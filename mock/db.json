@@ -1,0 +1,146 @@
+{
+  "functionModuleFirstOption": [
+        {"label":"入口", 
+        "value":"S1",
+        "children":[
+          {"label":"首页", "value": "S11"},
+           {"label":"我的丹露", "value": "S12"},
+            {"label":"活动", "value": "S13"},
+             {"label":"频道", "value": "S14"}
+        ]
+        },
+        {"label":"导购", "value":"S2","children":[
+          {"label":"分类", "value": "S21"},
+           {"label":"搜索", "value": "S22"},
+            {"label":"商品列表", "value": "S23"},
+             {"label":"商品详情", "value": "S24"},
+             {"label":"店铺", "value": "S25"}
+        ]
+        },
+        {"label":"售卖管理", "value":"S3","children":[
+          {"label":"售卖权管理", "value": "S31"},
+           {"label":"产品管理", "value": "S32"},
+            {"label":"商品管理", "value": "S33"},
+             {"label":"库存管理", "value": "S34"},
+             {"label":"佳哥管理", "value": "S35"}
+        ]
+        },
+        {"label":"营销", "value":"S4","children":[
+          {"label":"促销", "value": "S41"},
+           {"label":"营销", "value": "S42"},
+            {"label":"红包/优惠券", "value": "S43"},
+             {"label":"积分", "value": "S44"},
+             {"label":"推荐", "value": "S45"},
+             {"label":"广告", "value": "S46"},
+             {"label":"对外营销", "value": "S47"}
+        ]
+        },
+        {"label":"交易", "value":"S5","children":[
+          {"label":"收藏夹", "value": "S51"},
+           {"label":"购物车", "value": "S52"},
+            {"label":"常购", "value": "S53"},
+             {"label":"下单过程", "value": "S54"},
+             {"label":"退换货", "value": "S55"}
+        ]
+        },
+        {"label":"订单", "value":"S6","children":[
+          {"label":"订单管理-采购", "value": "S61"},
+           {"label":"订单管理-销售", "value": "S62"},
+            {"label":"订单提醒", "value": "S63"}
+            
+        ]
+        },
+        {"label":"支付", "value":"S7","children":[
+          {"label":"支付通道", "value": "S71"},
+           {"label":"卖家入网", "value": "S72"},
+            {"label":"支付账号管理", "value": "S73"},
+             {"label":"收款账号管理", "value": "S74"},
+             {"label":"支付拆分", "value": "S75"},
+             {"label":"支付密码管理", "value": "S76"},
+             {"label":"清分管理", "value": "S77"},
+             {"label":"平台费率管理", "value": "S78"}
+        ]
+        },
+        {"label":"金融", "value":"S8","children":[
+          {"label":"理财", "value": "S81"},
+           {"label":"保理", "value": "S82"}
+        ]
+        },
+        {"label":"用户", "value":"S9","children":[
+          {"label":"会员体系-买", "value": "S91"},
+           {"label":"会员体系-卖", "value": "S92"},
+            {"label":"用户账号管理", "value": "S93"},
+             {"label":"企业账号管理", "value": "S94"},
+             {"label":"用户信息管理", "value": "S95"},
+             {"label":"企业信息管理", "value": "S96"},
+             {"label":"店铺信息管理", "value": "S97"},
+             {"label":"角色权限管理-经", "value": "S98"},
+             {"label":"角色权限管理-终", "value": "S99"},
+             {"label":"角色权限管理-运营", "value": "S910"},
+             {"label":"角色权限管理-运维", "value": "S911"},
+             {"label":"经销商注册", "value": "S912"},
+             {"label":"终端店注册", "value": "S913"},
+             {"label":"注销-经销商", "value": "S914"},
+             {"label":"注销-终端店", "value": "S915"},
+             {"label":"系统登录", "value": "S916"}
+        ]
+      }
+        ],
+  "requirementPlanOption": [
+      "RP1704","RP1705","RP1706"
+    ],
+    
+  "data_list": [{
+    "id": "102",
+    "requirementName":"搜索增加经销商搜索（WEB交易）",
+    "functionModuleFirst":"引流",
+    "functionModuleSecond":"搜索",
+    "functionType":"新增功能", 
+     "requirementName":"搜索增加经销商搜索（WEB交易）", 
+      "priority":"1", 
+       "requirementPlan":"带规划", 
+        "requirementStart":"", 
+         "responsibleUserName":"戴瑞", 
+          "requirementStatus":"待讨论" 
+  },
+{
+    "id": "102",
+    "requirementName":"搜索增加经销商搜索（WEB交易）",
+    "functionModuleFirst":"引流",
+    "functionModuleSecond":"搜索",
+    "functionType":"新增功能", 
+     "requirementName":"搜索增加经销商搜索（WEB交易）", 
+      "priority":"1", 
+       "requirementPlan":"带规划", 
+        "requirementStart":"", 
+         "responsibleUserName":"戴瑞", 
+          "requirementStatus":"待讨论" 
+  },
+  {
+    "id": "102",
+    "requirementName":"搜索增加经销商搜索（WEB交易）",
+    "functionModuleFirst":"引流",
+    "functionModuleSecond":"搜索",
+    "functionType":"新增功能", 
+     "requirementName":"搜索增加经销商搜索（WEB交易）", 
+      "priority":"1", 
+       "requirementPlan":"带规划", 
+        "requirementStart":"", 
+         "responsibleUserName":"戴瑞", 
+          "requirementStatus":"待讨论" 
+  },
+  {
+    "id": "102",
+    "requirementName":"搜索增加经销商搜索（WEB交易）",
+    "functionModuleFirst":"引流",
+    "functionModuleSecond":"搜索",
+    "functionType":"新增功能", 
+     "requirementName":"搜索增加经销商搜索（WEB交易）", 
+      "priority":"1", 
+       "requirementPlan":"带规划", 
+        "requirementStart":"", 
+         "responsibleUserName":"戴瑞", 
+          "requirementStatus":"待讨论" 
+  }
+  ]
+}
