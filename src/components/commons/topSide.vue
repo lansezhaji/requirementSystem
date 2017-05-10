@@ -1,0 +1,45 @@
+<template>
+	<el-row class="topSide">
+		<el-col :span="20">
+			<h2>
+				丹露需求及项目管理系统
+			</h2> 
+		</el-col>
+		<el-col :span="4">
+			<el-col  class="toptitle">
+				<span>欢迎您：</span>
+				<span>谭军一</span>
+				<el-button type="default" class="logout">退出登录</el-button>
+			</el-col>
+		</el-col>
+	</el-row>
+</template>
+
+<script>
+  export default {
+    name: 'rvSide',
+    data: function() {
+      return {
+        
+      }
+    },
+   methods: {
+
+    }
+  }
+</script>
+
+<style >
+	.topSide{
+		background: lightgray;
+	}
+	.toptitle{
+		line-height: 30px;
+		margin-top: 20px;
+	}
+	.logout{
+		background-color: rgba(0,0,0,0);
+		border:1px solid white;
+		color: green;
+	}
+</style>

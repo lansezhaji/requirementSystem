@@ -24,8 +24,9 @@
           <el-menu-item index="3-2" class="sideBar">我审批的</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="3">人员管理</el-menu-item>
-      <el-menu-item index="4">我的账号</el-menu-item>
+      <el-menu-item index="3" @click="router('userManage')"> 人员管理</el-menu-item>
+
+      <el-menu-item index="4" @click="router('myAccount')">我的账号</el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -39,6 +40,11 @@
       }
     },
    methods: {
+    router(name){
+      this.$router.push({
+        name:name
+      })
+    },
    /**
     * 统计按钮
     */    
@@ -89,6 +95,6 @@
   margin-left: 40px;
  }
  .rvSide .el-submenu__title {
-  font-size: 20px;
+  font-size: 16px;
  }
 </style>

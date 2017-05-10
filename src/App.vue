@@ -1,24 +1,40 @@
 <template>
   <div id="app">
     
-    <el-row>
-      <el-col :span="3">
+    <el-row v-if="isLogin">
+      <el-col>
+          <top-side></top-side>
+      </el-col>
+      <el-col :span="3" >
         <rv-side></rv-side>
       </el-col>
-      <el-col :span="21">
+
+      <el-col :span="21" style="padding:20px">
           <router-view></router-view>
       </el-col>
     </el-row>
+    <login v-else >
+    </login>
 
   </div>
 </template>
 
 <script>
+import login from './components/login/login'
 import rvSide from 'commons/rvSide'
+import topSide from 'commons/topSide'
 export default {
   name: 'app',
   components: {
-    rvSide
+    rvSide,
+    login,
+    topSide
+  },
+  data:function(){
+      var data = {
+        isLogin : true,
+      }
+      return data
   }
 }
 </script>
@@ -30,6 +46,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /*margin-top: 60px;*/
 }
+
 </style>

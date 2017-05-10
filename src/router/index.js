@@ -46,6 +46,23 @@ export default new Router({
       path: '/versionManagement',
       name: 'versionManagement',
       component: require('views/versionManagement/versionManagement.vue')
-    }
+    },
+
+    /**
+     * 人员管理
+     */
+    {
+      path: '/userManage',
+      name: 'userManage',
+      component: require('views/userCenter/userManage.vue')
+    },
+    /**
+     * 我的账号
+     */
+    {
+      path: '/myAccount',
+      name: 'myAccount',
+      component: require('views/userCenter/myAccount.vue')
+    },
   ]
 })
