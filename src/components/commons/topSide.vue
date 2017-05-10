@@ -9,7 +9,7 @@
 			<el-col  class="toptitle">
 				<span>欢迎您：</span>
 				<span>谭军一</span>
-				<el-button type="default" class="logout">退出登录</el-button>
+				<el-button type="default" class="logout" @click="logout()">退出登录</el-button>
 			</el-col>
 		</el-col>
 	</el-row>
@@ -24,7 +24,9 @@
       }
     },
    methods: {
-
+   		logout :function(){
+   			this.$store.commit('logout');
+   		}
     }
   }
 </script>

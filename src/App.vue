@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     
-    <el-row v-if="isLogin">
+    <el-row v-if="this.$store.state.user.tocken">
       <el-col>
           <top-side></top-side>
       </el-col>
@@ -32,7 +32,7 @@ export default {
   },
   data:function(){
       var data = {
-        isLogin : true,
+        isLogin : false, // 暂时没使用
       }
       return data
   }
