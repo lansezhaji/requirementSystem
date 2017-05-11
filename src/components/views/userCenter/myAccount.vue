@@ -2,60 +2,56 @@
 	<el-row>
 		<el-breadcrumb separator="/">
 			<el-breadcrumb-item>
-				<h3>人员管理</h3>
+				<h3>我的账号</h3>
 			</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-row class="content">
-			<!-- 查询条件 -->
-			<el-form :model="userForm" :rules="rules" ref="userForm" label-width="100px">
-				<el-col :span="6">
-					<el-form-item label="账号：">
-						<el-input v-model="userForm.account"></el-input>
+			<el-form label-width="150px">
+				<el-col :span="10">
+					<el-form-item label="账号：" class="userMessage">
+						<span >tanjunyi</span>						
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
-					<el-form-item label="姓名：">
-						<el-input v-model="userForm.account"></el-input>
+				<el-col :span="10">
+					<el-form-item label="密码：" class="userMessage">
+						<span >******</span>						
 					</el-form-item>
 				</el-col>
-				<el-col :span="4">
-					<el-form-item label="状态：">
-						<el-select v-model="userForm.userStatus">
-							<el-option label="启用" value="01"></el-option>
-							<el-option label="停用" value="02"></el-option>
-						</el-select>
+				<el-col :span="10">
+					<el-form-item label="姓名：" class="userMessage">
+						<span >谭军一</span>						
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
-					<el-form-item >
-						<el-col><el-checkbox label="具有管理需求权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理版本权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理人员权限"></el-checkbox></el-col>
+				<el-col :span="10">
+					<el-form-item label="角色：" class="userMessage">
+						<span >产品部总经理</span>						
 					</el-form-item>
 				</el-col>
-				<el-col >
-					<el-form-item >
-						<el-button type="primary">搜索</el-button>
+				<el-col :span="10">
+					<el-form-item label="状态：" class="userMessage">
+						<span >启用</span>						
 					</el-form-item>
 				</el-col>
+				<el-col :span="10">
+					<el-form-item label="创建时间：" class="userMessage">
+						<span >2016-7-4</span>						
+					</el-form-item>
+
+				</el-col>				
 			</el-form>
-			<!-- 用户列表 -->
-			
+
 		</el-row>
+		
 		<el-row class="content">
-			  <el-table :data="tableData" stripe style="width: 100%;text-align:center">
-				    <el-table-column prop="date" label="序号" width="180" > </el-table-column>
-				    <el-table-column prop="date" label="账号" width="180" > </el-table-column>
-				    <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
-				    <el-table-column prop="address" label="管理需求"> </el-table-column>
-				    <el-table-column prop="address" label="管理版本"> </el-table-column>
-				    <el-table-column prop="address" label="管理人员"> </el-table-column>
-				    <el-table-column prop="address" label="状态"> </el-table-column>
-				    <el-table-column prop="address" label="操作">
-				    </el-table-column>
-			  </el-table>
-			  <el-pagination  layout="prev, pager, next" :total="50"> </el-pagination>
+			<el-row class="history title" >
+				登录历史记录：
+			</el-row>
+			<el-row v-for="item in loginHistory" class="history">
+				<el-col :span="6">{{item.date}}</el-col>
+				<el-col :span="16">{{item.address}}</el-col>
+			</el-row>
 		</el-row>
+
 	</el-row>
 
 
@@ -68,22 +64,22 @@
 					account:"",
 					userStatus:"01",
 				},
-				tableData: [{
-		          date: '2016-05-02',
+				loginHistory: [{
+		          date: '2016-05-02 19:12:23',
 		          name: '王小虎',
-		          address: '1518 弄'
+		          address: '成都市区高新区'
 		        }, {
-		          date: '2016-05-04',
+		          date: '2016-05-02 19:12:23',
 		          name: '王小虎',
-		          address: '1517 弄'
+		          address: '绵阳市'
 		        }, {
-		          date: '2016-05-01',
+		          date: '2016-05-02 19:12:23',
 		          name: '王小虎',
-		          address: '1519 弄'
+		          address: '广元朝天区'
 		        }, {
-		          date: '2016-05-03',
+		          date: '2016-05-02 19:12:23',
 		          name: '王小虎',
-		          address: '弄'
+		          address: '东海省乐山呼叫中心'
 		        }],
 				rules:{
 
@@ -106,5 +102,20 @@
 	    background-color: #fff;
 	    overflow: hidden;
 	}
-	
+	.userMessage{
+		text-align: left;
+	}
+	.history{
+		line-height: 40px;
+	}
+	.history:hover{
+		background-color: #eee;
+	}
+	.title{
+		text-align:left;
+		margin-bottom:30px;
+		padding-left: 20px;
+		background-color: #efefef;
+		border-radius: 3px;
+	}
 </style>
