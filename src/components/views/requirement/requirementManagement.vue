@@ -2,6 +2,9 @@
   <div class="requirementManagement ">
   <el-breadcrumb separator=">" class="bread-title">
       <el-breadcrumb-item>需求管理</el-breadcrumb-item>
+      <el-breadcrumb-item>
+        <el-button @click="debug()">debug</el-button>
+      </el-breadcrumb-item>
   </el-breadcrumb>
     <div class="retrieval  criteria Style">
   	<el-form :model="orderForm" ref="orderForm"  label-width="160px" class="query">
@@ -335,6 +338,9 @@
       
     },
      methods: {
+      debug:function(){
+        debugger
+      },
       /**
        * [bulkEdit 搜索]
        * @return {[type]} [description]

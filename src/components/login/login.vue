@@ -12,7 +12,7 @@
 					<el-input v-model="loginForm.password" type="password"></el-input>
 				</el-form-item>
 				<el-form-item >
-					<el-button type="primary">登录</el-button>
+					<el-button type="primary" @click="login()">登录</el-button>
 				</el-form-item>				
 			</el-form>
 		
@@ -42,7 +42,14 @@
       return data
     },
    	methods: {
-
+   		login : function(){
+   			var that = this;
+   			this.$refs['loginForm'].validate((valide)=>{
+   				if (valide) {
+   					that.$store.state.user.tocken = 'sld8e(Dl2'
+   				}
+   			})
+   		}
     }
   }
 </script>
