@@ -60,6 +60,16 @@ export default new Router({
       name: 'myExamined',
       component: require('views/approveManage/myApprove.vue')
     },
+    {
+      path: '/createApprove',
+      name: 'createApprove',
+      component: require('views/approveManage/createApprove.vue')
+    },
+    {
+      path: '/approveModify',
+      name: 'approveModify',
+      component: require('views/approveManage/approveModify.vue')
+    },
     
     /**
      * 人员管理
