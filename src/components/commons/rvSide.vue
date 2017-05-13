@@ -20,8 +20,8 @@
        <el-submenu index="3">
         <template slot="title">审批管理</template>
         <el-menu-item-group>
-          <el-menu-item index="3-1" style="margin-left:40px;">我发起的</el-menu-item>
-          <el-menu-item index="3-2" class="sideBar">我审批的</el-menu-item>
+          <el-menu-item index="3-1" style="margin-left:40px;" @click="router('myApprove')">我发起的</el-menu-item>
+          <el-menu-item index="3-2" class="sideBar" @click="router('myExamined')">我审批的</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-menu-item index="3" @click="router('userManage')"> 人员管理</el-menu-item>

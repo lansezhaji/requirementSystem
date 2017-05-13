@@ -47,7 +47,20 @@ export default new Router({
       name: 'versionManagement',
       component: require('views/versionManagement/versionManagement.vue')
     },
-
+    /**
+     * 审批管理
+     */
+    {
+      path: '/myApprove',
+      name: 'myApprove',
+      component: require('views/approveManage/myApprove.vue')
+    },
+    {
+      path: '/myExamined',
+      name: 'myExamined',
+      component: require('views/approveManage/myApprove.vue')
+    },
+    
     /**
      * 人员管理
      */
