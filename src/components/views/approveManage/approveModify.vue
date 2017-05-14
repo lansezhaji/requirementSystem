@@ -48,70 +48,113 @@
 										是对方的酸辣粉就哦我了解的是否了解
 									</el-col>
 							</el-form-item>
-							<el-col :span="8">
-								<el-form-item label="启动时间：">
-									<el-date-picker
-								      v-model="approveForm.approveStart"
-								      type="daterange"
-								      placeholder="选择日期范围">
-								    </el-date-picker>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8">
-								<el-form-item label="计划转测时间：">
-									<el-date-picker
-								      v-model="approveForm.approveTest"
-								      type="daterange"
-								      placeholder="选择日期范围">
-								    </el-date-picker>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8">
-								<el-form-item label="计划QA时间：">
-									<el-date-picker
-								      v-model="approveForm.approveQA"
-								      type="daterange"
-								      placeholder="选择日期范围">
-								    </el-date-picker>
-								</el-form-item>
-							</el-col>
-							<el-form-item label="项目经理：" class="userMessage" >
+							<el-form-item label="启动时间：">
+								<el-col style="text-align:left">
+									2017-03-10 17:23:33
+								</el-col>
+							</el-form-item>
+							<el-form-item label="计划转测时间：">
+								<el-col style="text-align:left">
+									2017-03-10 15:23:11
+								</el-col>
+							</el-form-item>
+							<el-form-item label="计划QA时间：">
+								<el-col style="text-align:left">
+									2017-03-10 15:23:11
+								</el-col>
+							</el-form-item>
+							
+							<el-form-item label="开发负责人：" class="userMessage" >
 								<el-col :span="8">
-									<el-input v-model="approveForm.productManage"></el-input>	
+									{{approveForm.productManage}}	
+								</el-col>
+							</el-form-item>
+							<el-form-item label="测试负责任：" class="userMessage" >
+								<el-col :span="8">
+									王国豪
+								</el-col>
+							</el-form-item>
+							<el-form-item label="发版负责任：" class="userMessage" >
+								<el-col :span="8">
+									谢星
 								</el-col>
 							</el-form-item>
 							<el-form-item label="项目其他成员：" class="userMessage" >
 								<el-col :span="16">
-									<el-input v-model="approveForm.productManage"></el-input>	
+									何苗，陈思雨，张可可
 								</el-col>
 							</el-form-item>
-							<el-col :span="6">
-								<el-form-item label="申请入版类型：">
-									<el-select v-model="approveForm.versionType">
-										<el-option label="WEB" value="01"></el-option>
-										<el-option label="APP" value="02"></el-option>
-									</el-select>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8">
-								<el-form-item label="选择版本号：">
-									<el-select v-model="approveForm.approveVersion">
-										<el-option label="release-v2017.10" value="01"></el-option>
-										<el-option label="release-v2017.13" value="02"></el-option>
-									</el-select>
-								</el-form-item>
-							</el-col>
-							<el-col :span="16">
-								<el-form-item label="备注内容：" class="userMessage">
-									<el-input
-									  type="textarea"
-									  :rows="3"
-									  placeholder="请输入内容"
-									  v-model="approveForm.comment">
-									</el-input>			
-								</el-form-item>
-							</el-col>
+							<el-form-item label="备注：" class="userMessage" >
+								<el-col :span="16">
+									因受到中心化影响，该项目暂时延迟
+								</el-col>
+							</el-form-item>
+							
 						</el-col>
+		<!-- 修改后 -->
+												<el-col :span="12">
+							<el-row type="flex" justify="center">
+								<el-col :span="6">
+									<h3>修改后</h3>
+								</el-col>
+							</el-row>
+							<el-form-item label="版本类型：" class="userMessage">
+								APP
+							</el-form-item>
+							<el-form-item label="版本号：" class="userMessage" >
+									<el-col :span="8">
+										release-v2017.13
+									</el-col>
+							</el-form-item>
+							<el-form-item label="需求内容：" class="userMessage" >
+									<el-col >
+										是对方的酸辣粉就哦我了解的是否了解
+									</el-col>
+							</el-form-item>
+							<el-form-item label="启动时间：">
+								<el-col style="text-align:left">
+									2017-03-10 17:23:33
+								</el-col>
+							</el-form-item>
+							<el-form-item label="计划转测时间：">
+								<el-col style="text-align:left">
+									2017-03-10 15:23:11
+								</el-col>
+							</el-form-item>
+							<el-form-item label="计划QA时间：">
+								<el-col style="text-align:left">
+									2017-03-10 15:23:11
+								</el-col>
+							</el-form-item>
+							
+							<el-form-item label="开发负责人：" class="userMessage" >
+								<el-col :span="8">
+									{{approveForm.productManage}}	
+								</el-col>
+							</el-form-item>
+							<el-form-item label="测试负责任：" class="userMessage" >
+								<el-col :span="8">
+									王国豪
+								</el-col>
+							</el-form-item>
+							<el-form-item label="发版负责任：" class="userMessage" >
+								<el-col :span="8">
+									谢星
+								</el-col>
+							</el-form-item>
+							<el-form-item label="项目其他成员：" class="userMessage" >
+								<el-col :span="16">
+									何苗，陈思雨，张可可
+								</el-col>
+							</el-form-item>
+							<el-form-item label="备注：" class="userMessage" >
+								<el-col :span="16">
+									因受到中心化影响，该项目暂时延迟
+								</el-col>
+							</el-form-item>
+							
+						</el-col>
+
 					</el-row>
 					
 									
