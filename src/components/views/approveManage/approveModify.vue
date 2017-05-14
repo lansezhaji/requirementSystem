@@ -39,7 +39,7 @@
 								WEB
 							</el-form-item>
 							<el-form-item label="版本号：" class="userMessage" >
-									<el-col :span="8">
+									<el-col >
 										release-v2017.0
 									</el-col>
 							</el-form-item>
@@ -102,7 +102,7 @@
 								APP
 							</el-form-item>
 							<el-form-item label="版本号：" class="userMessage" >
-									<el-col :span="8">
+									<el-col >
 										release-v2017.13
 									</el-col>
 							</el-form-item>

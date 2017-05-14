@@ -34,7 +34,11 @@
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="申请时间：" class="userMessage">
-												
+							<el-date-picker
+						      v-model="approveForm.approveTime"
+						      type="daterange"
+						      placeholder="选择日期范围">
+						    </el-date-picker>					
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -80,7 +84,9 @@
 		<el-row class="content">
 			<el-row type="flex" justify="left" v-if="!pageFlage">
 				<el-col :span="3">
-					<el-button type="text">+发起新的审批</el-button>
+					<router-link to="/createApprove">
+						<el-button type="/createApprove">+发起新的审批</el-button>
+					</router-link>
 				</el-col>
 			</el-row>
 			<el-table :data="tableData" stripe style="width: 100%;text-align:center" label-width="150px">

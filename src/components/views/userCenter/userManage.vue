@@ -47,11 +47,11 @@
 				    <el-table-column prop="date" label="序号" width="180" > </el-table-column>
 				    <el-table-column prop="date" label="账号" width="180" > </el-table-column>
 				    <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
-				    <el-table-column prop="address" label="管理需求"> </el-table-column>
-				    <el-table-column prop="address" label="管理版本"> </el-table-column>
-				    <el-table-column prop="address" label="管理人员"> </el-table-column>
-				    <el-table-column prop="address" label="状态"> </el-table-column>
-				    <el-table-column prop="address" label="操作">
+				    <el-table-column prop="address" label="管理需求" width="180"> </el-table-column>
+				    <el-table-column prop="address" label="管理版本" width="180"> </el-table-column>
+				    <el-table-column prop="address" label="管理人员" width="180"> </el-table-column>
+				    <el-table-column prop="address" label="状态" width="180"> </el-table-column>
+				    <el-table-column prop="address" label="操作" width="180">
 				    </el-table-column>
 			  </el-table>
 			  <el-pagination  layout="prev, pager, next" :total="50"> </el-pagination>

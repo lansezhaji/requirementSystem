@@ -4,29 +4,29 @@
       <el-submenu index="1">
         <template slot="title">需求管理</template>
         <el-menu-item-group>
-          <el-menu-item index="1-1" style="margin-left:40px;" @click="toRequirementManagement">需求管理</el-menu-item>
-          <el-menu-item index="1-2" class="sideBar" @click="toPropertyManagement">属性管理</el-menu-item>
+          <el-menu-item index="propertyManagement" class="sideBar"  @click="router('propertyManagement')">需求管理</el-menu-item>
+          <el-menu-item index="versionPropertyManagement" class="sideBar"  @click="router('versionPropertyManagement')">属性管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="2">
         <template slot="title">版本管理</template>
         <el-menu-item-group>
-          <el-menu-item index="2-1" style="margin-left:40px;" @click="toVersionList">版本列表</el-menu-item>
-          <el-menu-item index="2-2" class="sideBar" @click="toVersionManagement">版本类型管理</el-menu-item>
-          <el-menu-item index="2-1" style="margin-left:40px;" @click="toVersion">版本号管理</el-menu-item>
+          <el-menu-item index="versionList" class="sideBar"  @click="router('versionList')">版本列表</el-menu-item>
+          <el-menu-item index="requirementManagement" class="sideBar"  @click="router('requirementManagement')">版本类型管理</el-menu-item>
+          <el-menu-item index="versionManagement" class="sideBar"  @click="router('versionManagement')">版本号管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
 
        <el-submenu index="3">
         <template slot="title">审批管理</template>
         <el-menu-item-group>
-          <el-menu-item index="3-1" style="margin-left:40px;" @click="router('myApprove')">我发起的</el-menu-item>
-          <el-menu-item index="3-2" class="sideBar" @click="router('myExamined')">我审批的</el-menu-item>
+          <el-menu-item index="myApprove" class="sideBar"  @click="router('myApprove')">我发起的</el-menu-item>
+          <el-menu-item index="myExamined" class="sideBar"  @click="router('myExamined')">我审批的</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="3" @click="router('userManage')"> 人员管理</el-menu-item>
+      <el-menu-item index="userManage" @click="router('userManage')"> 人员管理</el-menu-item>
 
-      <el-menu-item index="4" @click="router('myAccount')">我的账号</el-menu-item>
+      <el-menu-item index="myAccount" @click="router('myAccount')">我的账号</el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -45,37 +45,7 @@
         name:name
       })
     },
-   /**
-    * 统计按钮
-    */    
-   toRequirementManagement() {
-    // this.$http.get('http://localhost:3003/users').then(({data})=>{
-    //   console.log(data)
-    // })
-    this.$router.push({
-      name:'requirementManagement'
-    })
-   },
-   toPropertyManagement() {
-    this.$router.push({
-      name:'propertyManagement'
-    })
-   },
-   toVersionList(){
-    this.$router.push({
-      name:'versionList'
-    })
-   },
-   toVersionManagement(){
-    this.$router.push({
-      name:'versionPropertyManagement'
-    })
-   },
-   toVersion() {
-     this.$router.push({
-      name:'versionManagement'
-    })
-   },
+
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
@@ -92,7 +62,10 @@
     height: 100%;
   }
  .rvSide .sideBar {
-  margin-left: 40px;
+    font-size: 14px;
+    color: #666;
+    line-height: 20px;
+    text-align: right;
  }
  .rvSide .el-submenu__title {
   font-size: 16px;
