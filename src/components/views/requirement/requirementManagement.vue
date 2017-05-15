@@ -3,7 +3,9 @@
   <el-breadcrumb separator=">" class="bread-title">
       <el-breadcrumb-item>需求管理</el-breadcrumb-item>
       <el-breadcrumb-item>
+        <el-button @click="initQueryData()">查询</el-button>
         <el-button @click="debug()">debug</el-button>
+        
       </el-breadcrumb-item>
   </el-breadcrumb>
     <div class="retrieval  criteria Style">
@@ -15,7 +17,7 @@
 				    <el-option
 				      v-for="item in functionalPlatformOption"
 				      :label="item.name"
-				      :value="item.value"
+				      :value="item.id"
 				      >
 				    </el-option>
 				  </el-select>
@@ -25,9 +27,9 @@
 				<el-form-item label="功能类型：">
 					<el-select v-model="orderForm.functionType" size="small"  placeholder="请选择">
 					    <el-option
-					      v-for="item in functionalTypeOption"
+					      v-for="item in functionModuleFirst"
 					      :label="item.name"
-					      :value="item.value"
+					      :value="item.id"
 					      >
 					    </el-option>
 					  </el-select>
@@ -39,7 +41,7 @@
 					    <el-option
 					      v-for="item in responsibleUserIdOption"
 					      :label="item.name"
-					      :value="item.value"
+					      :value="item.id"
 					      >
 					    </el-option>
 					  </el-select>
@@ -51,7 +53,7 @@
               <el-option
                 v-for="item in requirementStatusOption"
                 :label="item.name"
-                :value="item.value"
+                :value="item.id"
                 >
               </el-option>
             </el-select>
@@ -59,28 +61,31 @@
         </el-col>
     	</el-row>
     	<el-row type="flex" class="row-bg" justify="right" style="margin-top:20px;">
-    	  	<el-col :span="8">
+    	  	<el-col :span="6">
     	  	<el-form-item label="功能分类：">
-          <el-cascader
-            :options="functionModuleFirstOption"
-            v-model="orderForm.functionModuleFirst"
-            @change="cascaderChange">
-          </el-cascader>
-		  	</el-form-item>
+            <el-select  size="small" v-model="orderForm.functionModuleFirst"  placeholder="请选择">
+              <el-option
+                v-for="item in functionalTypeOption"
+                :label="item.name"
+                :value="item.id"
+                >
+              </el-option>
+            </el-select>
+		  	  </el-form-item>
     		</el-col>
-			<el-col :span="8">
+			<el-col :span="6">
 				<el-form-item label="需求规划：">
 					<el-select size="small" v-model="orderForm.requirementPlan"  placeholder="请选择">
 					    <el-option
 					      v-for="item in requirementPlanOption"
-					      :label="item.value"
-					      :value="item.value"
+					      :label="item.name"
+					      :value="item.id"
 					      >
 					    </el-option>
 					  </el-select>
 				</el-form-item>
     		</el-col>
-    		<el-col :span="8">
+    		<el-col :span="6">
 				<el-form-item label="需求名称:" >
           <el-autocomplete size="small" :maxlength="parseInt(100)"
                 class="inline-input"
@@ -96,7 +101,7 @@
     	</el-form>
       <div style="text-align:center;">
         <el-button type="primary" @click="Search">搜索</el-button>
-        <el-button type="primary">重置</el-button>
+        <el-button type="primary" @click="resetForm('orderForm')">重置</el-button>
       </div>
 	</div>
   <div class="retrieval  criteria Style" style="margin-top:20px;">
@@ -268,68 +273,19 @@
           list:[],
           total:10
         },
-        nameTest:[
-        {name:'W-终', value:'1'},
-        {name:'W-经', value:'1'},
-        {name:'A-终', value:'1'},
-        {name:'A-经', value:'1'},
-        {name:'运营', value:'1'},
-        {name:'运维', value:'1'},
-        {name:'其他', value:'1'}
-        ],
+        nameTest:[ ],
         //批量编辑的第一个值
         bulkEditFirstValue : '',
-        bulkEditFirstOptions: [
-          {name:'需求规划', value:'R1'},
-          {name:'需求进度', value:'R2'},
-          {name:'负责人', value:'R3'},
-          {name:'优先级', value:'R4'},
-        ],
+        bulkEditFirstOptions: [ ],
         //批量编辑的第二个值
         bulkEditSecondValue : '',
-        bulkEditSecondOptions: [
-          {name:'需求规划', value:'R1'},
-          {name:'需求进度', value:'R2'},
-          {name:'负责人', value:'R3'},
-          {name:'优先级', value:'R4'},
-        ],
+        bulkEditSecondOptions: [ ],
         ifSecond:false,
-        functionalPlatformOption:[
-        {name:'WEB终端店', value:'S01'},
-        {name:'WEB经销商', value:'S02'},
-        {name:'APP终端店', value:'S03'},
-        {name:'APP终端店', value:'S04'},
-        {name:'运营平台', value:'S05'}
-        ],
-        functionalTypeOption:[
-        {name:'新增功能', value:'F01'},
-        {name:'功能改进', value:'F02'},
-        {name:'界面友好性', value:'F03'},
-        {name:'Bug修复', value:'F04'},
-        {name:'运营需求', value:'F05'},
-        {name:'接口需求', value:'F06'}
-        ],
-        responsibleUserIdOption:[
-        {name:'夏睿', value:'P01'},
-        {name:'廖佳', value:'P02'},
-        {name:'贾茗兮', value:'P03'},
-        {name:'秦国舰', value:'P04'},
-        {name:'房敏', value:'P05'}
-        ],
-        requirementStatusOption:[
-        {name:'待讨论', value:'SS01'},
-        {name:'待设计', value:'SS02'},
-        {name:'需求中', value:'SS03'},
-        {name:'需求完成', value:'SS04'},
-        {name:'已评审', value:'SS05'},
-        {name:'开发中', value:'SS06'},
-        {name:'已发布', value:'SS07'},
-        {name:'暂缓', value:'SS08'},
-        {name:'拒绝', value:'SS09'},
-        ],
-        functionModuleFirstOption: [
-        
-        ],
+        functionalPlatformOption:[ ],
+        functionalTypeOption:[ ],
+        responsibleUserIdOption:[ ],
+        requirementStatusOption:[ ],
+        functionModuleFirst: [ ],
         requirementPlanOption:[
           {name:'RP1704', value:'RP1704'},{name:'RP1705', value:'RP1705'},{name:'RP1706', value:'RP1706'},
         ]
@@ -341,6 +297,69 @@
       debug:function(){
         debugger
       },
+
+      initBase : function(type,callback){
+            var that = this;
+            var reqData = {
+              type : type,
+            }
+            var url = '/api/dlmanagementtool/property/list?type='+type;
+            this.$http.post(url,reqData).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                if (ok && data.status == '0') {
+                    switch (type){
+                      case 1 : 
+                        that.requirementStatusOption = data.data ;
+                        break;
+                      case 2 :
+                        that.functionalTypeOption = data.data ;
+                        break;
+                      case 3 : 
+                        that.functionModuleFirst = data.data;
+                        break;
+                      case 4 : 
+                        that.functionalPlatformOption = data.data;
+                        break;
+                      case 5 : 
+                        that.responsibleUserIdOption = data.data;
+                        break;
+                    }
+                } else {
+                  that.$message.error(data.msg);
+                }
+            });
+      },
+      /**
+       * 查询初始化数据，填充请求参数
+       * @return {[type]} [description]
+       */
+      initQueryData : function(){
+          var that = this;
+          // 需求进度
+          this.initBase(1 );
+          // 功能模块
+          this.initBase(2 );
+          // 功能类型
+          this.initBase(3 );
+          // 产品平台
+          this.initBase(4 );
+          // 提出人
+          this.initBase(5 );
+            
+            // var url = process.env.API_ROOT + 'dlmanagementtool/login/loginin';
+
+      },
+      /**
+       * 重置表单
+       * @param  {[type]} formName [description]
+       * @return {[type]}          [description]
+       */
+      resetForm :function(formName) {
+          this.$refs[formName].resetFields();
+      } ,
       /**
        * [bulkEdit 搜索]
        * @return {[type]} [description]
@@ -355,7 +374,7 @@
       /**
        * [Search 搜索按钮的事件]
        */
-      Search(index){
+      Search : function(index){
         let reqData = {
           productPlatform : this.orderForm.productPlatform.join(','),
           functionType : this.orderForm.functionType,
@@ -404,10 +423,10 @@
        * [cascaderChange 二级联动触发的函数]
        * @return {[type]} [description]
        */
-      cascaderChange(value) {
+      cascaderChange : function(value) {
         console.log(value);
       },
-      selectChane(value) {
+      selectChane : function(value) {
         console.log(value)
         this.ifSecond = true
       },
@@ -415,7 +434,7 @@
        * [toAdd 跳转到新增需求---带有参数：]
        * @return {[type]} [description]
        */
-      toAdd() {
+      toAdd:function() {
         let that = this;
         that.$router.push({
           name:'addRequirement',
@@ -429,7 +448,7 @@
        * @param  {[type]} item [description]
        * @return {[type]}      [description]
        */
-      handleSelect(item) {
+      handleSelect:function(item) {
         this.orderForm.sellerName = item.companyName;
         let reqData = {
          Money:'',
@@ -446,12 +465,12 @@
        * [viewDetail 查看详情]
        * @return {[type]} [description]
        */
-      viewDetail(req) {
+      viewDetail : function(req) {
         this.$router.push({
           name:'viewRequirement'
         })
       },
-      handleSelectionChange(val) {
+      handleSelectionChange : function(val) {
         this.multipleSelection = val;
         if(this.multipleSelection.length > 0){
           this.groupEdit = false;
@@ -463,7 +482,7 @@
         /**
        * 模糊查询
        */
-      querySearch(queryString, call) {
+      querySearch :function(queryString, call) {
         var that = this;
         //此处去请求后端的数据
         that.fuzzyList='';
@@ -489,7 +508,7 @@
 
       },
       //获得二级联动的mock
-      getMockData() {
+      getMockData :function() {
         this.$http.get('http://localhost:3000/functionModuleFirstOption').then(({data}) => {
           // console.log(data)
           this.functionModuleFirstOption = data;
@@ -499,7 +518,7 @@
        * [getRequirementPlanOption 获得需求规划的数据]
        * @return {[type]} [description]
        */
-      getRequirementPlanOption(){
+      getRequirementPlanOption :function(){
          this.$http.get('http://localhost:3000/functionModuleFirstOption').then(({data}) => {
           this.requirementPlanOption = data.map( function (item, index) {
             return {
@@ -511,10 +530,11 @@
       }
     },
     beforeRouteEnter: function (to,from,next) {
-          next(vm => {
-            vm.getMockData()
-          });
-  }
+      next(vm => {
+        // vm.getMockData()
+        vm.initQueryData();
+      });
+    }
   }
 </script>
 

@@ -13,11 +13,10 @@
 				</el-form-item>
 				<el-form-item >
 					<el-button type="primary" @click="login()">登录</el-button>
+	  				<el-checkbox v-model="isDisplayBg">加载背景</el-checkbox>
 				</el-form-item>				
 			</el-form>
-			<el-col id="checkbox">
-	  			<el-checkbox v-model="isDisplayBg">加载背景</el-checkbox>
-			</el-col>
+			
 		</el-col>
 		<el-col v-if="isDisplayBg">
 			<iframe id="background" src="http://www.jq22.com/js/a5.html"></iframe> 
@@ -33,8 +32,8 @@
     	var data  ={
     		isDisplayBg : false,
     		loginForm : {
-    			account : "tanjunyi",
-    			password:"12345"
+    			account : "majun@danlu.com",
+    			password:"majun123"
     		},
     		rules:{
     			account:[
@@ -52,7 +51,26 @@
    			var that = this;
    			this.$refs['loginForm'].validate((valide)=>{
    				if (valide) {
-   					that.$store.state.user.tocken = 'sld8e(Dl2'
+
+   					// that.$store.state.user.tocken = 'sld8e(Dl2'
+   					var reqData = {
+   						userName : that.loginForm.account,
+   						userPassword : that.loginForm.password,
+   					}
+   					// var url = process.env.API_ROOT + 'dlmanagementtool/login/loginin';
+   					var url = '/api/dlmanagementtool/login/loginin';
+		            this.$http.post(url,reqData).then(({
+		                data,
+		                ok,
+		                statusText
+		            }) => {
+		                if (ok && data.status == '0') {
+		                	that.$store.state.user.tocken = data.data.userName;
+		                    console.log(data);
+		                } else {
+		                	that.$message.error(data.msg);
+		                }
+		            });
    				}
    			})
    		}
@@ -71,7 +89,7 @@
 	}
 	#background{
 	  width: 100%;
-	  height: 600px;
+	  min-height: 700px;
 	  z-index: -1;
 	}
 	#checkbox{

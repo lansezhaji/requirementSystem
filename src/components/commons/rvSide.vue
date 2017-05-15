@@ -1,18 +1,19 @@
+<!-- 左边栏 -->
 <template>
   <div class="rvSide">
     <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
       <el-submenu index="1">
         <template slot="title">需求管理</template>
         <el-menu-item-group>
-          <el-menu-item index="propertyManagement" class="sideBar"  @click="router('propertyManagement')">需求管理</el-menu-item>
-          <el-menu-item index="versionPropertyManagement" class="sideBar"  @click="router('versionPropertyManagement')">属性管理</el-menu-item>
+          <el-menu-item index="requirementManagement" class="sideBar"  @click="router('requirementManagement')">需求管理</el-menu-item>
+          <el-menu-item index="propertyManagement" class="sideBar"  @click="router('propertyManagement')">属性管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="2">
         <template slot="title">版本管理</template>
         <el-menu-item-group>
           <el-menu-item index="versionList" class="sideBar"  @click="router('versionList')">版本列表</el-menu-item>
-          <el-menu-item index="requirementManagement" class="sideBar"  @click="router('requirementManagement')">版本类型管理</el-menu-item>
+          <el-menu-item index="versionPropertyManagement" class="sideBar"  @click="router('versionPropertyManagement')">版本类型管理</el-menu-item>
           <el-menu-item index="versionManagement" class="sideBar"  @click="router('versionManagement')">版本号管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>

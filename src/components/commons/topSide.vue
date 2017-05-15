@@ -1,3 +1,4 @@
+<!-- 上边栏 -->
 <template>
 	<el-row class="topSide">
 		<el-col :span="20">
@@ -8,7 +9,7 @@
 		<el-col :span="4">
 			<el-col  class="toptitle">
 				<span>欢迎您：</span>
-				<span>谭军一</span>
+				<span>{{this.$store.state.user.tocken}}</span>
 				<el-button type="default" class="logout" @click="logout()">退出登录</el-button>
 			</el-col>
 		</el-col>
