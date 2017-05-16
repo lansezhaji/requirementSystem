@@ -160,7 +160,7 @@
     	<el-table @sort-change="sortChange"
     :data="tableData.data"
     border @selection-change="handleSelectionChange"
-    style="width: 100%">
+    style="width: 100%;text-align:left">
     <el-table-column
       type="selection"
       min-width="55">
@@ -168,7 +168,7 @@
     <el-table-column
       prop="id"
       label="序号"
-      min-width="100">
+      min-width="50">
     </el-table-column>
     <el-table-column
       prop="functionModuleFirst"
@@ -270,7 +270,7 @@
           size:'',
     		},
         tableData:{
-          list:[],
+          data:[],
           total:10
         },
         nameTest:[ ],
@@ -365,7 +365,7 @@
               statusText
           }) => {
               if (ok && data.status == '0') {
-                  debugger
+                  that.tableData = data.data;
               } else {
                   that.$message.error(data.msg);
               }

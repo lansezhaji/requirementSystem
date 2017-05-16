@@ -2,27 +2,30 @@
   <div class="addRequirement Style">
     <p>基本信息</p>
   
-  <el-form :model="formData" :rules="rules" ref="formData" label-width="100px">
+  <el-form :model="formData" :rules="rules" ref="formData" label-width="150px">
 	  <el-row type="flex" class="row-bg" justify="right">
-	    <el-col :span="8">
-			<el-form-item label="需求名称：">
-				<el-input size="small" v-model="formData.requirementName" placeholder="最大长度为50个字符"></el-input>
+	    <el-col :span="12">
+			<el-form-item label="需求名称：" prop="requirementName">
+				<el-col :span="18">
+					<el-input size="small" v-model="formData.requirementName" placeholder="最大长度为50个字符"></el-input>
+				</el-col>
+				
 			</el-form-item>
 		</el-col>
-		<el-col :span="8">
+		<el-col :span="6">
 		
 			<el-form-item label="提出方：">
 				<el-row type="flex" class="row-bg" justify="right">
 					<el-col :span="12">
 						<el-form-item>
 							<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
-						    <el-option
-						      v-for="item in ProposerOption"
-						      :label="item.name"
-						      :value="item.value"
-						      >
-						    </el-option>
-						  </el-select>
+							    <el-option
+							      v-for="item in ProposerOption"
+							      :label="item.name"
+							      :value="item.value"
+							      >
+							    </el-option>
+							  </el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -35,7 +38,7 @@
 
 		</el-col>
 
-		<el-col :span="8">
+		<el-col :span="4">
 			<el-form-item label="提出时间：">
 				<el-date-picker
 			      v-model="formData.proposerDate"
@@ -49,50 +52,52 @@
 	  </el-row>
 
 	<el-row type="flex" class="row-bg" justify="right">
-	  	<el-col :span="8">
+	  	<el-col :span="12">
 			<el-form-item label="需求包名称：">
-				<el-input size="small" v-model="formData.PakgeName" placeholder="最大长度为50个字符"></el-input>
+				<el-col :span="18">
+					<el-input size="small" v-model="formData.PakgeName" placeholder="最大长度为50个字符"></el-input>
+				</el-col>
 			</el-form-item>
 		</el-col>
-		<el-col :span="8">
-			<el-form-item label="负责人员：">
-							<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
-						    <el-option
-						      v-for="item in ProposerOption"
-						      :label="item.name"
-						      :value="item.value"
-						      >
-						    </el-option>
-						  </el-select>
+		<el-col :span="6" style="text-align:left">
+			<el-form-item label="负责人员：" prop="Proposer">
+				<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
+				    <el-option
+				      v-for="item in ProposerOption"
+				      :label="item.name"
+				      :value="item.value"
+				      >
+				    </el-option>
+				  </el-select>
 			</el-form-item>
 		</el-col>
 	</el-row>
 	<el-row type="flex" class="row-bg" justify="right">
-	  	<el-col :span="16">
+	  	<el-col :span="12">
 			<el-form-item label="产品平台：">
-				<el-checkbox-group v-model="formData.checked" @change="handleCheckedCitiesChange">
+				<el-checkbox-group v-model="formData.checked" @change="handleCheckedCitiesChange" style="text-align:left">
 					<el-checkbox v-for="item in checkList" :label="item.value">{{item.name}}</el-checkbox>
   				</el-checkbox-group>
 			</el-form-item>
 		</el-col>
-		<el-col :span="8">
+		<el-col :span="6" style="text-align:left">
 			<el-form-item label="需求规划：">
-							<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
-						    <el-option
-						      v-for="item in ProposerOption"
-						      :label="item.name"
-						      :value="item.value"
-						      >
-						    </el-option>
-						  </el-select>
+				<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
+				    <el-option
+				      v-for="item in ProposerOption"
+				      :label="item.name"
+				      :value="item.value"
+				      >
+				    </el-option>
+				</el-select>
 			</el-form-item>
 		</el-col>
 	</el-row>
 	<el-row type="flex" class="row-bg" justify="left">
-	  	<el-col :span="16">
+	  	<el-col :span="12">
 			<el-form-item label="功能模块：">
 				<el-row type="flex" class="row-bg" justify="left">
-						<el-col :span="12">
+						<el-col :span="12" style="text-align:left">
 							<el-form-item>
 								<el-select  size="small" v-model="formData.functionModule" multiple placeholder="请选择">
 							    <el-option
@@ -104,31 +109,31 @@
 							</el-select>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="12" style="text-align:left">
 							<el-form-item>
 								<el-select  size="small" v-model="formData.functionModule" multiple placeholder="请选择">
-							    <el-option
-							      v-for="item in functionModuleOption"
-							      :label="item.name"
-							      :value="item.value"
-							      >
-							    </el-option>
-							</el-select>
+								    <el-option
+								      v-for="item in functionModuleOption"
+								      :label="item.name"
+								      :value="item.value"
+								      >
+								    </el-option>
+								</el-select>
 							</el-form-item>
 						</el-col>
 				</el-row>
 				</el-form-item>
 		</el-col>
-		<el-col :span="8">
-			<el-form-item label="需求规划：">
-							<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择">
-						    <el-option
-						      v-for="item in functionModuleOption"
-						      :label="item.name"
-						      :value="item.value"
-						      >
-						    </el-option>
-						  </el-select>
+		<el-col :span="8" style="text-align:left">
+			<el-form-item label="需求启动：">
+				<el-select  size="small" v-model="formData.Proposer" multiple placeholder="请选择" >
+				    <el-option
+				      v-for="item in functionModuleOption"
+				      :label="item.name"
+				      :value="item.value"
+				      >
+				    </el-option>
+				</el-select>
 			</el-form-item>
 		</el-col>
 	</el-row>
@@ -136,7 +141,7 @@
 	<el-form-item label="功能类型：">
 	  <el-col :span="24">
 	  	<el-row type="flex" class="row-bg" justify="left">
-	  	  	<el-col :span="16">
+	  	  	<el-col :span="12" style="text-align:left">
 				<el-radio-group v-model="formData.FRadio">
 				    <el-radio :label="1">新增功能</el-radio>
 				    <el-radio :label="2">功能改进</el-radio>
@@ -146,16 +151,16 @@
 				    <el-radio :label="6">Bug修复</el-radio>
 				  </el-radio-group>
 	  		</el-col>
-	  		<el-col :span="8">
+<!-- 	  		<el-col :span="8">
 				<el-input v-model="formData.bugID"></el-input>
-	  		</el-col>
+	  		</el-col> -->
 	  	</el-row>
 	  	</el-col>
 	  </el-form-item>	
 
 
 	<el-row type="flex" class="row-bg" justify="left">
-		<el-col :span="24">
+		<el-col :span="24" style="text-align:left">
 			<el-form-item label="优先级别：">
 				<el-radio-group v-model="formData.PRadio">
 				    <el-radio :label="1">1</el-radio>
@@ -169,7 +174,7 @@
 		</el-col>
 	</el-row>
 	<el-row type="flex" class="row-bg" justify="left">
-		<el-col :span="12">
+		<el-col :span="6" style="text-align:left">
 			<el-form-item label="完成时间：" prop="date1">
 				<el-date-picker
 			      v-model="formData.date1"
@@ -179,7 +184,7 @@
 			    </el-date-picker>
 			 </el-form-item>	
     	</el-col>
-    	<el-col :span="12">
+    	<el-col :span="6" style="text-align:left">
 			<el-form-item label="评审时间：" prop="date2">
 				<el-date-picker
 			      v-model="formData.date2"
@@ -191,21 +196,21 @@
     	</el-col>
 	</el-row>
 	 <el-row type="flex" class="row-bg" justify="left">
-	    <el-col :span="24">
+	    <el-col :span="18">
 			<el-form-item label="需求背景：" prop="RqBack">
 					<el-input :maxlength="parseInt(100)" v-model="formData.RqBack" type="textarea"></el-input>
 			</el-form-item>	
 		</el-col>
 	  </el-row>
 	   <el-row type="flex" class="row-bg" justify="left">
-	    <el-col :span="24">
+	    <el-col :span="18">
 			<el-form-item label="需求描述：" prop="Rqdescription">
 					<el-input :maxlength="parseInt(100)" v-model="formData.Rqdescription" type="textarea"></el-input>
 			</el-form-item>	
 		</el-col>
 	  </el-row>
 	   <el-row type="flex" class="row-bg" justify="left">
-	    <el-col :span="24">
+	    <el-col :span="18">
 			<el-form-item label="需求备注：" prop="RqNote">
 					<el-input :maxlength="parseInt(100)" v-model="formData.RqNote" type="textarea"></el-input>
 			</el-form-item>	
@@ -276,16 +281,64 @@
         ],
         rules:{
         	requirementName:[
-        		{required: true, message: '此项为必填', trigger: 'change'},
+        		{required: true, message: '此项为必填', trigger: 'blur,change'},
         		{max: 50, message: '最大长度为50个字符', trigger: 'blur'}
         	],
+        	// 负责人员
+        	Proposer:[{
+        		required: true, message: '此项为必填', trigger: 'blur,change'
+        	}],
         	PakgeName:[
         		{required: true, message: '此项为必填', trigger: 'change'}
-        	]
+        	],
         }
       }
     },
     methods: {
+    	/**
+    	 * 初始化数据
+    	 * @return {[type]} [description]
+    	 */
+    	initDatas:function(){
+    		var that = this;
+            var reqData = {
+              type : type,
+              level : 1
+            }
+            var url = '/api/dlmanagementtool/property/list';
+            this.$http.post(url,reqData).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                if (ok && data.status == '0') {
+                    
+                    if (data.data.length>0) {
+                        data.data.forEach(function(item){
+                            switch (item.type){
+                            case 1 : 
+                              that.requirementStatusOption.push(item);
+                              break;
+                            case 2 :
+                              that.functionalTypeOption.push(item);
+                              break;
+                            case 3 : 
+                              that.functionModuleFirst.push(item);
+                              break;
+                            case 4 : 
+                              that.functionalPlatformOption.push(item);
+                              break;
+                            case 5 : 
+                              that.responsibleUserIdOption.push(item);
+                              break;
+                          }
+                        })
+                    };
+                } else {
+                  that.$message.error(data.msg);
+                }
+            });
+    	},
     	handleCheckedCitiesChange(value) {
     		console.log(value)
     	},
