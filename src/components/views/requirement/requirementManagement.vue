@@ -100,7 +100,7 @@
     	</el-row>
     	</el-form>
       <div style="text-align:center;">
-        <el-button type="primary" @click="Search">搜索</el-button>
+        <el-button type="primary" @click="queryRequeryList()">搜索</el-button>
         <el-button type="primary" @click="resetForm('orderForm')">重置</el-button>
       </div>
 	</div>
@@ -158,7 +158,7 @@
 </el-dialog>
 <!-- 表格 -->
     	<el-table @sort-change="sortChange"
-    :data="tableData.list"
+    :data="tableData.data"
     border @selection-change="handleSelectionChange"
     style="width: 100%">
     <el-table-column
@@ -297,36 +297,42 @@
       debug:function(){
         debugger
       },
-
+      // 初始化查询选相框
       initBase : function(type,callback){
             var that = this;
             var reqData = {
               type : type,
+              level : 1
             }
-            var url = '/api/dlmanagementtool/property/list?type='+type;
+            var url = '/api/dlmanagementtool/property/list';
             this.$http.post(url,reqData).then(({
                 data,
                 ok,
                 statusText
             }) => {
                 if (ok && data.status == '0') {
-                    switch (type){
-                      case 1 : 
-                        that.requirementStatusOption = data.data ;
-                        break;
-                      case 2 :
-                        that.functionalTypeOption = data.data ;
-                        break;
-                      case 3 : 
-                        that.functionModuleFirst = data.data;
-                        break;
-                      case 4 : 
-                        that.functionalPlatformOption = data.data;
-                        break;
-                      case 5 : 
-                        that.responsibleUserIdOption = data.data;
-                        break;
-                    }
+                    
+                    if (data.data.length>0) {
+                        data.data.forEach(function(item){
+                            switch (item.type){
+                            case 1 : 
+                              that.requirementStatusOption.push(item);
+                              break;
+                            case 2 :
+                              that.functionalTypeOption.push(item);
+                              break;
+                            case 3 : 
+                              that.functionModuleFirst.push(item);
+                              break;
+                            case 4 : 
+                              that.functionalPlatformOption.push(item);
+                              break;
+                            case 5 : 
+                              that.responsibleUserIdOption.push(item);
+                              break;
+                          }
+                        })
+                    };
                 } else {
                   that.$message.error(data.msg);
                 }
@@ -339,19 +345,33 @@
       initQueryData : function(){
           var that = this;
           // 需求进度
-          this.initBase(1 );
-          // 功能模块
-          this.initBase(2 );
-          // 功能类型
-          this.initBase(3 );
-          // 产品平台
-          this.initBase(4 );
-          // 提出人
-          this.initBase(5 );
-            
-            // var url = process.env.API_ROOT + 'dlmanagementtool/login/loginin';
+          this.initBase();
 
       },
+      /**
+       * 获取需求列表
+       * @return {[type]} [description]
+       */
+      queryRequeryList : function(pageIndex){
+          var that = this;
+          var url = "/api/dlmanagementtool/requirement/list"
+          var reqData = {
+            curPage : pageIndex || 1,
+            size : 15
+          }
+          this.$http.post(url,reqData).then(({
+              data,
+              ok,
+              statusText
+          }) => {
+              if (ok && data.status == '0') {
+                  debugger
+              } else {
+                  that.$message.error(data.msg);
+              }
+          });
+      },
+
       /**
        * 重置表单
        * @param  {[type]} formName [description]
@@ -389,8 +409,8 @@
         }
         console.log(reqData)
         this.$http.get('http://localhost:3000/data_list',reqData).then(({data}) => {
-          this.tableData.list = data;
-          console.log(this.tableData.list)
+          this.tableData.data = data;
+          console.log(this.tableData.data)
         })
       },
       /**
