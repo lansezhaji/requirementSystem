@@ -10,24 +10,12 @@
         <el-row type="flex" class="row-bg" justify="right">
               <el-col :span="8">
                 <el-form-item label="版本类型：">
-                  <el-select  size="small" v-model="orderForm.version"  placeholder="请选择">
+                  <el-select  size="small" v-model="orderForm.versionType"  placeholder="请选择">
+                    <el-option label="全部" value=""></el-option>
                     <el-option
                       v-for="item in versionTypeList"
-                      :key="item.value"
-                      :label="item.name"
-                      :value="item.value"
-                      >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                 <el-form-item label="版本号：">
-                  <el-select size="small" v-model="orderForm.versionNum"  placeholder="请选择">
-                    <el-option
-                      v-for="item in versionList"
                       :key="item.id"
-                      :label="item.versionName"
+                      :label="item.versionTypeName"
                       :value="item.id"
                       >
                     </el-option>
@@ -35,16 +23,27 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                 <el-form-item label="版本状态：">
-                  <el-select size="small" v-model="orderForm.versionStatus"  placeholder="请选择">
+                 <el-form-item label="版本号：">
+                  <el-select size="small" v-model="orderForm.versionName"  placeholder="请选择">
+                    <el-option label="全部" value=""></el-option>
                     <el-option
-                      v-for="item in versionStatusOption"
-                      :key="item.value"
-                      :label="item.name"
-                      :value="item.value"
+                      v-for="item in versionList"
+                      :label="item.versionName"
+                      :value="item.versionName"
                       >
                     </el-option>
                   </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                 <el-form-item label="版本状态：">
+                    <el-select size="small" v-model="orderForm.versionStatus" placeholder="请选择">
+                      <el-option label="全部" value=""></el-option>
+                      <el-option label="启用" value=1></el-option>
+                      <el-option label="上线" value=2></el-option>
+                      <el-option label="锁定" value=3></el-option>
+                      <el-option label="挂起" value=4></el-option>
+                    </el-select>
                 </el-form-item>
               </el-col>
         </el-row>
@@ -52,7 +51,9 @@
     <el-row type="flex" class="row-bg" justify="right">
               <el-col :span="8">
                 <el-form-item label="项目经理：">
-                  <el-input size="small" v-model="orderForm.projectManagement"></el-input>
+                  <el-col :span="20">
+                    <el-input size="small" v-model="orderForm.projectManagement"></el-input>
+                  </el-col>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -69,23 +70,25 @@
               </el-col>
               <el-col :span="8">
                  <el-form-item label="项目成员：">
-                  <el-input size="small" v-model="orderForm.projectMember"></el-input>
+                  <el-col :span="20">
+                    <el-input size="small" v-model="orderForm.projectMember"></el-input>
+                  </el-col>
                 </el-form-item>
               </el-col>
         </el-row>
         
          <el-row type="flex" class="row-bg" justify="right">
-              <el-col :span="12">
+              <el-col :span="8">
                 <el-form-item label="项目分支：">
-                  <el-col :span="12">
+                  <el-col :span="20">
                     <el-input size="small" v-model="orderForm.projectFeature"></el-input>
                   </el-col>
                 </el-form-item>
               </el-col>
              
-              <el-col :span="12">
+              <el-col :span="8">
                  <el-form-item label="需求名称：">
-                  <el-col :span="12">
+                  <el-col :span="20">
                     <el-input size="small" v-model="orderForm.requirementName"></el-input>
                   </el-col>
                 </el-form-item>
@@ -95,7 +98,7 @@
          <el-row type="flex" class="row-bg" justify="right">
            <el-col :span="12">  
                 <el-form-item label="计划转测时间：" >
-                   <el-col :span="12">
+                   <el-col :span="10">
                       <el-form-item prop="planeTransfDateFirst">
                          <el-date-picker size="small"
                         v-model="orderForm.planeTransfDateFirst"
@@ -120,7 +123,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="计划 QA 时间：" >
-                   <el-col :span="12">
+                   <el-col :span="10">
                       <el-form-item prop="planeQADateFirst">
                          <el-date-picker size="small"
                         v-model="orderForm.planeQADateFirst"
@@ -148,7 +151,7 @@
         <el-row type="flex" class="row-bg" justify="right">
            <el-col :span="12">  
                 <el-form-item label="计划上线时间：" >
-                   <el-col :span="12">
+                   <el-col :span="10">
                       <el-form-item prop="planeOnlineDateFirst">
                          <el-date-picker size="small"
                         v-model="orderForm.planeOnlineDateFirst"
@@ -173,7 +176,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="实际上线时间：" >
-                   <el-col :span="12">
+                   <el-col :span="10">
                       <el-form-item prop="actualOnlineDateFirst">
                          <el-date-picker size="small"
                         v-model="orderForm.actualOnlineDateFirst"
@@ -353,8 +356,8 @@
     data: function() {
       return {
         orderForm:{
-          version:'',
-          versionNum:'',
+          versionType:'',
+          versionName:'',
           versionStatus:'',
           planeTransfDateFirst:'',
           planeTransfDateSecond:'',
@@ -456,13 +459,20 @@
             var that = this;
             var url = '/api/dlmanagementtool/version/list';
             var reqData ={
-              // versionType     : that.form.versionStatus,
-              // versionName     : that.form.versionName,
-              // versionStatus   : that.form.versionStatus,
-              // planTimeStart   : that.form.planeOnlineDateFirst,
-              // planTimeEnd     : that.form.planeOnlineDateSecond,
-              // truthTimeStart  : that.form.actualOnlineDateFirst,
-              // truthTimeEnd    : that.form.actualOnlineDateSecond,
+              versionTypeId : that.orderForm.versionType || null,
+              versionName : that.orderForm.versionName || null ,
+              versionStatus : that.orderForm.versionStatus || null,
+              projectUserName : that.orderForm.projectManagement || null,
+              projectOthers : that.orderForm.projectMember || null,
+              responsibleUserName  : that.orderForm.prodcutManagement || null,
+              branchName : that.orderForm.projectFeature || null,
+              requirementName : that.orderForm.requirementName || null,
+              planTimeStart   : that.orderForm.planeOnlineDateFirst || null,
+              planTimeEnd     : that.orderForm.planeOnlineDateSecond || null,
+              truthTimeStart  : that.orderForm.actualOnlineDateFirst || null,
+              truthTimeEnd    : that.orderForm.actualOnlineDateSecond || null,
+              qaTimeStart     : that.orderForm.planeQADateFirst || null,
+              qaTimeEnd       : that.orderForm.planeQADateSecond || null,
               curPage         : that.orderForm.curPage.toString(),
               size            : that.orderForm.size.toString()
 
