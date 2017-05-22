@@ -190,11 +190,11 @@
       	deleteFirstVisiable : false, //删除弹窗
         newRequiremenProperty:'', 
         requiremenPropertyList:[
-        	{name:'需求状态',id:1},
+        	{name:'需求进度',id:1},
         	{name:'功能模块',id:2},
         	{name:'功能类型',id:3},
         	{name:'产品平台',id:4},
-        	{name:'提出人'  ,id:5},
+        	{name:'提出方'  ,id:5},
         ],
         firsetPropertyList : [], //一级属性列表
         //二级属性

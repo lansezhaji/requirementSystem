@@ -1,7 +1,7 @@
 <!-- 上边栏 -->
 <template>
 	<el-row class="topSide">
-		<el-col :span="20">
+		<el-col :span="18" :offset="2">
 			<h2>
 				丹露需求及项目管理系统
 			</h2> 
@@ -34,7 +34,7 @@
 
 <style >
 	.topSide{
-		background: lightgray;
+		background: #eee;
 	}
 	.toptitle{
 		line-height: 30px;

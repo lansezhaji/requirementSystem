@@ -2,15 +2,17 @@
     <div class="versionList">
       <el-breadcrumb separator=">" class="bread-title">
         <el-breadcrumb-item>版本管理</el-breadcrumb-item>
+        <el-button @click="getVersionTypeList()">查询</el-button>
+        <el-button @click="debug()">debug</el-button>
     </el-breadcrumb>
     <div class="retrieval  criteria Style">
-      <el-form :model="orderForm" ref="orderForm"  label-width="120px" class="query">
+      <el-form :model="orderForm" ref="orderForm"  label-width="120px" class="query" style="text-align:left">
         <el-row type="flex" class="row-bg" justify="right">
               <el-col :span="8">
                 <el-form-item label="版本类型：">
                   <el-select  size="small" v-model="orderForm.version"  placeholder="请选择">
                     <el-option
-                      v-for="item in versionOption"
+                      v-for="item in versionTypeList"
                       :key="item.value"
                       :label="item.name"
                       :value="item.value"
@@ -23,10 +25,10 @@
                  <el-form-item label="版本号：">
                   <el-select size="small" v-model="orderForm.versionNum"  placeholder="请选择">
                     <el-option
-                      v-for="item in versionNumOption"
-                      :key="item.value"
-                      :label="item.name"
-                      :value="item.value"
+                      v-for="item in versionList"
+                      :key="item.id"
+                      :label="item.versionName"
+                      :value="item.id"
                       >
                     </el-option>
                   </el-select>
@@ -60,8 +62,7 @@
                       v-for="item in prodcutManagementOption"
                       :key="item.value"
                       :label="item.name"
-                      :value="item.value"
-                      >
+                      :value="item.value" >
                     </el-option>
                   </el-select>
                 </el-form-item>
@@ -76,13 +77,17 @@
          <el-row type="flex" class="row-bg" justify="right">
               <el-col :span="12">
                 <el-form-item label="项目分支：">
-                  <el-input size="small" v-model="orderForm.projectFeature"></el-input>
+                  <el-col :span="12">
+                    <el-input size="small" v-model="orderForm.projectFeature"></el-input>
+                  </el-col>
                 </el-form-item>
               </el-col>
              
               <el-col :span="12">
                  <el-form-item label="需求名称：">
-                  <el-input size="small" v-model="orderForm.requirementName"></el-input>
+                  <el-col :span="12">
+                    <el-input size="small" v-model="orderForm.requirementName"></el-input>
+                  </el-col>
                 </el-form-item>
               </el-col>
         </el-row>
@@ -194,7 +199,7 @@
         </el-row>
 
       <div style="text-align:center;">
-        <el-button type="primary">搜索</el-button>
+        <el-button type="primary" @click="getVersionList()">搜索</el-button>
         <el-button type="primary">重置</el-button>
       </div>
       </el-form> 
@@ -203,47 +208,141 @@
 
     <div class="retrieval  criteria Style" style="margin-top:20px;">
        <el-table
-    :data="tableData5" border
-    style="width: 100%">
+    :data="versionList" border
+    style="width: 100%;text-align:left">
     <el-table-column type="expand">
       <template scope="props">
-          <table  class="">
-            <tbody>
-               <tr>
-                <th>项目基本信息</th>
-                <td>{{tableData3[0].projectBaseMsg.projectNmae}}</td>
-                <th>品牌名称</th>
-                <td>{{tableData3.projectBaseMsg.projectNmae}}</td>
-            </tr>
-            </tbody>
-          </table>
+          <el-row style="text-align:left">
+            <el-form >
+            <el-col :span="23">
+              <el-row >
+                <el-col :span="3" >
+                  <strong>项目基本信息：</strong>
+                </el-col>
+                <el-col :span="4">
+                  <el-form-item label="项目名称：">
+                      Pandora
+                  </el-form-item>
+                  <el-form-item label="项目经理：">
+                      莎姐
+                  </el-form-item>
+                  <el-form-item label="启动时间：" style="border-bottom:1px dashed lightgray">
+                      2016/9/12
+                  </el-form-item>
+                </el-col>
+                <el-col :span="17">
+                  <el-form-item label="项目分支：">
+                      feature_pandora
+                  </el-form-item>
+                  <el-form-item label="项目成员：">
+                      王国豪，何苗，陈思宇
+                  </el-form-item>
+                  <el-form-item style="border-bottom:1px dashed lightgray">
+                      <el-col :span="6">
+                        <strong>计划转测时间：</strong>
+                        <span>2017-05-12</span>
+                      </el-col>
+                      <el-col :span="6">
+                        <strong>实际转测时间：</strong>
+                        <span>2017-05-12</span>
+                      </el-col>
+                      <el-col :span="6">
+                        <strong>计划QA时间：</strong>
+                        <span>2017-05-12</span>
+                      </el-col>
+                      <el-col :span="6">
+                        <strong>实际QA时间：</strong>
+                        <span>2017-05-12</span>
+                      </el-col>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="3">
+                  <strong>需求信息：</strong>
+                </el-col>
+                <el-col :span="16">
+                  <el-form-item label="需求名称：">
+                      中心化改造
+                  </el-form-item>
+                  <el-form-item label="需求包名称：">
+                      中心化改造包名称
+                  </el-form-item>
+                </el-col>
+                <el-col :span="5">
+                  <el-form-item label="产品经理：">
+                      夏瑞
+                  </el-form-item>
+                  <el-form-item label="产品经理：">
+                      夏瑞
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="1">
+              <el-button>编辑</el-button>
+            </el-col>
+            </el-form>
+          </el-row>
+          <!-- <table>
+            <th>1</th>
+            <td>
+              <tr><strong>项目基本信息</strong></tr>
+              <tr><strong>需求信息</strong></tr>
+            </td>
+            <td>
+              <tr>项目名称</tr>
+              <tr>项目经理</tr>
+              <tr>启动时间</tr>
+              <tr>需求名称</tr>
+              <tr>需求包名称</tr>
+            </td>
+          </table> -->
       </template>
     </el-table-column>
     <el-table-column
       label="版本序号"
       prop="id">
+      <template scope="scope">{{ scope.row.id }}</template>
     </el-table-column>
     <el-table-column
       label="版本类型"
       prop="name">
+      <template scope="scope">
+            <el-col>
+              {{getVersionType(scope.row)}}
+            </el-col>
+          </template>
     </el-table-column>
     <el-table-column
       label="版本号"
-      prop="desc">
+      prop="versionName">
     </el-table-column>
     <el-table-column
       label="版本状态"
       prop="desc">
+      <template scope="scope">
+              <el-col>
+                {{versionTypeStatus(scope.row)}}
+              </el-col>
+          </template>
     </el-table-column>
     <el-table-column
       label="计划上线时间"
-      prop="desc">
+      prop="planTimeStr">
     </el-table-column>
     <el-table-column
       label="实际上线时间"
-      prop="desc">
+      prop="truthTimeStr">
     </el-table-column>
   </el-table>
+  <el-pagination
+        @current-change="pageChange"
+        :current-page.sync="returnData.currentPage"
+        :page-size="5"
+        layout="total, prev, pager, next"
+        :total="returnData.totalCount">
+      </el-pagination> 
     </div>
   </div>
 </template>
@@ -269,90 +368,154 @@
           actualOnlineDateFirst:'',
           actualOnlineDateSecond:'',
           projectFeature:'',
-          requirementName:''
+          requirementName:'',
+          curPage : "1",
+          size : "5"
 
         },
-        tableData3: [
-        {
-          projectBaseMsg:{//项目基本信息
-            projectNmae:'Pandora', //项目名称
-            projectManagement:'', //项目经理
-            startDate:'', //启动时间
-            projectFeature:'released-2017',
-            projectMember:'王国豪、禾苗',
-            planeOnlineDate:'2017/03',//计划转测时间
-            actualOnlineDate:'',//实际转测时间
-            planeTransfDate:'2017/4',//计划QA时间
-            planeQADate:''//实际QA时间
-          },
-          //需求信息
-          requirementMsg:[
-          {requirementPackageName:'dasdasdasdsadas'},
-          {requirementName:'dsadsadasdsadas'}
-          ]
-        }
-        ],
-        tableData5: [{
-          id: '12987122',
-          name: '好滋好味鸡蛋仔',
-          category: '江浙小吃、小吃零食',
-          desc: '荷兰优质淡奶，奶香浓而不腻',
-          address: '上海市普陀区真北路',
-          shop: '王小虎夫妻店',
-          shopId: '10333'
-        }, {
-          id: '12987123',
-          name: '好滋好味鸡蛋仔',
-          category: '江浙小吃、小吃零食',
-          desc: '荷兰优质淡奶，奶香浓而不腻',
-          address: '上海市普陀区真北路',
-          shop: '王小虎夫妻店',
-          shopId: '10333'
-        }, {
-          id: '12987125',
-          name: '好滋好味鸡蛋仔',
-          category: '江浙小吃、小吃零食',
-          desc: '荷兰优质淡奶，奶香浓而不腻',
-          address: '上海市普陀区真北路',
-          shop: '王小虎夫妻店',
-          shopId: '10333'
-        }, {
-          id: '12987126',
-          name: '好滋好味鸡蛋仔',
-          category: '江浙小吃、小吃零食',
-          desc: '荷兰优质淡奶，奶香浓而不腻',
-          address: '上海市普陀区真北路',
-          shop: '王小虎夫妻店',
-          shopId: '10333'
-        }],
-        versionOption:[
-          {name:'全部', value:'all'},
-          {name:'WEB', value:'S01'},
-          {name:'iOS终端店', value:'S02'},
-          {name:'iOS经销商', value:'S03'},
-          {name:'Android终端店', value:'S04'},
-          {name:'Android经销商', value:'S05'},
-          {name:'其他', value:'S06'}
-        ],
-        versionNumOption:[
-          {name:'全部', value:'all'},
-          {name:'released-2017.11', value:'released-2017.11'},
-          {name:'released-2017.12', value:'released-2017.12'},
-          {name:'released-2017.13', value:'released-2017.13'},
-          {name:'released-2017.14', value:'released-2017.14'},
-          {name:'released-2017.15', value:'released-2017.15'},
-            
-        ],
-        versionStatusOption:[
-          {name:'全部', value:'all'},
-          {name:'未上线', value:'S01'},
-          {name:'已上线', value:'S01'},
-        ],
-        prodcutManagementOption:[
-          {name:'贾茗兮', value:'S01'},
-          {name:'夏睿', value:'S01'},
-        ]
+        returnData : {
+          currentPage  : 1,
+          totalCount : 45
+        },//版本列表所有返回数据
+        versionList : [],//版本号列表
+        tableData3: [ ],
+        versionTypeList:[ ],
+        versionNumOption:[ ],
+        versionStatusOption:[ ],
+        prodcutManagementOption:[ ]
       }
+    },
+    methods:{
+      debug:function(){
+          debugger
+      },
+      initData : function(type,callback){
+            var that = this;
+            var reqData = {
+              type : type,
+              level : 1
+            }
+            var url = '/api/dlmanagementtool/property/list';
+            this.$http.post(url,reqData).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                if (ok && data.status == '0') {
+                    
+                    if (data.data.length>0) {
+                        data.data.forEach(function(item){
+                            switch (item.type){
+                            case 1 : 
+                              that.requirementStatusOption.push(item);
+                              break;
+                            case 2 :
+                              that.functionalTypeOption.push(item);
+                              break;
+                            case 3 : 
+                              that.functionModuleFirst.push(item);
+                              break;
+                            case 4 : 
+                              that.functionalPlatformOption.push(item);
+                              break;
+                            case 5 : 
+                              that.responsibleUserIdOption.push(item);
+                              break;
+                          }
+                        })
+                    };
+                } else {
+                  that.$message.error(data.msg);
+                }
+            });
+      },
+      /**
+       * 获取版本类型列表
+       * @return {[type]} [description]
+       */
+      getVersionTypeList : function(){
+            var that  = this;
+            var url = "/api/dlmanagementtool/versiontype/list"
+            this.$http.get(url).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                if (ok && data.status == '0') {
+                    that.versionTypeList = data.data
+                } else {
+                    that.$message.error(data.msg);
+                }
+            });
+      },
+      /**
+       * 获取版本号列表
+       * @return {[type]} [description]
+       */
+       getVersionList : function(){
+            var that = this;
+            var url = '/api/dlmanagementtool/version/list';
+            var reqData ={
+              // versionType     : that.form.versionStatus,
+              // versionName     : that.form.versionName,
+              // versionStatus   : that.form.versionStatus,
+              // planTimeStart   : that.form.planeOnlineDateFirst,
+              // planTimeEnd     : that.form.planeOnlineDateSecond,
+              // truthTimeStart  : that.form.actualOnlineDateFirst,
+              // truthTimeEnd    : that.form.actualOnlineDateSecond,
+              curPage         : that.orderForm.curPage.toString(),
+              size            : that.orderForm.size.toString()
+
+            }
+            this.$http.post(url,reqData).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                  if (ok && data.status == '0') {
+                      that.returnData = data.data
+                      that.versionList= data.data.data;
+                    } else {
+                      that.$message.error(data.msg);
+                  }
+            });
+       },
+       /**
+       * 版本类型过滤
+       * @return {[type]} [description]
+       */
+      getVersionType : function(row){
+        var typeName = "111"
+        this.versionTypeList.forEach(function(item){
+            if (row.versionTypeId == item.id) {
+              typeName = item.versionTypeName;
+            };
+        })
+        return typeName;
+      },
+      /**
+       * 获取版本号状态
+       * @param  {[type]} row [description]
+       * @return {[type]}     [description]
+       */
+      versionTypeStatus: function(row){
+        var statusArray = ['','启用','上线','锁定','挂起'] ;
+        return statusArray[row.versionStatus]
+      },
+      /**
+       * 翻页
+       * @param  {[type]} val [description]
+       * @return {[type]}     [description]
+       */
+      pageChange : function(val){
+        this.orderForm.curPage = val;
+        this.getVersionList(val)
+      },
+    },
+    beforeRouteEnter: function (to,from,next) {
+        next(vm => {
+            vm.getVersionList();
+        }); 
     }
   }
 </script>
