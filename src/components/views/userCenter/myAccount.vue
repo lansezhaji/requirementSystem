@@ -4,12 +4,14 @@
 			<el-breadcrumb-item>
 				<h3>我的账号</h3>
 			</el-breadcrumb-item>
+<!--         <el-button @click="getUserInfo()">查询</el-button>
+        <el-button @click="debug()">debug</el-button> -->
 		</el-breadcrumb>
 		<el-row class="content">
 			<el-form label-width="150px">
 				<el-col :span="10">
 					<el-form-item label="账号：" class="userMessage">
-						<span >tanjunyi</span>						
+						<span >{{userForm.userName}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">
@@ -19,22 +21,22 @@
 				</el-col>
 				<el-col :span="10">
 					<el-form-item label="姓名：" class="userMessage">
-						<span >谭军一</span>						
+						<span >{{userForm.name}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">
 					<el-form-item label="角色：" class="userMessage">
-						<span >产品部总经理</span>						
+						<span >{{userForm.role}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">
 					<el-form-item label="状态：" class="userMessage">
-						<span >启用</span>						
+						<span >{{getUserStatus(userForm.userStatus)}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">
 					<el-form-item label="创建时间：" class="userMessage">
-						<span >2016-7-4</span>						
+						<span >{{getCreateTime(userForm.createTime)}}</span>						
 					</el-form-item>
 
 				</el-col>				
@@ -42,7 +44,7 @@
 
 		</el-row>
 		
-		<el-row class="content">
+<!-- 		<el-row class="content">
 			<el-row class="history title" >
 				登录历史记录：
 			</el-row>
@@ -50,7 +52,7 @@
 				<el-col :span="6">{{item.date}}</el-col>
 				<el-col :span="16">{{item.address}}</el-col>
 			</el-row>
-		</el-row>
+		</el-row> -->
 
 	</el-row>
 
@@ -62,25 +64,10 @@
 			var data = {
 				userForm:{
 					account:"",
-					userStatus:"01",
+					userStatus:1,
+					createTime : 123
 				},
-				loginHistory: [{
-		          date: '2016-05-02 19:12:23',
-		          name: '王小虎',
-		          address: '成都市区高新区'
-		        }, {
-		          date: '2016-05-02 19:12:23',
-		          name: '王小虎',
-		          address: '绵阳市'
-		        }, {
-		          date: '2016-05-02 19:12:23',
-		          name: '王小虎',
-		          address: '广元朝天区'
-		        }, {
-		          date: '2016-05-02 19:12:23',
-		          name: '王小虎',
-		          address: '东海省乐山呼叫中心'
-		        }],
+				loginHistory: [ ],
 				rules:{
 
 				}
@@ -88,8 +75,55 @@
 			return data
 		},
 		methods:{
-
-		}
+			debug:function(){
+		        debugger
+	      	},
+			/**
+			 * 获取用户基本信息
+			 * @return {[type]} [description]
+			 */
+			getUserInfo : function(){
+		        var that = this;
+	            var url = '/api/dlmanagementtool/user/getUserInfo';
+	            var reqData = {
+	            	userName : this.$store.state.user.tocken
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                  if (ok && data.status == '0') {
+	                      that.userForm = data.data;
+	                    } else {
+	                      that.$message.error(data.msg);
+	                  }
+	            });
+			},
+			/**
+			 * 获取用户状态
+			 * @param  {[type]} state [description]
+			 * @return {[type]}       [description]
+			 */
+			getUserStatus : function(state){
+				return state ? '启用' : '停用'
+			},
+			/**
+			 * 获取创建时间
+			 * @return {[type]} [description]
+			 */
+			getCreateTime : function(timeT){
+				if (timeT) {
+					var time = new Date(timeT);
+					return time.toLocaleString();
+				};
+			}
+		},
+		beforeRouteEnter: function (to,from,next) {
+	      next(vm => {
+	        vm.getUserInfo();
+	      });
+	    }
 	}
 </script>
 <style>

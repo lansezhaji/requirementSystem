@@ -1,15 +1,15 @@
 <template>
 	<el-row class="bg" type="flex" justify="center">
-		<el-col :span="10" :offset = "8" id="loginFrame"> 
-			<el-row>
+		<el-col :span="10" :offset = "10" id="loginFrame"> 
+			<el-row style="text-align:left;margin-left:100px">
 				<h1>丹露需求及项目管理系统</h1>
 			</el-row>
-			<el-form label-width="150px" :model="loginForm" :rules="rules" ref="loginForm">
-				<el-form-item label="账户：" prop="account">
-					<el-input v-model="loginForm.account"></el-input>
+			<el-form label-width="150px" :model="loginForm" :rules="rules" ref="loginForm" style="text-align:left">
+				<el-form-item label="账户：" prop="account" >
+					<el-input v-model="loginForm.account" class="login-item"></el-input>
 				</el-form-item>
 				<el-form-item label="密码：" prop="password">
-					<el-input v-model="loginForm.password" type="password"></el-input>
+					<el-input v-model="loginForm.password" type="password" class="login-item"></el-input>
 				</el-form-item>
 				<el-form-item >
 					<el-button type="primary" @click="login()">登录</el-button>
@@ -66,6 +66,7 @@
 		            }) => {
 		                if (ok && data.status == '0') {
 		                	that.$store.state.user.tocken = data.data.userName;
+		                	that.$message.success(data.msg);
 		                    console.log(data);
 		                } else {
 		                	that.$message.error(data.msg);
@@ -86,6 +87,10 @@
 		top: 0;
 		left: 0;
 		color: gray;
+	}
+	.login-item{
+		text-align: left;
+		max-width: 300px;
 	}
 	#background{
 	  width: 100%;

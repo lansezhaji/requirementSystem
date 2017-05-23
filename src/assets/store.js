@@ -10,7 +10,7 @@ Vue.use(Vuex)
 const state = {
   user : {
   	name : "tanjunyi",
-  	tocken : "w2dEd8J4k~.u"
+  	tocken : "majun@danlu.com"
   }
 }
 

@@ -1,12 +1,12 @@
 <!-- 上边栏 -->
 <template>
 	<el-row class="topSide">
-		<el-col :span="18" :offset="2">
+		<el-col :span="16" :offset="2">
 			<h2>
 				丹露需求及项目管理系统
 			</h2> 
 		</el-col>
-		<el-col :span="4">
+		<el-col :span="6">
 			<el-col  class="toptitle">
 				<span>欢迎您：</span>
 				<span>{{this.$store.state.user.tocken}}</span>

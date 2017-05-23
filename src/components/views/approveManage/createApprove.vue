@@ -7,104 +7,120 @@
 			<el-breadcrumb-item>
 				<h3>发起申请</h3>
 			</el-breadcrumb-item>
+			<el-button @click="getUserInfo()">查询</el-button>
+        	<el-button @click="debug()">debug</el-button>
 		</el-breadcrumb>
 		<el-row class="content">
 			<el-row class="history title" >
 				申请内容：
 			</el-row>
-			<el-form label-width="150px" >
-				<el-row>
-					<el-form-item label="审批类型：" class="userMessage">
-						<el-col v-if="isEditMode">
-							<el-radio-group v-model="approveForm.approveType" >
-								<el-radio label="01">入版申请</el-radio>
-								<el-radio label="02">修改项目信息</el-radio>
-							</el-radio-group>	
-						</el-col>
-						<el-col v-else>
-							{{approveForm.approveType}}
-						</el-col>				
-					</el-form-item>
-					<el-form-item label="项目名称：" class="userMessage" >
-						<el-col :span="8">
-							<el-input v-model="approveForm.approveName"></el-input>	
-						</el-col>
-					</el-form-item>
-					<el-form-item label="项目分支：" class="userMessage">
-						<el-col :span="8">
-							<el-input v-model="approveForm.approveBranch"></el-input>	
-						</el-col>
-					</el-form-item>
-					<el-form-item label="需求内容：" class="userMessage" >
-						<el-row v-for="content in approveForm.approveContent">
+			<el-form label-width="150px" style="text-align:left">
+
+				<el-row >
+					<el-col>
+						<el-form-item label="审批类型：" class="userMessage">
+							<el-col v-if="isEditMode">
+								<el-radio-group v-model="approveForm.applyType" >
+									<el-radio  :label="1" >入版申请</el-radio>
+									<el-radio  :label="2" >修改项目信息</el-radio>
+								</el-radio-group>	
+							</el-col>
+							<el-col v-else>
+								{{approveForm.applyType}}
+							</el-col>				
+						</el-form-item>
+					</el-col>
+					<el-col>
+						<el-form-item label="项目名称：" class="userMessage" >
 							<el-col :span="8">
-								<el-input v-model="content.title"></el-input>	
+								<el-input v-model="approveForm.projectName"></el-input>	
 							</el-col>
-							<el-col :span="3" :offset="1" >
-								<span>产品经理：</span>
-								<span>{{content.productManage}}</span>
+						</el-form-item>
+					</el-col>
+					<el-col>
+						<el-form-item label="项目分支：" class="userMessage">
+							<el-col :span="8">
+								<el-input v-model="approveForm.projectBranch"></el-input>	
 							</el-col>
-							<el-col :span="4" :offset="1">
-								<span>Bugzilla ID：</span>
-								<span>{{content.bugzId}}</span>
-							</el-col>
-							<el-col :span="4">
-								<el-button type="primary" size="small">增加需求</el-button>
-								<el-button type="default" size="small">删除</el-button>
-							</el-col>
-						</el-row>
-						
-					</el-form-item>
+						</el-form-item>
+					</el-col>
+					<el-col>
+						<el-form-item label="需求内容：" class="userMessage" >
+							<el-row v-for="content in approveForm.approveContent">
+								<el-col :span="8">
+									<el-input v-model="content.title"></el-input>	
+								</el-col>
+								<el-col :span="3" :offset="1" >
+									<span>产品经理：</span>
+									<span>{{content.productManage}}</span>
+								</el-col>
+								<el-col :span="4" :offset="1">
+									<span>Bugzilla ID：</span>
+									<span>{{content.bugzId}}</span>
+								</el-col>
+								<el-col :span="4">
+									<el-button type="primary" size="small">增加需求</el-button>
+									<el-button type="default" size="small">删除</el-button>
+								</el-col>
+							</el-row>
+							
+						</el-form-item>
+					</el-col>
 					<el-col :span="8">
 						<el-form-item label="启动时间：">
-							<el-date-picker
-						      v-model="approveForm.approveStart"
-						      type="daterange"
-						      placeholder="选择日期范围">
-						    </el-date-picker>
+							<el-col>
+								<el-date-picker
+							      v-model="approveForm.startTime"
+							      type="datetime"
+							      placeholder="选择时间">
+							    </el-date-picker>	
+							</el-col>
+							
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="计划转测时间：">
 							<el-date-picker
-						      v-model="approveForm.approveTest"
-						      type="daterange"
-						      placeholder="选择日期范围">
+						      v-model="approveForm.testTime"
+						      type="datetime"
+						      placeholder="选择时间">
 						    </el-date-picker>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="计划QA时间：">
 							<el-date-picker
-						      v-model="approveForm.approveQA"
-						      type="daterange"
-						      placeholder="选择日期范围">
+						      v-model="approveForm.qaTime"
+						      type="datetime"
+						      placeholder="选择时间">
 						    </el-date-picker>
 						</el-form-item>
 					</el-col>
-					<el-form-item label="项目经理：" class="userMessage" >
-						<el-col :span="8">
-							<el-input v-model="approveForm.productManage"></el-input>	
-						</el-col>
-					</el-form-item>
-					<el-form-item label="项目其他成员：" class="userMessage" >
-						<el-col :span="16">
-							<el-input v-model="approveForm.productManage"></el-input>	
-						</el-col>
-					</el-form-item>
+					<el-col>
+						<el-form-item label="项目经理：" class="userMessage" >
+							<el-col :span="8">
+								<el-input v-model="approveForm.productManage"></el-input>	
+							</el-col>
+						</el-form-item>
+					</el-col>
+					<el-col>
+						<el-form-item label="项目其他成员：" class="userMessage" >
+							<el-col :span="16">
+								<el-input v-model="approveForm.projectOthers"></el-input>	
+							</el-col>
+						</el-form-item>
+					</el-col>
 					<el-col :span="6">
 						<el-form-item label="申请入版类型：">
-							<el-select v-model="approveForm.versionType">
-								<el-option label="WEB" value="01"></el-option>
-								<el-option label="APP" value="02"></el-option>
-							</el-select>
+							<el-select v-model="approveForm.versionTypeId" @change="getVersionList">
+					            <el-option v-for="type in versionTypeList" :label="type.versionTypeName" :value="type.id"></el-option>
+					        </el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="选择版本号：">
-							<el-select v-model="approveForm.approveVersion">
-								<el-option label="release-v2017.10" value="01"></el-option>
-								<el-option label="release-v2017.13" value="02"></el-option>
+							<el-select v-model="approveForm.versionId">
+								<el-option v-for="type in versionList" :label="type.versionName" :value="type.id"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -119,12 +135,10 @@
 							</el-input>			
 						</el-form-item>
 					</el-col>
-									
 				</el-row>
-
 				<el-row type="flex" justify="center">
 					<el-col :span="2">
-						<el-button @click="queryMyApprove" type="primary">提交</el-button>
+						<el-button @click="updateApproveInfo" type="primary">提交</el-button>
 					</el-col>
 				</el-row>			
 			</el-form>
@@ -143,9 +157,9 @@
 				isEditMode : true, //是否是编辑模式哦
 				approveForm:{
 					
-					approveType : "01", //审批类型
-					approveName : "中心化改造", //审批名称
-					approveBranch : "2017.13",//审批分支
+					applyType : 1, //审批类型
+					projectName : "中心化改造", //审批名称
+					projectBranch : "2017.13",//审批分支
 					approveContent : [{
 						title:"中心化改造项目",
 						productManage : "夏瑞",
@@ -155,38 +169,25 @@
 						productManage : "夏瑞",
 						bugzId : "10026"
 					}],
-					approveStart : [],//审批启动时间
-					approveTest : [],//项目转测时间
-					approveQA : [],//项目过QA时间
+					startTime : [],//审批启动时间
+					testTime : [],//项目转测时间
+					qaTime : [],//项目过QA时间
 					comment:"123",//备注内容
-					versionType : "02",
 					requireName : "zhong",
 					approveTime : [],
-					approveVersion : "01",
+					versionTypeId : "01",
+					versionId :"",
 					productManage : "张虎",
+					projectOthers : "其他成员",//
 				},
-				tableData: [{
-		          date: '2016-05-02',
-		          name: '王小虎',
-		          address: '1518 弄'
-		        }, {
-		          date: '2016-05-04',
-		          name: '王小虎',
-		          address: '1517 弄'
-		        }, {
-		          date: '2016-05-01',
-		          name: '王小虎',
-		          address: '1519 弄'
-		        }, {
-		          date: '2016-05-03',
-		          name: '王小虎',
-		          address: '弄'
-		        }],
+				tableData: [ ],
+				versionTypeList : [],//版本类型列表
+				versionList : [],//版本号列表
 				rules:{
-					// approveName : [{
+					// projectName : [{
 					// 	required:true,message:"该项为必填项",trigger:'blur'
 					// }],
-					// approveBranch:[{
+					// projectBranch:[{
 					// 	required:true,message:"该项为必填项",trigger:'blur'
 					// }],
 					// productManage:[{
@@ -197,12 +198,75 @@
 			return data
 		},
 		methods:{
+			debug:function(){
+		        debugger
+	      	},
+			/**
+			* 获取版本类型列表
+			* @return {[type]} [description]
+			*/
+			getVersionTypeList : function(){
+			    var that  = this;
+			    var url = "/api/dlmanagementtool/versiontype/list"
+			    this.$http.get(url).then(({
+			        data,
+			        ok,
+			        statusText
+			    }) => {
+			        if (ok && data.status == '0') {
+			            
+			            that.versionTypeList = data.data
+			        } else {
+			            that.$message.error(data.msg);
+			        }
+			    });
+			},
+			/**
+			 * 获取版本号列表
+			 * @return {[type]} [description]
+			 */
+			getVersionList : function(){
+	            var that = this;
+			    that.approveForm.versionId = "";
+	            var url = '/api/dlmanagementtool/version/list';
+	            var reqData ={
+	            	versionTypeId 	: this.approveForm.versionTypeId,
+	              	curPage         : 1,
+	              	size            : 10
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                  if (ok && data.status == '0') {
+	                      that.versionList= data.data.data;
+	                    } else {
+	                      that.$message.error(data.msg);
+	                  }
+	            });
+			},
 			/**
 			 * 搜索我发起的审批
 			 * @return {[type]} [description]
 			 */
-			queryMyApprove : function(){
-
+			updateApproveInfo : function(){
+				console.log(this.approveForm);
+				var reqData =  {
+				     applyType: this.approveForm.applyType,
+				     projectName: this.approveForm.projectName,
+				     projectBranch: this.approveForm.projectBranch,
+				     requirementIds: "1,2",
+				     startTime: this.approveForm.startTime,
+				     testTime: this.approveForm.testTime,
+				     qaTime: this.approveForm.qaTime,
+				     projectUserId: null,
+				     projectUserName: "张虎",
+				     projectOthers: "陈思宇，王国豪",
+				     versionTypeId: 1,
+				     versionId: 2,
+				     remark: "备注"
+				}
 			},
 			/**
 			 * 清空表单
@@ -214,8 +278,9 @@
 		},
 		beforeRouteEnter: function(to, from, next) {
         next(vm => {
-        		vm.pageFlage = vm.$route.name == 'myApprove' 
 
+        		vm.pageFlage = vm.$route.name == 'myApprove' 
+        		vm.getVersionTypeList();
 	        });
 	    }
 	}

@@ -8,29 +8,39 @@
 		<el-row class="content">
 			<!-- 查询条件 -->
 			<el-form :model="userForm" :rules="rules" ref="userForm" label-width="100px">
-				<el-col :span="6">
+				<el-col :span="5">
 					<el-form-item label="账号：">
 						<el-input v-model="userForm.account"></el-input>
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
+				<el-col :span="5">
 					<el-form-item label="姓名：">
-						<el-input v-model="userForm.account"></el-input>
+						<el-input v-model="userForm.name"></el-input>
 					</el-form-item>
 				</el-col>
 				<el-col :span="4">
 					<el-form-item label="状态：">
 						<el-select v-model="userForm.userStatus">
-							<el-option label="启用" value="01"></el-option>
-							<el-option label="停用" value="02"></el-option>
+							<el-option label="全部" value="2"></el-option>
+							<el-option label="启用" value="1"></el-option>
+							<el-option label="停用" value="0"></el-option>
 						</el-select>
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
+				<el-col :span="3">
 					<el-form-item >
-						<el-col><el-checkbox label="具有管理需求权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理版本权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理人员权限"></el-checkbox></el-col>
+						<el-col><el-checkbox v-model="userForm.requireAdmin" label="具有管理需求权限"></el-checkbox></el-col>
+					</el-form-item>
+				</el-col>
+				<el-col :span="3">
+					<el-form-item >
+						<el-col><el-checkbox v-model="userForm.versionAdmin" label="具有管理版本权限"></el-checkbox></el-col>
+					</el-form-item>
+				</el-col>
+				<el-col :span="3">
+					<el-form-item >
+						<el-col><el-checkbox v-model="userForm.memberAdmin" label="具有管理人员权限"></el-checkbox></el-col>
+						
 					</el-form-item>
 				</el-col>
 				<el-col >
@@ -43,67 +53,74 @@
 			
 		</el-row>
 		<el-row class="content">
-			  <el-table :data="tableData" stripe style="width: 100%;text-align:left" >
+			  <el-table :data="returnData.data" stripe style="width: 100%;text-align:left" >
 				    <el-table-column prop="id" label="序号"  > </el-table-column>
 				    <el-table-column prop="userName" label="账号"  > </el-table-column>
 				    <el-table-column prop="name" label="姓名" > </el-table-column>
 				    <el-table-column  label="管理需求" >
 				    	<template scope="scope">
 				    		<el-col style="color:#2fa6ff" >
-				    			<i :class="checkStatus(scope.requireAdmin)"></i>
+				    			<i :class="checkStatus(scope.row.requireAdmin)"></i>
 				    		</el-col>
 				    	</template>
 				    </el-table-column>
 				    <el-table-column prop="versionAdmin" label="管理版本" >
 						<template scope="scope">
 				    		<el-col style="color:#2fa6ff" >
-				    			<i :class="checkStatus(scope.versionAdmin)"></i>
+				    			<i :class="checkStatus(scope.row.versionAdmin)"></i>
 				    		</el-col>
 				    	</template>
 				    </el-table-column>
 				    <el-table-column prop="memberAdmin" label="管理人员" >
 						<template scope="scope">
 				    		<el-col style="color:#2fa6ff" >
-				    			<i :class="checkStatus(scope.memberAdmin)"></i>
+				    			<i :class="checkStatus(scope.row.memberAdmin)"></i>
 				    		</el-col>
 				    	</template>
 				    </el-table-column>
 				    <el-table-column  label="状态" >
 				    	<template scope="scope">
-				    		<el-col style="color:#2fa6ff" >
-				    			{{scope.userStatus | userStatus}}
+				    		<el-col >
+				    			{{getUserStatus(scope.row.userStatus)}}
 				    		</el-col>
 				    	</template>
 
 				    </el-table-column>
 				    <el-table-column  label="操作" >
 				    	<template  scope="scope">
-				    		<el-button type="text" @click="editUserMessage(scope.id)">编辑</el-button>
+				    		<el-button type="text" @click="editUserMessage(scope.row)">编辑</el-button>
 				    	</template>
 				    </el-table-column>
 			  </el-table>
 			  <el-dialog title="编辑账户" :visible.sync="editDialogVisible" size="tiny" >
 				  <el-form label-width="150px">
 				  	<el-form-item label="账户：" style="text-align:left">
-				  		wangguohao@danlu.com
+				  		{{EditForm.userName}}
 				  	</el-form-item>
 				  	<el-form-item label="权限：" style="text-align:left">
-				  		<el-col><el-checkbox label="具有管理需求权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理版本权限"></el-checkbox></el-col>
-						<el-col><el-checkbox label="具有管理人员权限"></el-checkbox></el-col>
+				  		<el-col><el-checkbox label="具有管理需求权限" v-model="EditForm.requireAdmin"></el-checkbox></el-col>
+						<el-col><el-checkbox label="具有管理版本权限" v-model="EditForm.versionAdmin"></el-checkbox></el-col>
+						<el-col><el-checkbox label="具有管理人员权限" v-model="EditForm.memberAdmin"></el-checkbox></el-col>
 				  	</el-form-item>
 				  	<el-form-item label="状态：" style="text-align:left">
-						<el-select v-model="userForm.userStatus">
-							<el-option label="启用" value="01"></el-option>
-							<el-option label="停用" value="02"></el-option>
+						<el-select v-model="EditForm.userStatus">
+							<el-option label="启用" value="1"></el-option>
+							<el-option label="停用" value="0"></el-option>
 						</el-select>
 					</el-form-item>
 				  </el-form>
 				  <span slot="footer" class="dialog-footer">
-				    <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+				    <el-button type="primary" @click="updateUserInfo">保 存</el-button>
+				    <el-button type="default" @click="editDialogVisible = false">取 消</el-button>
 				  </span>
 				</el-dialog>
-			  <el-pagination  layout="prev, pager, next" :total="50"> </el-pagination>
+			  <el-pagination
+		        @current-change="pageChange"
+		        :current-page.sync="returnData.currentPage"
+		        :page-size="userForm.size"
+		        layout="total, prev, pager, next"
+		        :total="returnData.totalCount">
+		      </el-pagination>  
 		</el-row>
 	</el-row>
 
@@ -115,10 +132,26 @@
 			var data = {
 				userForm:{
 					account:"",
-					userStatus:"01",
+					name : "",
+					userStatus:"2",
+					requireAdmin : false,
+					versionAdmin : false,
+					memberAdmin : false,
+					curPage : 1 ,
+					size : 10
 				},
-				tableData: [ ],
-				editDialogVisible : true,
+				returnData: {
+					totalCount : 1
+				},
+				EditForm : {
+					account:"",
+					name : "",
+					userStatus:1,
+					requireAdmin : false,
+					versionAdmin : false,
+					memberAdmin : false,
+				},
+				editDialogVisible : false,
 				rules:{
 
 				}
@@ -128,23 +161,27 @@
 		methods:{
 			queryUserList : function(){
 				var that = this;
+
 				var reqData = {
-					userName 		: "",
-					name	 		: "",
-					requireAdmin	: "",
-					versionAdmin	: "",
-					memberAdmin		: "",
-					userStatus		: "",
+					curPage : that.userForm.curPage,
+					size : that.userForm.size,
+					data:[{
+						userName 		: that.userForm.account,
+						name	 		: that.userForm.name,
+						requireAdmin	: that.userForm.requireAdmin ? 1 : 0,
+						versionAdmin	: that.userForm.versionAdmin ? 1 : 0,
+						memberAdmin		: that.userForm.memberAdmin ? 1 : 0,
+						userStatus		: parseInt(that.userForm.userStatus),						
+					}]
  				}
-				// var url = "/api/dlmanagementtool/user/searchUserList"
-				var url = "/api/dlmanagementtool/user/viewUsers"
+				var url = "/api/dlmanagementtool/user/searchUserListInPage"
 					this.$http.post(url,reqData).then(({
 	                data,
 	                ok,
 	                statusText
 	            }) => {
 	                if (ok && data.status == '0') {
-	                	this.tableData =  data.data;
+	                	this.returnData =  data.data;
 	                } else {
 	                  that.$message.error(data.msg);
 	                }
@@ -155,23 +192,77 @@
 			 * @return {[type]} [description]
 			 */
 			checkStatus :function(value){
-				if (!value) {
+				if (value) {
 					return 'el-icon-check'
 				};
+			},
+			/**
+			 * 获取用户状态
+			 * @param  {[type]} state [description]
+			 * @return {[type]}       [description]
+			 */
+			getUserStatus : function(state){
+				return state ? '启用' : '停用'
 			},
 			/**
 			 * 编辑用户信息
 			 * @return {[type]} [description]
 			 */
-			editUserMessage: function(id){
+			editUserMessage: function(row){
 
-			}
+				this.EditForm.userName = row.userName;
+				this.EditForm.requireAdmin  = row.requireAdmin == 1 ;
+				this.EditForm.memberAdmin = row.memberAdmin == 1;
+				this.EditForm.versionAdmin = row.versionAdmin== 1;
+				this.EditForm.userStatus = row.userStatus.toString();
+				this.editDialogVisible = true;
+			},
+			/**
+			* 翻页
+			* @param  {[type]} val [description]
+			* @return {[type]}     [description]
+			*/
+			pageChange : function(val){
+				this.userForm.curPage = val;
+				this.queryUserList(val)
+			},
+			/**
+			 * 更新用户信息
+			 * @return {[type]} [description]
+			 */
+			updateUserInfo : function(){
+				var that = this;
+				var url = "/api/dlmanagementtool/user/updateUser"
+				var reqData = {
+					userName : this.EditForm.userName,
+					requireAdmin : this.EditForm.requireAdmin ? 1 : 0,
+					versionAdmin : this.EditForm.versionAdmin ? 1 : 0,
+					memberAdmin : this.EditForm.memberAdmin ? 1 : 0,
+					userStatus : parseInt(this.EditForm.userStatus) 
+				}
+				this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == '0') {
+	                	that.$message.success(data.msg);
+	                	this.editDialogVisible = false;
+	                	// that.userForm.requireAdmin = that.EditForm.requireAdmin
+	                	// that.userForm.versionAdmin = that.EditForm.versionAdmin
+	                	// that.userForm.memberAdmin = that.EditForm.memberAdmin
+	                	that.queryUserList();
+	                } else {
+	                  that.$message.error(data.msg);
+	                }
+	            });
+			},
 		},
-		filters:{
-			userStatus :function(userType){
-				return userType == '0' ? '停用' : '启用'
-			}
-		}
+	    beforeRouteEnter: function (to,from,next) {
+	        next(vm => {
+	            vm.queryUserList();
+	        }); 
+	    }
 	}
 </script>
 <style>
