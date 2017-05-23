@@ -14,11 +14,11 @@
 			<el-row class="history title" >
 				申请内容：
 			</el-row>
-			<el-form label-width="150px" style="text-align:left">
+			<el-form label-width="150px" style="text-align:left" :model="approveForm" ref="approveForm" :rules="rules">
 
 				<el-row >
 					<el-col>
-						<el-form-item label="审批类型：" class="userMessage">
+						<el-form-item label="审批类型：" class="userMessage" prop="applyType" required>
 							<el-col v-if="isEditMode">
 								<el-radio-group v-model="approveForm.applyType" >
 									<el-radio  :label="1" >入版申请</el-radio>
@@ -31,14 +31,14 @@
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目名称：" class="userMessage" >
+						<el-form-item label="项目名称：" class="userMessage" prop="projectName">
 							<el-col :span="8">
 								<el-input v-model="approveForm.projectName"></el-input>	
 							</el-col>
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目分支：" class="userMessage">
+						<el-form-item label="项目分支：" class="userMessage" prop="projectBranch">
 							<el-col :span="8">
 								<el-input v-model="approveForm.projectBranch"></el-input>	
 							</el-col>
@@ -67,7 +67,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="启动时间：">
+						<el-form-item label="启动时间：" prop="startTime" required>
 							<el-col>
 								<el-date-picker
 							      v-model="approveForm.startTime"
@@ -79,7 +79,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="计划转测时间：">
+						<el-form-item label="计划转测时间：" prop="testTime" required>
 							<el-date-picker
 						      v-model="approveForm.testTime"
 						      type="datetime"
@@ -88,7 +88,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="计划QA时间：">
+						<el-form-item label="计划QA时间：" prop="qaTime" required>
 							<el-date-picker
 						      v-model="approveForm.qaTime"
 						      type="datetime"
@@ -97,28 +97,28 @@
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目经理：" class="userMessage" >
+						<el-form-item label="项目经理：" class="userMessage"  prop="projectUserName">
 							<el-col :span="8">
-								<el-input v-model="approveForm.productManage"></el-input>	
+								<el-input v-model="approveForm.projectUserName"></el-input>	
 							</el-col>
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目其他成员：" class="userMessage" >
-							<el-col :span="16">
+						<el-form-item label="项目其他成员：" class="userMessage" prop="projectOthers">
+							<el-col :span="15">
 								<el-input v-model="approveForm.projectOthers"></el-input>	
 							</el-col>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
-						<el-form-item label="申请入版类型：">
+						<el-form-item label="申请入版类型：" prop="versionTypeId">
 							<el-select v-model="approveForm.versionTypeId" @change="getVersionList">
 					            <el-option v-for="type in versionTypeList" :label="type.versionTypeName" :value="type.id"></el-option>
 					        </el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="选择版本号：">
+						<el-form-item label="选择版本号：" prop="versionId">
 							<el-select v-model="approveForm.versionId">
 								<el-option v-for="type in versionList" :label="type.versionName" :value="type.id"></el-option>
 							</el-select>
@@ -131,7 +131,7 @@
 							  type="textarea"
 							  :rows="3"
 							  placeholder="请输入内容"
-							  v-model="approveForm.comment">
+							  v-model="approveForm.remark">
 							</el-input>			
 						</el-form-item>
 					</el-col>
@@ -152,6 +152,14 @@
 <script >
 	export default{
 		data : function(){
+			var selectValidate = (rule, value, callback) => {
+		        if (!value || value.toString() == '') {
+		          	callback(new Error('该项目为必填项'));
+		        }else{
+		        	callback();
+		        }
+
+		    }
 			var data = {
 				pageFlage : false,//false :表示我发起的申请，true表示我审批的
 				isEditMode : true, //是否是编辑模式哦
@@ -169,30 +177,51 @@
 						productManage : "夏瑞",
 						bugzId : "10026"
 					}],
-					startTime : [],//审批启动时间
-					testTime : [],//项目转测时间
-					qaTime : [],//项目过QA时间
-					comment:"123",//备注内容
+					startTime : "",//审批启动时间
+					testTime : "",//项目转测时间
+					qaTime : "",//项目过QA时间
+					remark:"123",//备注内容
 					requireName : "zhong",
 					approveTime : [],
 					versionTypeId : "01",
 					versionId :"",
-					productManage : "张虎",
+					projectUserName : "张虎",
 					projectOthers : "其他成员",//
 				},
 				tableData: [ ],
 				versionTypeList : [],//版本类型列表
 				versionList : [],//版本号列表
 				rules:{
-					// projectName : [{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }],
-					// projectBranch:[{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }],
-					// productManage:[{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }]
+					applyType: [{
+						validator:selectValidate,trigger:'blur'
+					}],
+					projectName: [{
+						required:true,message:"该项为必填项",trigger:'blur'
+					}],
+					projectBranch: [{
+						required:true,message:"该项为必填项",trigger:'blur'
+					}],
+					startTime: [{
+						validator:selectValidate,trigger:'blur'
+					}],
+					testTime: [{
+						validator:selectValidate,trigger:'blur'
+					}],
+					qaTime: [{
+						validator:selectValidate,trigger:'blur'
+					}],
+					projectUserName: [{
+						required:true,message:"该项为必填项",trigger:'blur'
+					}],
+					projectOthers: [{
+						required:true,message:"该项为必填项",trigger:'blur'
+					}],
+					versionTypeId: [{
+						validator:selectValidate,trigger:'blur'
+					}],
+					versionId: [{
+						validator:selectValidate,trigger:'blur'
+					}],
 				}
 			}
 			return data
@@ -251,22 +280,46 @@
 			 * @return {[type]} [description]
 			 */
 			updateApproveInfo : function(){
-				console.log(this.approveForm);
-				var reqData =  {
-				     applyType: this.approveForm.applyType,
-				     projectName: this.approveForm.projectName,
-				     projectBranch: this.approveForm.projectBranch,
-				     requirementIds: "1,2",
-				     startTime: this.approveForm.startTime,
-				     testTime: this.approveForm.testTime,
-				     qaTime: this.approveForm.qaTime,
-				     projectUserId: null,
-				     projectUserName: "张虎",
-				     projectOthers: "陈思宇，王国豪",
-				     versionTypeId: 1,
-				     versionId: 2,
-				     remark: "备注"
-				}
+				var that  = this;
+				this.$refs['approveForm'].validate(valide =>{
+					if (valide) {
+						var reqData =  {
+						     applyType: this.approveForm.applyType,
+						     projectName: this.approveForm.projectName,
+						     projectBranch: this.approveForm.projectBranch,
+						     requirementIds: "1,2",
+						     startTime: this.approveForm.startTime,
+						     testTime: this.approveForm.testTime,
+						     qaTime: this.approveForm.qaTime,
+						     // projectUserId: null,
+						     projectUserName: this.approveForm.projectUserName,
+						     projectOthers: this.approveForm.projectOthers,
+						     versionTypeId: this.approveForm.versionTypeId,
+						     versionId: this.approveForm.versionId,
+						     remark: this.approveForm.remark
+						}
+						console.log(reqData);
+
+					    var url = "/api/dlmanagementtool/apply/save"
+					    this.$http.post(url,reqData).then(({
+					        data,
+					        ok,
+					        statusText
+					    }) => {
+					        if (ok && data.status == '0') {
+					            that.$message.success("保存成功");
+					            that.$router.push({
+					            	name : "myApprove"
+					            });
+					        } else {
+					            that.$message.error(data.msg);
+					        }
+					    });
+					}else{
+						this.$message.error('请先正确填写表单信息');
+					}
+				})
+				
 			},
 			/**
 			 * 清空表单

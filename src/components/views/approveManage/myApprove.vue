@@ -89,17 +89,17 @@
 					</router-link>
 				</el-col>
 			</el-row>
-			<el-table :data="tableData" stripe style="width: 100%;text-align:center" label-width="150px">
-				    <el-table-column prop="date" label="审批单号" min-width="180px" > </el-table-column>
-				    <el-table-column prop="date" label="审批类型" min-width="150px" > </el-table-column>
-				    <el-table-column prop="name" label="申请时间" min-width="180px"> </el-table-column>
-				    <el-table-column prop="address" label="最后审批时间" min-width="180px"> </el-table-column>
-				    <el-table-column prop="address" label="申请人" min-width="180px"> </el-table-column>
-				    <el-table-column prop="address" label="版本类型" min-width="150px"> </el-table-column>
-				    <el-table-column prop="address" label="版本号" min-width="180px"> </el-table-column>
-				    <el-table-column prop="address" label="需求名称" min-width="180px"> </el-table-column>
-				    <el-table-column prop="address" label="产品经理" min-width="150px"> </el-table-column>
-				    <el-table-column prop="address" label="审批状态" min-width="150px"> </el-table-column>
+			<el-table :data="returnData.data" stripe style="width: 100%;text-align:left" label-width="150px">
+				    <el-table-column prop="applyCode" label="审批单号" min-width="180px" > </el-table-column>
+				    <el-table-column prop="applyType" label="审批类型" min-width="150px" > </el-table-column>
+				    <el-table-column prop="createTimeStr" label="申请时间" min-width="180px"> </el-table-column>
+				    <el-table-column prop="updateUserName" label="最后审批时间" min-width="180px"> </el-table-column>
+				    <el-table-column prop="applyUserName" label="申请人" min-width="180px"> </el-table-column>
+				    <el-table-column prop="versionTypeId" label="版本类型" min-width="150px"> </el-table-column>
+				    <el-table-column prop="versionId" label="版本号" min-width="180px"> </el-table-column>
+				    <el-table-column prop="projectName" label="需求名称" min-width="180px"> </el-table-column>
+				    <el-table-column prop="projectUserName" label="产品经理" min-width="150px"> </el-table-column>
+				    <el-table-column prop="applyStatus" label="审批状态" min-width="150px"> </el-table-column>
 				    <el-table-column prop="address" label="操作" min-width="100px"> </el-table-column>
 			  </el-table>
 		</el-row>
@@ -124,23 +124,7 @@
 					approvePersion : "",
 					productManage : ""
 				},
-				tableData: [{
-		          date: '2016-05-02',
-		          name: '王小虎',
-		          address: '1518 弄'
-		        }, {
-		          date: '2016-05-04',
-		          name: '王小虎',
-		          address: '1517 弄'
-		        }, {
-		          date: '2016-05-01',
-		          name: '王小虎',
-		          address: '1519 弄'
-		        }, {
-		          date: '2016-05-03',
-		          name: '王小虎',
-		          address: '弄'
-		        }],
+				returnData : {},
 				rules:{
 
 				}
@@ -153,7 +137,25 @@
 			 * @return {[type]} [description]
 			 */
 			queryMyApprove : function(){
-
+	            var that = this;
+			    that.approveForm.versionId = "";
+	            var url = '/api/dlmanagementtool/apply/proposedApply';
+	            var reqData ={
+	            	versionTypeId 	: this.approveForm.versionTypeId,
+	              	curPage         : 1,
+	              	size            : 10
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                  if (ok && data.status == '0') {
+	                      that.returnData= data.data;
+	                    } else {
+	                      that.$message.error(data.msg);
+	                  }
+	            });
 			},
 			/**
 			 * 清空表单
