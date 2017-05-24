@@ -19,21 +19,23 @@
 				<el-row >
 					<el-col>
 						<el-form-item label="审批类型：" class="userMessage" prop="applyType" required>
-							<el-col v-if="isEditMode">
-								<el-radio-group v-model="approveForm.applyType" >
+							<el-col >
+								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange">
 									<el-radio  :label="1" >入版申请</el-radio>
 									<el-radio  :label="2" >修改项目信息</el-radio>
 								</el-radio-group>	
-							</el-col>
-							<el-col v-else>
-								{{approveForm.applyType}}
-							</el-col>				
+							</el-col>			
 						</el-form-item>
 					</el-col>
 					<el-col>
 						<el-form-item label="项目名称：" class="userMessage" prop="projectName">
-							<el-col :span="8">
+							<el-col :span="8" v-if="approveForm.applyType == 1">
 								<el-input v-model="approveForm.projectName"></el-input>	
+							</el-col>
+							<el-col v-else>
+								<el-select >
+									<el-option :label="req.requirementName" :value="req.id" v-for=" req in requireLise">中心化改造</el-option>
+								</el-select>
 							</el-col>
 						</el-form-item>
 					</el-col>
@@ -162,7 +164,7 @@
 		    }
 			var data = {
 				pageFlage : false,//false :表示我发起的申请，true表示我审批的
-				isEditMode : true, //是否是编辑模式哦
+				// isEditMode : true, //是否是编辑模式哦
 				approveForm:{
 					
 					applyType : 1, //审批类型
@@ -222,7 +224,8 @@
 					versionId: [{
 						validator:selectValidate,trigger:'blur'
 					}],
-				}
+				},
+				requireLise : [] //需求列表
 			}
 			return data
 		},
@@ -283,6 +286,18 @@
 				var that  = this;
 				this.$refs['approveForm'].validate(valide =>{
 					if (valide) {
+						var versionTypeName = ""
+						that.versionTypeList.forEach(function(item){
+							if (item.id == that.approveForm.versionTypeId) {
+								versionTypeName = item.versionTypeName
+							};
+						})
+						var versionName = ""
+						that.versionList.forEach(function(item){
+							if (item.id == that.approveForm.versionId) {
+								versionName = item.versionName
+							};
+						})
 						var reqData =  {
 						     applyType: this.approveForm.applyType,
 						     projectName: this.approveForm.projectName,
@@ -295,8 +310,10 @@
 						     projectUserName: this.approveForm.projectUserName,
 						     projectOthers: this.approveForm.projectOthers,
 						     versionTypeId: this.approveForm.versionTypeId,
+						     versionTypeName : versionTypeName ,
 						     versionId: this.approveForm.versionId,
-						     remark: this.approveForm.remark
+						     versionName : versionName,
+						     remark: this.approveForm.remark,
 						}
 						console.log(reqData);
 
@@ -327,6 +344,34 @@
 			 */
 			clearForm : function(){
 
+			},
+			/**
+			 * 申请类型更改
+			 * @return {[type]} [description]
+			 */
+			applyTypeChange : function(){
+				var that = this;
+				if (parseInt(this.approveForm.applyType) == 2) {
+			          var url = "/api/dlmanagementtool/requirement/list"
+			          var reqData = {
+			            curPage : 1,
+			            size : 15,
+			            data:[{ 
+			                responsibleUserName : this.$store.state.user.tocken,
+			            }]
+			          }
+			          this.$http.post(url,reqData).then(({
+			              data,
+			              ok,
+			              statusText
+			          }) => {
+			              if (ok && data.status == '0') {
+			                  that.requireLise = data.data;
+			              } else {
+			                  that.$message.error(data.msg);
+			              }
+			          });
+				};
 			}
 		},
 		beforeRouteEnter: function(to, from, next) {

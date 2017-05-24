@@ -70,6 +70,11 @@ export default new Router({
       name: 'approveModify',
       component: require('views/approveManage/approveModify.vue')
     },
+    {
+      path: '/approveDetail',
+      name: 'approveDetail',
+      component: require('views/approveManage/approveDetail.vue')
+    },
     
     /**
      * 人员管理

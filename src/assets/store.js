@@ -9,7 +9,7 @@ Vue.use(Vuex)
 
 const state = {
   user : {
-  	name : "tanjunyi",
+  	name : "马俊",
   	tocken : "majun@danlu.com"
   }
 }

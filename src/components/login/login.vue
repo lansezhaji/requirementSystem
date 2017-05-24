@@ -68,6 +68,9 @@
 		                	that.$store.state.user.tocken = data.data.userName;
 		                	that.$message.success(data.msg);
 		                    console.log(data);
+		                    var time = new Date();
+		                    var timeStmp = time.getTime();
+		                    sessionStorage.setItem('tocken',timeStmp);
 		                } else {
 		                	that.$message.error(data.msg);
 		                }

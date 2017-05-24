@@ -162,7 +162,7 @@
 
 				<el-row type="flex" justify="center">
 					<el-col :span="2">
-						<el-button @click="queryMyApprove" type="primary">提交</el-button>
+						<el-button @click="updateApproveInfo" type="primary">提交</el-button>
 					</el-col>
 				</el-row>			
 			</el-form>
@@ -203,23 +203,6 @@
 					approveVersion : "01",
 					productManage : "张虎",
 				},
-				tableData: [{
-		          date: '2016-05-02',
-		          name: '王小虎',
-		          address: '1518 弄'
-		        }, {
-		          date: '2016-05-04',
-		          name: '王小虎',
-		          address: '1517 弄'
-		        }, {
-		          date: '2016-05-01',
-		          name: '王小虎',
-		          address: '1519 弄'
-		        }, {
-		          date: '2016-05-03',
-		          name: '王小虎',
-		          address: '弄'
-		        }],
 				rules:{
 					// approveName : [{
 					// 	required:true,message:"该项为必填项",trigger:'blur'
@@ -236,10 +219,10 @@
 		},
 		methods:{
 			/**
-			 * 搜索我发起的审批
+			 * 更新信息
 			 * @return {[type]} [description]
 			 */
-			queryMyApprove : function(){
+			updateApproveInfo : function(){
 
 			},
 			/**
