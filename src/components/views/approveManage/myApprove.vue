@@ -86,7 +86,7 @@
 			</el-form>
 
 		</el-row>
-		<el-row type="flex" justify="left" v-if="!pageFlage" style="margin-top:20px">
+		<el-row type="flex" justify="left" v-if="pageFlage" style="margin-top:20px">
 				<el-col :span="2">
 					<router-link to="/createApprove">
 						<el-button  type="text">+发起新的审批</el-button>
@@ -102,7 +102,7 @@
 						</template>
 				    </el-table-column>
 				    <el-table-column prop="createTimeStr" label="申请时间" min-width="180px"> </el-table-column>
-				    <el-table-column prop="updateUserName" label="最后审批时间" min-width="180px"> </el-table-column>
+				    <el-table-column prop="updateTimeStr" label="最后审批时间" min-width="180px"> </el-table-column>
 				    <el-table-column prop="userName" label="申请人" min-width="100px" v-if="!pageFlage"> </el-table-column>
 				    <el-table-column prop="versionTypeId" label="版本类型" min-width="100px">
 				    	<template scope="scope">
@@ -123,7 +123,10 @@
 				    	<template scope="scope">
 				    		<el-row v-if="pageFlage">
 				    			<el-col  style="text-align:center" :span="12">
-			    					<router-link  :to="{ name: 'approveDetail', query: {id:scope.row.id}}">
+			    					<router-link v-if="scope.row.applyType == 1" :to="{ name: 'approveDetail', query: {id:scope.row.id}}">
+										<el-button type="text">查看</el-button>
+									</router-link>
+									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
 			    				</el-col>
@@ -139,7 +142,10 @@
 				    				<el-button type="text" @click="handelApprove(scope.row,false)">驳回</el-button>
 				    			</el-col>
 				    			<el-col :span="8" style="text-align:center">
-				    				<router-link :to="{ name: 'approveModify', query: {id:scope.row.id}}">
+				    				<router-link v-if="scope.row.applyType == 1" :to="{ name: 'approveDetail', query: {id:scope.row.id}}">
+										<el-button type="text">查看</el-button>
+									</router-link>
+									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
 				    			</el-col>	

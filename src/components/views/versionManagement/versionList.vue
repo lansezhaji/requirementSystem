@@ -214,7 +214,7 @@
     :data="versionList" border
     style="width: 100%;text-align:left">
     <el-table-column type="expand">
-      <template scope="props">
+      <template scope="scope">
           <el-row style="text-align:left">
             <el-form >
             <el-col :span="23">
@@ -224,60 +224,54 @@
                 </el-col>
                 <el-col :span="4">
                   <el-form-item label="项目名称：">
-                      Pandora
+                      {{scope.row.requirementApplies[0].projectName}}
                   </el-form-item>
                   <el-form-item label="项目经理：">
-                      莎姐
+                      {{scope.row.requirementApplies[0].projectUserName}}
                   </el-form-item>
                   <el-form-item label="启动时间：" style="border-bottom:1px dashed lightgray">
-                      2016/9/12
+                      {{scope.row.requirementApplies[0].startTimeStr}}
                   </el-form-item>
                 </el-col>
-                <el-col :span="17">
+                <el-col :span="16">
                   <el-form-item label="项目分支：">
-                      feature_pandora
+                      {{scope.row.requirementApplies[0].projectBranch}}
                   </el-form-item>
                   <el-form-item label="项目成员：">
-                      王国豪，何苗，陈思宇
+                     {{scope.row.requirementApplies[0].projectOthers}}
                   </el-form-item>
                   <el-form-item style="border-bottom:1px dashed lightgray">
                       <el-col :span="6">
                         <strong>计划转测时间：</strong>
-                        <span>2017-05-12</span>
+                        <span>{{scope.row.requirementApplies[0].testTimeStr}}</span>
                       </el-col>
                       <el-col :span="6">
                         <strong>实际转测时间：</strong>
-                        <span>2017-05-12</span>
+                        <span>待填</span>
                       </el-col>
                       <el-col :span="6">
                         <strong>计划QA时间：</strong>
-                        <span>2017-05-12</span>
+                        <span>{{scope.row.requirementApplies[0].qaTimeStr}}</span>
                       </el-col>
                       <el-col :span="6">
                         <strong>实际QA时间：</strong>
-                        <span>2017-05-12</span>
+                        <span>待填</span>
                       </el-col>
                   </el-form-item>
                 </el-col>
               </el-row>
-              <el-row>
+              <el-row v-for="require in scope.row.requirementApplies[0].requirementInfos">
                 <el-col :span="3">
                   <strong>需求信息：</strong>
                 </el-col>
                 <el-col :span="16">
                   <el-form-item label="需求名称：">
-                      中心化改造
-                  </el-form-item>
-                  <el-form-item label="需求包名称：">
-                      中心化改造包名称
+                      {{require.requirementName}}
                   </el-form-item>
                 </el-col>
                 <el-col :span="5">
                   <el-form-item label="产品经理：">
-                      夏瑞
-                  </el-form-item>
-                  <el-form-item label="产品经理：">
-                      夏瑞
+                      {{require.responsibleUserName}}
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -287,20 +281,6 @@
             </el-col>
             </el-form>
           </el-row>
-          <!-- <table>
-            <th>1</th>
-            <td>
-              <tr><strong>项目基本信息</strong></tr>
-              <tr><strong>需求信息</strong></tr>
-            </td>
-            <td>
-              <tr>项目名称</tr>
-              <tr>项目经理</tr>
-              <tr>启动时间</tr>
-              <tr>需求名称</tr>
-              <tr>需求包名称</tr>
-            </td>
-          </table> -->
       </template>
     </el-table-column>
     <el-table-column

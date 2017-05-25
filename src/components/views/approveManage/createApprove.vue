@@ -28,13 +28,16 @@
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目名称：" class="userMessage" prop="projectName">
-							<el-col :span="8" v-if="approveForm.applyType == 1">
+						<el-form-item v-if="approveForm.applyType == 1" label="项目名称：" class="userMessage" prop="projectName">
+							<el-col :span="8" >
 								<el-input v-model="approveForm.projectName"></el-input>	
 							</el-col>
-							<el-col v-else>
-								<el-select >
-									<el-option :label="req.requirementName" :value="req.id" v-for=" req in requireLise">中心化改造</el-option>
+							
+						</el-form-item>
+						<el-form-item v-else label="项目名称：" class="userMessage" >
+							<el-col >
+								<el-select v-model="approveForm.projectId" @change="getProjectDetail">
+									<el-option :label="req.projectName" :value="req.id" v-for=" req in requireLise"></el-option>
 								</el-select>
 							</el-col>
 						</el-form-item>
@@ -48,17 +51,17 @@
 					</el-col>
 					<el-col>
 						<el-form-item label="需求内容：" class="userMessage" >
-							<el-row v-for="content in approveForm.approveContent">
+							<el-row v-for="content in approveForm.requirementInfos">
 								<el-col :span="8">
-									<el-input v-model="content.title"></el-input>	
+									<el-input v-model="content.requirementName"></el-input>	
 								</el-col>
 								<el-col :span="3" :offset="1" >
 									<span>产品经理：</span>
-									<span>{{content.productManage}}</span>
+									<span>{{content.responsibleUserName}}</span>
 								</el-col>
 								<el-col :span="4" :offset="1">
 									<span>Bugzilla ID：</span>
-									<span>{{content.bugzId}}</span>
+									<span>{{content.functionBugId}}</span>
 								</el-col>
 								<el-col :span="4">
 									<el-button type="primary" size="small">增加需求</el-button>
@@ -168,27 +171,29 @@
 				approveForm:{
 					
 					applyType : 1, //审批类型
-					projectName : "中心化改造", //审批名称
-					projectBranch : "2017.13",//审批分支
+					projectId : "",//项目ID，仅在修改项目信息时需要
+					projectName : "", //审批名称
+					projectBranch : "",//审批分支
 					approveContent : [{
-						title:"中心化改造项目",
-						productManage : "夏瑞",
-						bugzId : "10026"
+						title:"",
+						productManage : "",
+						bugzId : ""
 					},{
 						title:"",
-						productManage : "夏瑞",
-						bugzId : "10026"
+						productManage : "",
+						bugzId : ""
 					}],
 					startTime : "",//审批启动时间
 					testTime : "",//项目转测时间
 					qaTime : "",//项目过QA时间
-					remark:"123",//备注内容
-					requireName : "zhong",
+					remark:"",//备注内容
+					requireName : "",
 					approveTime : [],
-					versionTypeId : "01",
+					versionTypeId : "",
 					versionId :"",
-					projectUserName : "张虎",
-					projectOthers : "其他成员",//
+					projectUserName : "",
+					projectOthers : "",//
+					requirementInfos : "",
 				},
 				tableData: [ ],
 				versionTypeList : [],//版本类型列表
@@ -298,22 +303,30 @@
 								versionName = item.versionName
 							};
 						})
+
+						var projectName = ""
+						that.requireLise.forEach(function(item){
+							if (item.id == that.approveForm.projectId) {
+								projectName = item.projectName
+							};
+						})
 						var reqData =  {
-						     applyType: this.approveForm.applyType,
-						     projectName: this.approveForm.projectName,
-						     projectBranch: this.approveForm.projectBranch,
+							 id : (that.approveForm.applyType == 2) ? that.approveForm.projectId : "",
+						     applyType: that.approveForm.applyType,
+						     projectName : projectName,
+						     projectBranch: that.approveForm.projectBranch,
 						     requirementIds: "1,2",
-						     startTime: this.approveForm.startTime,
-						     testTime: this.approveForm.testTime,
-						     qaTime: this.approveForm.qaTime,
+						     startTime: that.approveForm.startTime,
+						     testTime: that.approveForm.testTime,
+						     qaTime: that.approveForm.qaTime,
 						     // projectUserId: null,
-						     projectUserName: this.approveForm.projectUserName,
-						     projectOthers: this.approveForm.projectOthers,
-						     versionTypeId: this.approveForm.versionTypeId,
+						     projectUserName: that.approveForm.projectUserName,
+						     projectOthers: that.approveForm.projectOthers,
+						     versionTypeId: that.approveForm.versionTypeId,
 						     versionTypeName : versionTypeName ,
-						     versionId: this.approveForm.versionId,
+						     versionId: that.approveForm.versionId,
 						     versionName : versionName,
-						     remark: this.approveForm.remark,
+						     remark: that.approveForm.remark,
 						}
 						console.log(reqData);
 
@@ -343,7 +356,49 @@
 			 * @return {[type]} [description]
 			 */
 			clearForm : function(){
+				this.$refs['approveForm'].resetFields();
+			},
+			getProjectDetail : function(){
+	            var that  = this;
+	            var url = "/api/dlmanagementtool/apply/getApplyById"
+	            var reqData = {
+	            	id : this.approveForm.projectId
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == '0') {
+						that.approveForm.projectBranch = data.data.projectBranch;//审批分支
+						that.approveForm.startTime = data.data.startTime;//审批启动时间
+						that.approveForm.testTime = data.data.testTime;//项目转测时间
+						that.approveForm.qaTime = data.data.qaTime;//项目过QA时间
+						that.approveForm.remark=data.data.remark;//备注内容
+						that.approveForm.requireName = data.data.requireName;
+						that.approveForm.versionTypeId = data.data.versionTypeId;
+						that.approveForm.projectUserName = data.data.projectUserName;
+						that.approveForm.projectOthers = data.data.projectOthers;//
+						that.approveForm.requirementInfos = data.data.requirementInfos;
 
+						setTimeout(function(){
+							that.approveForm.versionId =data.data.versionId;
+						},500)
+	                } else if (data.status == 1) {
+	                	that.approveForm.projectBranch = "";
+	                	that.approveForm.projectName = "";
+						that.approveForm.startTime = "";
+						that.approveForm.testTime = "";
+						that.approveForm.qaTime = "";
+						that.approveForm.remark="";
+						that.approveForm.requireName = "";
+						that.approveForm.versionTypeId = "";
+						that.approveForm.projectUserName = "";
+						that.approveForm.projectOthers = "";
+						that.approveForm.requirementInfos = "";
+	                    that.$message.error(data.msg);
+	                }
+	            });
 			},
 			/**
 			 * 申请类型更改
@@ -352,15 +407,9 @@
 			applyTypeChange : function(){
 				var that = this;
 				if (parseInt(this.approveForm.applyType) == 2) {
-			          var url = "/api/dlmanagementtool/requirement/list"
-			          var reqData = {
-			            curPage : 1,
-			            size : 15,
-			            data:[{ 
-			                responsibleUserName : this.$store.state.user.tocken,
-			            }]
-			          }
-			          this.$http.post(url,reqData).then(({
+
+			          var url = "/api/dlmanagementtool/apply/getPassedProjects"
+			          this.$http.get(url).then(({
 			              data,
 			              ok,
 			              statusText
@@ -371,7 +420,18 @@
 			                  that.$message.error(data.msg);
 			              }
 			          });
-				};
+				}else{
+						that.approveForm.projectBranch = "";
+						that.approveForm.startTime = "";
+						that.approveForm.testTime = "";
+						that.approveForm.qaTime = "";
+						that.approveForm.remark="";
+						that.approveForm.requireName = "";
+						that.approveForm.versionTypeId = "";
+						that.approveForm.projectUserName = "";
+						that.approveForm.projectOthers = "";
+						that.approveForm.requirementInfos = "";
+				}
 			}
 		},
 		beforeRouteEnter: function(to, from, next) {
