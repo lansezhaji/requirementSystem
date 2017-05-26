@@ -253,7 +253,11 @@
 			        if (ok && data.status == '0') {
 			            
 			            that.versionTypeList = data.data
-			        } else {
+			        }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 			            that.$message.error(data.msg);
 			        }
 			    });
@@ -278,7 +282,11 @@
 	            }) => {
 	                  if (ok && data.status == '0') {
 	                      that.versionList= data.data.data;
-	                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                      that.$message.error(data.msg);
 	                  }
 	            });
@@ -341,7 +349,11 @@
 					            that.$router.push({
 					            	name : "myApprove"
 					            });
-					        } else {
+				        }else if (data.status == -2 || data.status == -3) {
+		                  	this.$store.commit('logout');
+	   						localStorage.setItem("token","");
+	   						this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
 					            that.$message.error(data.msg);
 					        }
 					    });

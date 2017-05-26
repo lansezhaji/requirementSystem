@@ -347,7 +347,11 @@
                           }
                         })
                     };
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -377,7 +381,11 @@
             }) => {
                   if (ok && data.status == '0') {
                       that.requirementPlanOption = data.data;
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                       that.$message.error(data.msg);
                   }
             });
@@ -409,7 +417,11 @@
           }) => {
               if (ok && data.status == '0') {
                   that.tableData = data.data;
-              } else {
+              }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                   that.$message.error(data.msg);
               }
           });
@@ -463,7 +475,11 @@
           }) => {
               if (ok && data.status == '0') {
                   that.$message.success("导出成功！");
-              } else {
+              }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                   that.$message.error(data.msg);
               }
           });
@@ -482,7 +498,11 @@
           }) => {
               if (ok && data.status == '0') {
                   that.$message.success("导出成功");
-              } else {
+              }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                   that.$message.error(data.msg);
               }
           });
@@ -513,7 +533,11 @@
                   that.dialogDeleteVisible = false;
                   that.queryRequeryList();
                   that.$message.success("删除成功！");
-              } else {
+              }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                   that.$message.error(data.msg);
               }
           });

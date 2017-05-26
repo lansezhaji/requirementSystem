@@ -126,7 +126,7 @@
 			    					<router-link v-if="scope.row.applyType == 1" :to="{ name: 'approveDetail', query: {id:scope.row.id}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
-									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id}}">
+									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id,applyUuid:scope.row.applyUuid}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
 			    				</el-col>
@@ -142,10 +142,10 @@
 				    				<el-button type="text" @click="handelApprove(scope.row,false)">驳回</el-button>
 				    			</el-col>
 				    			<el-col :span="8" style="text-align:center">
-				    				<router-link v-if="scope.row.applyType == 1" :to="{ name: 'approveDetail', query: {id:scope.row.id}}">
+				    				<router-link v-if="scope.row.applyType == 1" :to="{ name: 'approveDetail', query: {id:scope.row.id,applyUuid:scope.row.applyUuid}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
-									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id}}">
+									<router-link v-else :to="{ name: 'approveModify', query: {id:scope.row.id,applyUuid:scope.row.applyUuid}}">
 										<el-button type="text">查看</el-button>
 									</router-link>
 				    			</el-col>	
@@ -238,7 +238,11 @@
 		            }) => {
 		                if (ok && data.status == '0') {
 		                    that.initData.versionTypeList = data.data
-		                } else {
+		                }else if (data.status == -2 || data.status == -3) {
+		                  	this.$store.commit('logout');
+	   						localStorage.setItem("token","");
+	   						this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
 		                    that.$message.error(data.msg);
 		                }
 		            });
@@ -276,7 +280,11 @@
 	            }) => {
 	                  if (ok && data.status == '0') {
 	                      that.returnData= data.data;
-	                    } else {
+	                    }else if (data.status == -2 || data.status == -3) {
+		                  	this.$store.commit('logout');
+	   						localStorage.setItem("token","");
+	   						this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
 	                      that.$message.error(data.msg);
 	                  }
 	            });
@@ -341,7 +349,11 @@
 	                      that.$message.success(data.msg);
 	                      that.approveDialogVisible = false;
 	                      that.queryMyApprove();
-	                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                      that.$message.error(data.msg);
 	                  }
 	            });
@@ -365,7 +377,11 @@
 	                      that.$message.success(data.msg);
 	                      that.approveDialogVisible = false;
 	                      that.queryMyApprove();
-	                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                      that.$message.error(data.msg);
 	                  }
 	            });

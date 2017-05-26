@@ -4,8 +4,8 @@
 			<el-breadcrumb-item>
 				<h3>我的账号</h3>
 			</el-breadcrumb-item>
-<!--         <el-button @click="getUserInfo()">查询</el-button>
-        <el-button @click="debug()">debug</el-button> -->
+        <el-button @click="getUserInfo()">查询</el-button>
+        <el-button @click="debug()">debug</el-button>
 		</el-breadcrumb>
 		<el-row class="content">
 			<el-form label-width="150px">
@@ -86,7 +86,7 @@
 		        var that = this;
 	            var url = '/api/dlmanagementtool/user/getUserInfo';
 	            var reqData = {
-	            	userName : this.$store.state.user.tocken
+	            	userName : localStorage.getItem("name")
 	            }
 	            this.$http.post(url,reqData).then(({
 	                data,
@@ -95,9 +95,13 @@
 	            }) => {
 	                  if (ok && data.status == '0') {
 	                      that.userForm = data.data;
-	                    } else {
+	                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  } else {
 	                      that.$message.error(data.msg);
-	                  }
+	                  }	
 	            });
 			},
 			/**

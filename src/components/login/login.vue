@@ -65,12 +65,11 @@
 		                statusText
 		            }) => {
 		                if (ok && data.status == '0') {
-		                	that.$store.state.user.tocken = data.data.userName;
+		                	that.$store.state.user.token = data.data.token;
+		                	that.$store.state.user.name = data.data.userName;
 		                	that.$message.success(data.msg);
-		                    console.log(data);
-		                    var time = new Date();
-		                    var timeStmp = time.getTime();
-		                    sessionStorage.setItem('tocken',timeStmp);
+						    localStorage.setItem("token",data.data.token);
+						    localStorage.setItem("name",data.data.userName);
 		                } else {
 		                	that.$message.error(data.msg);
 		                }

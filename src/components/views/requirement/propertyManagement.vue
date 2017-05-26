@@ -173,7 +173,11 @@
                 if (ok && data.status == '0' && !data.data) {
                 	this.$message.success('该名称可用');
                 	callback();
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   	callback(new Error('需求名称已存在'));
                 }
             });
@@ -279,7 +283,11 @@
                     	that.propertyForm.newSecondProperty = ""
                     	that.getSecondProperty(that.firstReqIndex);
                     }
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -309,7 +317,11 @@
                     that.firsetPropertyList = data.data
                     that.firstReqIndex = "";
                     that.secondReqIndex = "";
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -343,7 +355,11 @@
                 if (ok && data.status == '0') {
                 	that.$message.success("修改成功");
                     that.getFirstProperty(that.requirementIndex);
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -368,7 +384,11 @@
                 	that.$message.success("删除成功");
                 	that.deleteFirstVisiable = false;
                     that.getFirstProperty(that.requirementIndex);
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -396,7 +416,11 @@
                 if (ok && data.status == '0') {
                     that.secondPropertyList = data.data
                     that.secondReqIndex = "";
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -440,7 +464,11 @@
                 	that.$message.success("修改成功");
                 	that.secondProperyModify = false;
                     that.getSecondProperty(that.firstReqIndex);
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -466,7 +494,11 @@
                 	that.deleteSecondVisiablee = false;
                 	this.secondProperyModify = false;
                     that.getSecondProperty(that.firstReqIndex);
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
                   that.$message.error(data.msg);
                 }
             });

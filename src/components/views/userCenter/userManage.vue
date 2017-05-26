@@ -182,7 +182,11 @@
 	            }) => {
 	                if (ok && data.status == '0') {
 	                	this.returnData =  data.data;
-	                } else {
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                  that.$message.error(data.msg);
 	                }
 	            });
@@ -252,7 +256,11 @@
 	                	// that.userForm.versionAdmin = that.EditForm.versionAdmin
 	                	// that.userForm.memberAdmin = that.EditForm.memberAdmin
 	                	that.queryUserList();
-	                } else {
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                  that.$message.error(data.msg);
 	                }
 	            });

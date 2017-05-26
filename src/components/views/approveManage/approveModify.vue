@@ -8,167 +8,161 @@
 				<h3>发起申请</h3>
 			</el-breadcrumb-item>
 		</el-breadcrumb>
-		<el-row class="content">
-			<el-row class="history title" >
-				申请内容：
-			</el-row>
-
-			<el-form label-width="150px" >
-				<el-row>
-					<el-form-item label="审批类型：" class="userMessage">
-						<el-col >
-							项目信息修改
-						</el-col>				
-					</el-form-item>
-					<el-form-item label="项目名称：" class="userMessage" >
-						<el-col :span="8">
-							Marorder	
-						</el-col>
-					</el-form-item>
-					<el-form-item label-width="0" class="userMessage" >
-						<el-row style="border-top:1px dashed gray"></el-row>
-					</el-form-item>
-					<el-row>
-						<el-col :span="12">
-							<el-row type="flex" justify="center">
-								<el-col :span="6">
-									<h3>修改前</h3>
-								</el-col>
-							</el-row>
-							<el-form-item label="版本类型：" class="userMessage">
-								WEB
-							</el-form-item>
-							<el-form-item label="版本号：" class="userMessage" >
-									<el-col >
-										release-v2017.0
-									</el-col>
-							</el-form-item>
-							<el-form-item label="需求内容：" class="userMessage" >
-									<el-col >
-										是对方的酸辣粉就哦我了解的是否了解
-									</el-col>
-							</el-form-item>
-							<el-form-item label="启动时间：">
-								<el-col style="text-align:left">
-									2017-03-10 17:23:33
-								</el-col>
-							</el-form-item>
-							<el-form-item label="计划转测时间：">
-								<el-col style="text-align:left">
-									2017-03-10 15:23:11
-								</el-col>
-							</el-form-item>
-							<el-form-item label="计划QA时间：">
-								<el-col style="text-align:left">
-									2017-03-10 15:23:11
-								</el-col>
-							</el-form-item>
-							
-							<el-form-item label="开发负责人：" class="userMessage" >
-								<el-col :span="8">
-									{{approveForm.productManage}}	
-								</el-col>
-							</el-form-item>
-							<el-form-item label="测试负责任：" class="userMessage" >
-								<el-col :span="8">
-									王国豪
-								</el-col>
-							</el-form-item>
-							<el-form-item label="发版负责任：" class="userMessage" >
-								<el-col :span="8">
-									谢星
-								</el-col>
-							</el-form-item>
-							<el-form-item label="项目其他成员：" class="userMessage" >
-								<el-col :span="16">
-									何苗，陈思雨，张可可
-								</el-col>
-							</el-form-item>
-							<el-form-item label="备注：" class="userMessage" >
-								<el-col :span="16">
-									因受到中心化影响，该项目暂时延迟
-								</el-col>
-							</el-form-item>
-							
-						</el-col>
-		<!-- 修改后 -->
-												<el-col :span="12">
-							<el-row type="flex" justify="center">
-								<el-col :span="6">
-									<h3>修改后</h3>
-								</el-col>
-							</el-row>
-							<el-form-item label="版本类型：" class="userMessage">
-								APP
-							</el-form-item>
-							<el-form-item label="版本号：" class="userMessage" >
-									<el-col >
-										release-v2017.13
-									</el-col>
-							</el-form-item>
-							<el-form-item label="需求内容：" class="userMessage" >
-									<el-col >
-										是对方的酸辣粉就哦我了解的是否了解
-									</el-col>
-							</el-form-item>
-							<el-form-item label="启动时间：">
-								<el-col style="text-align:left">
-									2017-03-10 17:23:33
-								</el-col>
-							</el-form-item>
-							<el-form-item label="计划转测时间：">
-								<el-col style="text-align:left">
-									2017-03-10 15:23:11
-								</el-col>
-							</el-form-item>
-							<el-form-item label="计划QA时间：">
-								<el-col style="text-align:left">
-									2017-03-10 15:23:11
-								</el-col>
-							</el-form-item>
-							
-							<el-form-item label="开发负责人：" class="userMessage" >
-								<el-col :span="8">
-									{{approveForm.productManage}}	
-								</el-col>
-							</el-form-item>
-							<el-form-item label="测试负责任：" class="userMessage" >
-								<el-col :span="8">
-									王国豪
-								</el-col>
-							</el-form-item>
-							<el-form-item label="发版负责任：" class="userMessage" >
-								<el-col :span="8">
-									谢星
-								</el-col>
-							</el-form-item>
-							<el-form-item label="项目其他成员：" class="userMessage" >
-								<el-col :span="16">
-									何苗，陈思雨，张可可
-								</el-col>
-							</el-form-item>
-							<el-form-item label="备注：" class="userMessage" >
-								<el-col :span="16">
-									因受到中心化影响，该项目暂时延迟
-								</el-col>
-							</el-form-item>
-							
-						</el-col>
-
-					</el-row>
-					
-									
+		<el-col :span="17">
+			<el-row class="content">
+				<el-row class="history title" >
+					申请内容：
 				</el-row>
+				<el-form label-width="150px" >
+					<el-row>
+						<el-form-item label="审批类型：" class="userMessage">
+							<el-col >
+								{{getApproveType(approveNewDetail.applyType)}}
+							</el-col>				
+						</el-form-item>
+						<el-form-item label="项目名称：" class="userMessage" >
+							<el-col :span="8">
+								{{approveNewDetail.projectName}}
+							</el-col>
+						</el-form-item>
+						<el-form-item label-width="0" class="userMessage" >
+							<el-row style="border-top:1px dashed gray"></el-row>
+						</el-form-item>
+						<el-row>
+							<el-col :span="12">
+								<el-row type="flex" justify="center">
+									<el-col :span="6">
+										<h3>修改前</h3>
+									</el-col>
+								</el-row>
+								<el-form-item label="版本类型：" class="userMessage">
+									{{approveOrgDetail.versionTypeName}}
+								</el-form-item>
+								<el-form-item label="版本号：" class="userMessage" >
+										<el-col >
+											{{approveOrgDetail.versionName}}
+										</el-col>
+								</el-form-item>
+								<el-form-item label="需求内容：" class="userMessage" >
+										<el-col v-for="require in approveOrgDetail.requirementInfos">
+											{{require.requirementName}}
+										</el-col>
+								</el-form-item>
+								<el-form-item label="启动时间：">
+									<el-col style="text-align:left">
+										{{approveOrgDetail.startTimeStr}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="计划转测时间：">
+									<el-col style="text-align:left">
+										{{approveOrgDetail.testTimeStr}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="计划QA时间：">
+									<el-col style="text-align:left">
+										{{approveOrgDetail.qaTimeStr}}
+									</el-col>
+								</el-form-item>
+								
+								<el-form-item label="开发负责人：" class="userMessage" >
+									<el-col :span="8">
+											{{approveOrgDetail.projectUserName}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="项目其他成员：" class="userMessage" >
+									<el-col :span="16">
+										{{approveOrgDetail.projectOthers}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="备注：" class="userMessage" >
+									<el-col :span="16">
+										{{approveOrgDetail.remark}}
+									</el-col>
+								</el-form-item>
+								
+							</el-col>
+			<!-- 修改后 -->
+							<el-col :span="12">
+								<el-row type="flex" justify="center">
+									<el-col :span="6">
+										<h3>修改后</h3>
+									</el-col>
+								</el-row>
+								<el-form-item label="版本类型：" class="userMessage">
+									<el-col :class="getCompareClass('versionTypeName')">
+										{{approveNewDetail.versionTypeName}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="版本号：" class="userMessage" >
+									<el-col :class="getCompareClass('versionName')">
+										{{approveNewDetail.versionName}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="需求内容：" class="userMessage" >
+										<el-col v-for="(require,index) in approveNewDetail.requirementInfos" :class="compareProjectName(index)">
+											{{require.requirementName}}
+										</el-col>
+								</el-form-item>
+								<el-form-item label="启动时间：">
+									<el-col style="text-align:left" :class="getCompareClass('startTimeStr')">
+										{{approveNewDetail.startTimeStr}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="计划转测时间：" >
+									<el-col style="text-align:left" :class="getCompareClass('testTimeStr')">
+										{{approveNewDetail.testTimeStr}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="计划QA时间：">
+									<el-col style="text-align:left" :class="getCompareClass('qaTimeStr')">
+										{{approveNewDetail.qaTimeStr}}
+									</el-col>
+								</el-form-item>
+								
+								<el-form-item label="开发负责人：" class="userMessage" >
+									<el-col :span="8" :class="getCompareClass('projectUserName')">
+											{{approveNewDetail.projectUserName}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="项目其他成员：" class="userMessage" >
+									<el-col :span="16" :class="getCompareClass('projectOthers')">
+										{{approveNewDetail.projectOthers}}
+									</el-col>
+								</el-form-item>
+								<el-form-item label="备注：" class="userMessage" >
+									<el-col :span="16" :class="getCompareClass('remark')">
+										{{approveNewDetail.remark}}
+									</el-col>
+								</el-form-item>
+								
+							</el-col>
 
-				<el-row type="flex" justify="center">
-					<el-col :span="2">
-						<el-button @click="updateApproveInfo" type="primary">提交</el-button>
-					</el-col>
-				</el-row>			
-			</el-form>
+						</el-row>
+						
+										
+					</el-row>		
+				</el-form>
+			</el-row>			
+		</el-col>
 
-		</el-row>
-
+		<el-col :span="6"  class="content">
+			<el-row class="history title" >
+				审批记录：
+			</el-row>
+			<el-col style="text-align:left">
+				<ul>
+					<li v-for="list in approveHistory">
+						{{getTime(list.operateTime)}}
+						{{list.operateUserName}}
+						{{list.operateComment}}
+						<el-col v-if="list.applyComment" style="margin-left:20px">
+							审批说明：{{list.applyComment}}
+						</el-col>
+						
+					</li>
+				</ul>
+			</el-col>
+		</el-col>
 	</el-row>
 
 
@@ -177,53 +171,92 @@
 	export default{
 		data : function(){
 			var data = {
-				pageFlage : false,//false :表示我发起的申请，true表示我审批的
-				isEditMode : true, //是否是编辑模式哦
-				approveForm:{
-					
-					approveType : "01", //审批类型
-					approveName : "中心化改造", //审批名称
-					approveBranch : "2017.13",//审批分支
-					approveContent : [{
-						title:"中心化改造项目",
-						productManage : "夏瑞",
-						bugzId : "10026"
-					},{
-						title:"",
-						productManage : "夏瑞",
-						bugzId : "10026"
-					}],
-					approveStart : [],//审批启动时间
-					approveTest : [],//项目转测时间
-					approveQA : [],//项目过QA时间
-					comment:"123",//备注内容
-					versionType : "02",
-					requireName : "zhong",
-					approveTime : [],
-					approveVersion : "01",
-					productManage : "张虎",
-				},
-				rules:{
-					// approveName : [{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }],
-					// approveBranch:[{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }],
-					// productManage:[{
-					// 	required:true,message:"该项为必填项",trigger:'blur'
-					// }]
-				}
+				approveId : "",
+				applyUuid: "",
+				approveOrgDetail : {},
+				approveNewDetail : {},
+				approveHistory : {}
 			}
 			return data
 		},
 		methods:{
 			/**
-			 * 更新信息
-			 * @return {[type]} [description]
-			 */
-			updateApproveInfo : function(){
+			* 获取版本类型列表
+			* @return {[type]} [description]
+			*/
+			getApproveDetail : function(){
+	            var that  = this;
+	            var url = "/api/dlmanagementtool/apply/modifyComparedInfo"
+	            var reqData = {
+	            	id : parseInt(this.approveId),
+	            	applyUuid : this.applyUuid
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == '0') {
+	                	that.approveOrgDetail = data.data[1] || ""
+	                    that.approveNewDetail = data.data[0] || ""
 
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
+	                    that.$message.error(data.msg);
+	                }
+	            });
+			},
+			getApproveType : function(type){
+				var typeArray = ['','入版申请','项目信息修改'];
+				return typeArray[type]
+			},
+			getCompareClass : function(name){
+				if (this.approveOrgDetail[name] != this.approveNewDetail[name]) {
+					return 'diff'
+				};					
+			},
+			compareProjectName : function(index){
+				if (this.approveOrgDetail.requirementInfos[index].requirementName != this.approveNewDetail.requirementInfos[index].requirementName) {
+					return 'diff'
+				};	
+			},
+			/**
+			 * 时间转换
+			 * @param  {[type]} time [description]
+			 * @return {[type]}      [description]
+			 */
+			getTime : function(time){
+				var timeStr = new Date(time);
+				return timeStr.toLocaleString();
+			},
+			/**
+			* 获取审批记录
+			* @return {[type]} [description]
+			*/
+			getApproveHistory : function(){
+	            var that  = this;
+	            var url = "/api/dlmanagementtool/apply/applyLog"
+	            var reqData = {
+	            	applyId : parseInt(this.approveId)
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == '0') {
+	                    that.approveHistory = data.data
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
+	                    that.$message.error(data.msg);
+	                }
+	            });
 			},
 			/**
 			 * 清空表单
@@ -235,8 +268,10 @@
 		},
 		beforeRouteEnter: function(to, from, next) {
         next(vm => {
-        		vm.pageFlage = vm.$route.name == 'myApprove' 
-
+        		vm.approveId = vm.$route.query.id
+        		vm.applyUuid = vm.$route.query.applyUuid
+        		vm.getApproveDetail();
+        		vm.getApproveHistory();
 	        });
 	    }
 	}
@@ -266,5 +301,8 @@
 		padding-left: 20px;
 		background-color: #efefef;
 		border-radius: 3px;
+	}
+	.diff{
+		color: red;
 	}
 </style>

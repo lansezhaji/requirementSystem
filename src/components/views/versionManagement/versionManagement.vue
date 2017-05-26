@@ -283,7 +283,11 @@
             }) => {
                 if (ok && data.status == '0') {
                     that.versionTypeList = data.data
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                }  else {
                     that.$message.error(data.msg);
                 }
             });
@@ -317,7 +321,11 @@
                   if (ok && data.status == '0') {
                       that.returnData = data.data
                       that.versionList= data.data.data;
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                       that.$message.error(data.msg);
                   }
             });
@@ -359,7 +367,11 @@
                       that.$message.success("保存成功");
                       that.addDialogVisible = false;
                       that.getVersionList();
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                       that.$message.error(data.msg);
                   }
             });
@@ -388,7 +400,11 @@
                       that.deleteDialogVisible = false;
                       that.$message.success("删除成功");
                       that.getVersionList();
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                       that.$message.error(data.msg);
                   }
             });
@@ -439,7 +455,11 @@
                   if (ok && data.status == '0') {
                       that.$message.success("修改成功");
                       that.getVersionList();
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
                       that.$message.error(data.msg);
                   }
             });

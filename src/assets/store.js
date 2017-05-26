@@ -9,17 +9,17 @@ Vue.use(Vuex)
 
 const state = {
   user : {
-  	name : "马俊",
-  	tocken : "majun@danlu.com"
+  	name : "",
+  	token : localStorage.getItem("token")
   }
 }
 
 const mutations = { 
-	login : function(name){
-		state.user.tocken = name
+	login : function(token){
+		state.user.token = token
 	},
 	logout : function(){
-		state.user.tocken = ""
+		state.user.token = ""
 	}
 }
 

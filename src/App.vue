@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     
-    <el-row v-if="this.$store.state.user.tocken">
+    <el-row v-if="this.$store.state.user.token">
       <el-col>
           <top-side></top-side>
       </el-col>

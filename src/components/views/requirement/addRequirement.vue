@@ -436,7 +436,11 @@
 	                	// this.$message.success('该名称可用');
 	                	
 	                	callback();
-	                } else {
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
 	                	// this.$message.error('需求名称已存在');
 	                  	callback(new Error('需求名称已存在'));
 	                }
@@ -538,7 +542,11 @@
             }) => {
                 	if (ok && data.status == '0') {
                     	that.initData.requirementList = data.data;
-                    } else {
+                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
                   		that.$message.error(data.msg);
                 	}
             });
@@ -591,7 +599,11 @@
                           }
                         })
                     };
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -621,7 +633,11 @@
                 if (ok && data.status == '0') {
                     that.initData.secondFunctionModule  = data.data
 
-                } else {
+                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
                   that.$message.error(data.msg);
                 }
             });
@@ -729,7 +745,11 @@
 		                if (ok && data.status == '0') {
 		                    that.$message.success("保存成功");
 		                    that.$router.replace("/requirementManagement");
-		                } else {
+		                }else if (data.status == -2 || data.status == -3) {
+		                  	this.$store.commit('logout');
+	   						localStorage.setItem("token","");
+	   						this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
 		                  that.$message.error(data.msg);
 		                }
 		            });
