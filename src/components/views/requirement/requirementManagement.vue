@@ -40,8 +40,8 @@
 				<el-form-item label="负责人：">
 					<el-select  size="small" v-model="orderForm.responsibleUserId"  placeholder="请选择">
 					    <el-option
-					      v-for="item in responsibleUserIdOption"
-					      :label="item.name"
+					      v-for="item in userList"
+					      :label="item.userName"
 					      :value="item.id"
 					      >
 					    </el-option>
@@ -114,7 +114,7 @@
       <el-col :span="4" >
         <el-button type="text" @click="toAdd"><i class="el-icon-plus"></i>新增</el-button>
         <el-button type="text" @click="dialogDeleteVisible = true">删除</el-button>
-        <el-button type="text" :disabled="groupEdit" @click="bulkEditVisible = true">批量编辑</el-button>
+        <el-button type="text" :disabled="groupEdit" @click="batchModifyRequire">批量编辑</el-button>
       </el-col>
       <el-col :span="20" style="text-align: right;">
          <el-button type="text" @click="exportSelectRequire">导出选择需求</el-button>
@@ -132,32 +132,39 @@
 </el-dialog>
 
 <!-- 批量编辑对话框 -->
- <el-dialog title="批量编辑需求" v-model="bulkEditVisible">
- <el-row>
-  <el-col :span="12">
-     <el-select v-model="bulkEditFirstValue" placeholder="请选择">
-        <el-option
-          v-for="item in bulkEditFirstOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-  </el-col>
-  <el-col :span="12">
-     <el-select v-model="bulkEditSecondValue" placeholder="请选择">
-        <el-option
-          v-for="item in bulkEditSecondOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-  </el-col>
- </el-row>
+ <el-dialog title="批量编辑需求" v-model="bulkEditVisible" size="tiny">
+ <el-form>
+  <el-form-item v-for="(item,index) in batchForm">
+      <el-col :span="8">
+         <el-select v-model="item.typeId" @change="batchTypeSelect(index)">
+           <el-option :value="type.id" :label="type.name" v-for="type in item.typeList"></el-option>
+         </el-select>
+      </el-col>
+      <el-col :span="4">
+        更新为：
+      </el-col>
+      <el-col :span="12">
+      <!-- 需求规划 -->
+        <el-select v-model="item.value" placeholder="请选择" v-if="item.typeId==1">
+            <el-option :value="type" :label="type" v-for="type in item.list"></el-option>
+        </el-select>
+        <el-select v-model="item.value" placeholder="请选择" v-if="item.typeId==2">
+            <el-option :value="type.id" :label="type.name" v-for="type in item.list"></el-option>
+        </el-select>
+        <el-select v-model="item.value" placeholder="请选择" v-if="item.typeId==3">
+            <el-option :value="type.id" :label="type.userName" v-for="type in item.list"></el-option>
+        </el-select>
+        <el-select v-model="item.value" placeholder="请选择" v-if="item.typeId==4">
+            <el-option :value="type" :label="type" v-for="type in item.list"></el-option>
+        </el-select>
+      </el-col>    
+  </el-form-item>
+
+ </el-form>
+
  
   <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="initQueryData">确 定</el-button>
+    <el-button type="primary" @click="batchModify()">确 定</el-button>
     <el-button @click="bulkEditVisible = false">取 消</el-button>
   </span>
 </el-dialog>
@@ -302,8 +309,9 @@
         responsibleUserIdOption:[ ],
         requirementStatusOption:[ ],
         functionModuleFirst: [ ],
-        requirementPlanOption:[ ]
-        
+        requirementPlanOption:[ ],
+        batchForm : [],
+        userList : [],//用户列表
       }
       
     },
@@ -450,8 +458,143 @@
        * [bulkEdit 搜索]
        * @return {[type]} [description]
        */
-      bulkEdit() {
+      getUserList : function(userName){
+        var that = this;
 
+        var reqData = {
+          curPage : 1,
+          size : 5,
+          data:[{
+            userName    : userName || "",      
+          }]
+        }
+        var url = "/api/dlmanagementtool/user/searchUserListInPage"
+          this.$http.post(url,reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == '0') {
+                    this.userList =  data.data.data;
+                  }else if (data.status == -2 || data.status == -3) {
+                    this.$store.commit('logout');
+                    localStorage.setItem("token","");
+                    this.$message.error("登录信息已经失效，请重新登录");
+                  }  else {
+                    that.$message.error(data.msg);
+                  }
+              });
+      },
+      /**
+       * 批量修改弹窗
+       * @return {[type]} [description]
+       */
+      batchModifyRequire : function(){
+        this.resetBatchForm();
+        this.bulkEditVisible = true
+      },
+      /**
+       * 批量操作选项
+       * @return {[type]} [description]
+       */
+      batchTypeSelect : function(index){
+        var that = this;
+        //去除其他选项中的重复项
+        this.batchForm.forEach(function(item,i){
+            if (i != index) {
+                item.typeList.forEach(function(type,order){
+                      if (type.id == that.batchForm[index].typeId) {
+                      item.typeList.splice(order,1);
+                  };
+                })
+            };
+        })
+        // 填充选项列表
+        switch(that.batchForm[index].typeId){
+
+          case 1: this.batchForm[index].list = that.requirementPlanOption; //需求规划
+                  break;
+          case 2: this.batchForm[index].list = that.requirementStatusOption; //需求进度
+                  break;
+          case 3: this.batchForm[index].list = that.userList; 
+                  break;
+          case 4: this.batchForm[index].list = [1,2,3,4,5,6];
+                  break;
+        }
+        
+      },
+      /**
+       * 批量修改
+       * @return {[type]} [description]
+       */
+      batchModify :function(){
+        var that = this;
+          var reqData = [];
+         
+          that.multipleSelection.forEach(function(require){
+            var modifyObj = {
+                id : require.id
+            };
+            that.batchForm.forEach(function(item){
+              if (item.typeId ==1 && item.value) {
+                modifyObj.requirementPlan = item.value
+              }else if (item.typeId ==2 && item.value) {
+                modifyObj.requirementStatusId = item.value
+              }else if (item.typeId ==3 && item.value) {
+                // modifyObj.requirementPlan = item.value
+              }else if (item.typeId ==4 && item.value) {
+                modifyObj.priority = item.value
+              }
+            })
+            reqData.push(modifyObj)
+          })
+          console.log("批量修改："+reqData);
+          var url = "/api/dlmanagementtool/requirement/batchEdit"
+          this.$http.post(url,reqData).then(({
+              data,
+              ok,
+              statusText
+          }) => {
+              if (ok && data.status == '0') {
+                  that.$message.success("修改成功");
+                  that.queryRequeryList();
+                  that.bulkEditVisible = false;
+              }else if (data.status == -2 || data.status == -3) {
+                  this.$store.commit('logout');
+                  localStorage.setItem("token","");
+                  this.$message.error("登录信息已经失效，请重新登录");
+              }  else {
+                  that.$message.error(data.msg);
+              }
+          });
+         
+      },
+      /**
+       * 初始化批量操作表单
+       * @return {[type]} [description]
+       */
+      resetBatchForm : function(){
+          this.batchForm = [{
+              typeList:[{id : 1 ,name :'需求规划'},{id : 2 ,name :'需求进度'},{id : 3 ,name :'负责人'},{id : 4 ,name :'优先级'}],
+              typeId : "",
+              list : [],
+              value : "",
+            },{
+              typeList:[{id : 1 ,name :'需求规划'},{id : 2 ,name :'需求进度'},{id : 3 ,name :'负责人'},{id : 4 ,name :'优先级'}],
+              typeId : "",
+              list : [],
+              value : "",
+            },{
+              typeList:[{id : 1 ,name :'需求规划'},{id : 2 ,name :'需求进度'},{id : 3 ,name :'负责人'},{id : 4 ,name :'优先级'}],
+              typeId : "",
+              list : [],
+              value : "",
+            },{
+              typeList:[{id : 1 ,name :'需求规划'},{id : 2 ,name :'需求进度'},{id : 3 ,name :'负责人'},{id : 4 ,name :'优先级'}],
+              typeId : "",
+              list : [],
+              value : "",
+            }]
       },
       /**
        * 导出选择的需求
@@ -679,6 +822,7 @@
         vm.initQueryData();
         vm.getRequirePlan();
         vm.queryRequeryList();
+        vm.getUserList();
       });
     }
   }

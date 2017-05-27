@@ -26,9 +26,25 @@
     },
    methods: {
    		logout :function(){
-   			this.$store.commit('logout');
-   			localStorage.setItem("token","");
+   			
 
+			var url = '/api/dlmanagementtool/login/logout';
+            this.$http.get(url).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                if (ok && data.status == '0') {
+                	this.$store.commit('logout');
+   					localStorage.setItem("token","");
+   					this.$message.success('注销成功');
+                } else {
+                	that.$message.error(data.msg);
+                }
+            });
+
+
+   			
    		}
     }
   }

@@ -50,25 +50,27 @@
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="需求内容：" class="userMessage" >
-							<el-row v-for="content in approveForm.requirementInfos">
+						<el-form-item label="需求内容：" class="userMessage" required>
+							<el-row v-for="(content,index) in approveForm.requirementInfos">
 								<el-col :span="8">
-									<el-input v-model="content.requirementName"></el-input>	
+									{{content.requirementName}}
 								</el-col>
 								<el-col :span="3" :offset="1" >
 									<span>产品经理：</span>
 									<span>{{content.responsibleUserName}}</span>
 								</el-col>
-								<el-col :span="4" :offset="1">
+								<el-col :span="4" :offset="1" v-if="content.functionBugId">
 									<span>Bugzilla ID：</span>
 									<span>{{content.functionBugId}}</span>
 								</el-col>
 								<el-col :span="4">
-									<el-button type="primary" size="small">增加需求</el-button>
-									<el-button type="default" size="small">删除</el-button>
+									<el-button type="default" size="small" @click="deleteRequireMent(index)">删除</el-button>
 								</el-col>
 							</el-row>
-							
+							<el-autocomplete v-model="approveForm.requirementName" 
+							:fetch-suggestions="querySearch"  placeholder="最多60个字符" 
+							:trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
+							<el-button type="primary" size="small" @click="addRequireMent" :disabled="!approveForm.requireTemp">增加需求</el-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -165,6 +167,23 @@
 		        }
 
 		    }
+		     var requireNameValid = (rule, value, callback) => {
+				if (!value || this.$route.query.id)  {
+				  callback();
+				} else {
+					var url = '/api/dlmanagementtool/requirement/checkNameRepeat';
+					var reqData = {
+						requirementName : value
+					}
+		            this.$http.post(url,reqData).then(({ data, ok, statusText }) => {
+		                if (ok && data.status == '0' && !data.data) {
+		                	callback();
+		                }else{
+		                  	callback(new Error('暂时没写，记得调一下'));
+		                }
+		            });
+				}
+			}
 			var data = {
 				pageFlage : false,//false :表示我发起的申请，true表示我审批的
 				// isEditMode : true, //是否是编辑模式哦
@@ -173,7 +192,10 @@
 					applyType : 1, //审批类型
 					projectId : "",//项目ID，仅在修改项目信息时需要
 					projectName : "", //审批名称
+					requirementName : "",//缓存需求名称
+					requireTemp : "",
 					projectBranch : "",//审批分支
+
 					approveContent : [{
 						title:"",
 						productManage : "",
@@ -193,7 +215,7 @@
 					versionId :"",
 					projectUserName : "",
 					projectOthers : "",//
-					requirementInfos : "",
+					requirementInfos : [ ],
 				},
 				tableData: [ ],
 				versionTypeList : [],//版本类型列表
@@ -204,6 +226,8 @@
 					}],
 					projectName: [{
 						required:true,message:"该项为必填项",trigger:'blur'
+					},{
+						validator:requireNameValid ,trigger:'blur'
 					}],
 					projectBranch: [{
 						required:true,message:"该项为必填项",trigger:'blur'
@@ -313,17 +337,39 @@
 						})
 
 						var projectName = ""
-						that.requireLise.forEach(function(item){
-							if (item.id == that.approveForm.projectId) {
-								projectName = item.projectName
-							};
+						if (that.approveForm.applyType == 1) {
+							projectName = that.approveForm.projectName
+						}else{
+							that.requireLise.forEach(function(item){
+								if (item.id == that.approveForm.projectId) {
+									projectName = item.projectName
+								};
+							})							
+						}
+
+						if (projectName == "") {
+							this.$message.error("项目名称不能为空");
+							return false;
+						};
+						// 获取需求列表
+						var requireIds = new Set();
+						this.approveForm.requirementInfos.forEach(function(item){
+							requireIds.add(item.id);
 						})
+						var requireArr = [];
+						requireIds.forEach(function(item){
+							requireArr.push(item)
+						})
+						if (requireArr.length<=0) {
+							this.$message.error("请至少选择一个需求");
+							return false;
+						};
 						var reqData =  {
 							 id : (that.approveForm.applyType == 2) ? that.approveForm.projectId : "",
 						     applyType: that.approveForm.applyType,
 						     projectName : projectName,
 						     projectBranch: that.approveForm.projectBranch,
-						     requirementIds: "1,2",
+						     requirementIds: requireArr.toString(),
 						     startTime: that.approveForm.startTime,
 						     testTime: that.approveForm.testTime,
 						     qaTime: that.approveForm.qaTime,
@@ -370,6 +416,10 @@
 			clearForm : function(){
 				this.$refs['approveForm'].resetFields();
 			},
+			/**
+			 * 获取项目详细信息
+			 * @return {[type]} [description]
+			 */
 			getProjectDetail : function(){
 	            var that  = this;
 	            var url = "/api/dlmanagementtool/apply/getApplyById"
@@ -444,7 +494,90 @@
 						that.approveForm.projectOthers = "";
 						that.approveForm.requirementInfos = "";
 				}
-			}
+			},
+			/**
+			 * 添加需求
+			 */
+			addRequireMent :function(){
+				var that = this;
+				var isRepeat = false;
+				 //先判断是否重复
+				 this.approveForm.requirementInfos.forEach(function(item){
+				 	if (item.id == that.approveForm.requireTemp.id) {
+				 		that.$message.error("该需求已经在列表中，请勿重复添加");
+				 		isRepeat = true;
+				 	};
+				 })
+				 if (!isRepeat) {
+						// 加入列表
+						this.approveForm.requirementInfos.push({
+							id : that.approveForm.requireTemp.id,
+							requirementName : that.approveForm.requireTemp.value,
+							responsibleUserName:that.approveForm.requireTemp.proposeUserName,
+							functionBugId : that.approveForm.requireTemp.functionBugId
+						})
+				 };
+
+				that.approveForm.requirementName = "";
+				that.approveForm.requireTemp = "";
+			},
+			/**
+			 * 删除需求
+			 * @param  {[type]} index [description]
+			 * @return {[type]}       [description]
+			 */
+			deleteRequireMent : function(index){
+				if (this.approveForm.requirementInfos.length>1) {
+					this.approveForm.requirementInfos.splice(index,1);
+				};
+				
+			},
+			querySearchItem : function(index){
+				console.log("1111"+index);
+			},
+			/**
+	         * 使用店铺联想输入
+	         * @param  {[type]}   queryString 输入的值
+	         * @param  {Function} cb          即callback,传入筛选后的数组
+	         * @return {[type]}               [description]
+	         */
+	        querySearch(queryString, cb) {
+	            var that = this;
+	            that.associateList = [];
+	            this.approveForm.requireTemp = ""
+	            var url = "/api/dlmanagementtool/requirement/fuzzyQueryRequirement";
+	            var reqData = {
+	                requirementName: queryString,
+	            };
+
+	            this.$http.post(url, reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == 0) {
+	                	var list = data.data;
+	                    list.forEach(function(item) {
+	                        var restaurant = {};
+	                        restaurant.value = item.requirementName;
+	                        restaurant.id = item.id;
+	                        restaurant.proposeUserName = item.proposeUserName;
+	                        restaurant.functionBugId = item.functionBugId
+	                        that.associateList.push(restaurant);
+	                    })
+	                    cb(that.associateList);
+	                }
+	            });
+
+	        },
+	        /**
+	         * 联想选中
+	         * @param  {[type]} item 选中的条目
+	         */
+	        handleSelect(item) {
+	        	this.approveForm.requireTemp = item;
+	        	console.log(item);
+	        },
 		},
 		beforeRouteEnter: function(to, from, next) {
         next(vm => {

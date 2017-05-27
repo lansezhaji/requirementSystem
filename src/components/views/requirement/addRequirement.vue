@@ -304,18 +304,18 @@
 	    		<el-row>
 	    			<el-col :span="12" style="text-align:left">
 	    				<el-form-item label="版本类型：">
-	    					WEB
+	    					{{requireDetail.requirementDisplay}}
 	    				</el-form-item>
 	    			</el-col>
 	    			<el-col :span="12" style="text-align:left">
 	    				<el-form-item label="版本号：">
-	    					release-2017.01
+	    					{{requireDetail.versionName}}
 	    				</el-form-item>
 	    			</el-col>
 	    		</el-row>
 	    		<el-col>
 	    			<el-form-item label="项目分支：" >
-	    				feature_pandora
+	    				{{requireDetail.branchName}}
 	    			</el-form-item>
 	    		</el-col>	
 	    		<el-col>
@@ -427,21 +427,10 @@
 				var reqData = {
 					requirementName : value
 				}
-	            this.$http.post(url,reqData).then(({
-	                data,
-	                ok,
-	                statusText
-	            }) => {
+	            this.$http.post(url,reqData).then(({ data, ok, statusText }) => {
 	                if (ok && data.status == '0' && !data.data) {
-	                	// this.$message.success('该名称可用');
-	                	
 	                	callback();
-	                }else if (data.status == -2 || data.status == -3) {
-	                  	this.$store.commit('logout');
-   						localStorage.setItem("token","");
-   						this.$message.error("登录信息已经失效，请重新登录");
-	                  }  else {
-	                	// this.$message.error('需求名称已存在');
+	                }else{
 	                  	callback(new Error('需求名称已存在'));
 	                }
 	            });

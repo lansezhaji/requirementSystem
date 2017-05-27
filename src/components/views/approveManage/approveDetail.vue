@@ -37,11 +37,11 @@
 									<el-col :span="12">
 										{{require.requirementName}}
 									</el-col>
-									<el-col :span="4">
+									<el-col :span="6">
 										<span>产品经理：</span>
 										{{require.responsibleUserName}}
 									</el-col>
-									<el-col :span="4">
+									<el-col :span="6" v-if="require.functionBugId">
 										<span>Bugzilla ID：</span>
 										{{require.functionBugId}}
 									</el-col>
