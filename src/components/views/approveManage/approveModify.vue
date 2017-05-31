@@ -43,6 +43,11 @@
 											{{approveOrgDetail.versionName}}
 										</el-col>
 								</el-form-item>
+								<el-form-item label="分支名称：" class="userMessage" >
+										<el-col >
+											{{approveOrgDetail.projectBranch}}
+										</el-col>
+								</el-form-item>
 								<el-form-item label="需求内容：" class="userMessage" >
 										<el-col v-for="require in approveOrgDetail.requirementInfos">
 											{{require.requirementName}}
@@ -97,6 +102,11 @@
 									<el-col :class="getCompareClass('versionName')">
 										{{approveNewDetail.versionName}}
 									</el-col>
+								</el-form-item>
+								<el-form-item label="分支名称：" class="userMessage" >
+										<el-col :class="getCompareClass('projectBranch')">
+											{{approveNewDetail.projectBranch}}
+										</el-col>
 								</el-form-item>
 								<el-form-item label="需求内容：" class="userMessage" >
 										<el-col v-for="(require,index) in approveNewDetail.requirementInfos" :class="compareProjectName(index)">

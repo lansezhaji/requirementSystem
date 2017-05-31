@@ -54,7 +54,7 @@
 							</el-select>						
 						</el-form-item>
 					</el-col>
-					<el-col :span="8" v-if="pageFlage">
+					<el-col :span="8" v-if="!pageFlage">
 						<el-form-item label="申请人：" class="userMessage">
 							<el-input v-model="approveForm.approvePersion"></el-input>					
 						</el-form-item>
@@ -191,7 +191,7 @@
 	export default{
 		data : function(){
 			var data = {
-				pageFlage : false,//false :表示我发起的申请，true表示我审批的
+				pageFlage : true,//true :表示我发起的申请，false表示我审批的
 				approveForm:{
 					approveNo:"",
 					approveType : "",
@@ -256,9 +256,9 @@
 			    that.approveForm.versionId = "";
 	            
 	            if (this.pageFlage) {
-	            	var url = '/api/dlmanagementtool/apply/approvedApply';
-	            }else{
 	            	var url = '/api/dlmanagementtool/apply/proposedApply';
+	            }else{
+	            	var url = '/api/dlmanagementtool/apply/approvedApply';
 	            }
 	            var reqData ={
 	            	applyCode 		: this.approveForm.approveNo || null, //单号

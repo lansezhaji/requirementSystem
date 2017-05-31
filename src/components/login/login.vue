@@ -70,6 +70,16 @@
 		                	that.$message.success(data.msg);
 						    localStorage.setItem("token",data.data.token);
 						    localStorage.setItem("name",data.data.userName);
+						    // 判断用户权限
+						    if (data.data.requireAdmin) {
+				    	        that.$router.push({
+						          name:'requirementManagement' 
+						        })
+						    }else{
+						    	that.$router.push({
+						          name:'versionList' 
+						        })
+						    }
 		                } else {
 		                	that.$message.error(data.msg);
 		                }

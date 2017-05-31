@@ -9,7 +9,7 @@
     <div class="retrieval  criteria Style">
     	<el-row>
 	      <el-col :span="2">
-	        <el-button type="text" @click="dialogAddVisible = true"><i class="el-icon-plus"></i>新增</el-button>
+	        <el-button type="text" @click="addVersionProperty"><i class="el-icon-plus"></i>新增</el-button>
 	        <!-- <el-button type="text" @click="dialogEditVisible = true">编辑</el-button> -->
 	      </el-col>
 	      <el-col :span="22" style="text-align: right;">
@@ -172,7 +172,7 @@
         multipleSelection: [],
         rules:{
            versionType:[{
-              required:true,message:"版本类型不能为空",trigger:'blur,change',
+              required:true,message:"版本类型不能为空",trigger:'blur',
 
            },{
                validator:versionNameValid,trigger:'blur'
@@ -297,6 +297,14 @@
                   that.$message.error(data.msg);
               }
           });
+      },
+      /**
+       * 新增版本类型
+       */
+      addVersionProperty : function(){
+        this.addForm.versionType = "";
+        this.addForm.comment = "";
+        this.dialogAddVisible = true
       },
       /**
        * 编辑版本类型

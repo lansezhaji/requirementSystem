@@ -12,7 +12,7 @@
   	<el-form :model="orderForm" ref="orderForm"  label-width="160px" class="query">
     	<el-row type="flex" class="row-bg" justify="right">
     	  	<el-col :span="6">
-    	  	<el-form-item label="功能平台：">
+    	  	<el-form-item label="功能平台：" prop="productPlatform">
 				<el-select size="small" v-model="orderForm.productPlatform" multiple placeholder="请选择">
 				    <el-option
 				      v-for="item in functionalPlatformOption"
@@ -24,7 +24,7 @@
 		  	</el-form-item>
     		</el-col>
 			<el-col :span="6">
-				<el-form-item label="功能类型：">
+				<el-form-item label="功能类型：" prop="functionType">
 					<el-select v-model="orderForm.functionType" size="small"  placeholder="请选择">
               <el-option label="全部" value=""></el-option>
 					    <el-option
@@ -37,8 +37,9 @@
 				</el-form-item>
     		</el-col>
     		<el-col :span="6">
-				<el-form-item label="负责人：">
+				<el-form-item label="负责人：" prop="responsibleUserId">
 					<el-select  size="small" v-model="orderForm.responsibleUserId"  placeholder="请选择">
+              <el-option label="全部" value=""></el-option>
 					    <el-option
 					      v-for="item in userList"
 					      :label="item.userName"
@@ -49,7 +50,7 @@
 				</el-form-item>
     		</el-col>
         <el-col :span="6">
-        <el-form-item label="需求进度：">
+        <el-form-item label="需求进度：" prop="requirementStatus">
           <el-select  size="small" v-model="orderForm.requirementStatus"  placeholder="请选择">
               <el-option label="全部" value=""></el-option>
               <el-option
@@ -64,7 +65,7 @@
     	</el-row>
     	<el-row type="flex" class="row-bg" justify="right" style="margin-top:20px;">
     	  	<el-col :span="6">
-    	  	<el-form-item label="功能分类：">
+    	  	<el-form-item label="功能分类：" prop="functionModuleFirst">
             <el-select  size="small" v-model="orderForm.functionModuleFirst"  placeholder="请选择">
               <el-option label="全部" value=""></el-option>
               <el-option
@@ -78,7 +79,7 @@
 		  	  </el-form-item>
     		</el-col>
 			<el-col :span="6">
-				<el-form-item label="需求规划：">
+				<el-form-item label="需求规划：" prop="requirementPlan">
 					<el-select size="small" v-model="orderForm.requirementPlan"  placeholder="请选择">
               <el-option label="全部" value=""></el-option>
 					    <el-option
@@ -91,7 +92,7 @@
 				</el-form-item>
     		</el-col>
     		<el-col :span="6">
-				<el-form-item label="需求名称:" >
+				<el-form-item label="需求名称:" prop="requirementName">
           <el-autocomplete size="small" :maxlength="parseInt(100)"
                 class="inline-input"
                 v-model="orderForm.requirementName"
@@ -113,11 +114,11 @@
     <el-row>
       <el-col :span="4" >
         <el-button type="text" @click="toAdd"><i class="el-icon-plus"></i>新增</el-button>
-        <el-button type="text" @click="dialogDeleteVisible = true">删除</el-button>
+        <el-button type="text" :disabled="groupEdit" @click="dialogDeleteVisible = true">删除</el-button>
         <el-button type="text" :disabled="groupEdit" @click="batchModifyRequire">批量编辑</el-button>
       </el-col>
       <el-col :span="20" style="text-align: right;">
-         <el-button type="text" @click="exportSelectRequire">导出选择需求</el-button>
+         <el-button type="text" :disabled="groupEdit" @click="exportSelectRequire">导出选择需求</el-button>
         <el-button type="text" @click="exportAllRequire">导出全部需求</el-button>
       </el-col>
     </el-row>
@@ -171,8 +172,9 @@
 <!-- 表格 -->
     	<el-table @sort-change="sortChange"
     :data="tableData.data"
+    :stripe="true"
     border @selection-change="handleSelectionChange"
-    style="width: 100%;text-align:left">
+    class="requireClass" >
     <el-table-column
       type="selection"
       min-width="55">
@@ -185,15 +187,15 @@
     <el-table-column
       prop="functionModuleFirst"
       label="功能分类"
-      min-width="180">
+      min-width="100">
         <template scope="scope">
-            {{scope.row.functionModuleFirstName}}  /{{scope.row.functionModuleSecondName}}
+            {{scope.row.functionModuleFirstName}}-{{scope.row.functionModuleSecondName}}
         </template>
     </el-table-column>
         <el-table-column label="功能平台" style="font-size:12px;">
           <el-table-column v-for="it in functionalPlatformOption" 
-            :label="it.name" 
-            min-width="58">
+            :label="filterFunctionList(it.id)" 
+            min-width="55">
             <template scope="scope" >
               <i :class="getProductCheck(scope.row.productPlatformId,it.id)"></i>
             </template>
@@ -210,6 +212,7 @@
        <el-table-column
           prop="requirementName"
           label="需求名称"
+          show-overflow-tooltip
           min-width="200">
         </el-table-column>
 
@@ -217,23 +220,32 @@
           prop="priority"
           label="优先级"
           min-width="40" >
+          <template scope="scope">
+            <!-- <el-col :class="priorityClass(scope.row.priority)"> -->
+            <el-col >
+              {{scope.row.priority}}
+            </el-col>
+          </template>
         </el-table-column>
 
          <el-table-column
           prop="requirementPlan"
           label="需求规划"
-          min-width="80">
+          show-overflow-tooltip
+          min-width="120">
         </el-table-column>
 
         <el-table-column
           prop="requirementStart"
           label="需求启动"
-          min-width="80">
+          show-overflow-tooltip
+          min-width="120">
         </el-table-column>
 
         <el-table-column
           prop="responsibleUserName"
           label="负责人"
+          show-overflow-tooltip
           min-width="100">
         </el-table-column>
 
@@ -241,6 +253,12 @@
           prop="requirementStatusName"
           label="需求进度"
           min-width="100">
+          <template scope="scope">
+            <!-- <el-col :class="requireStatusClass(scope.row.requirementStatusName)"> -->
+            <el-col >
+              {{scope.row.requirementStatusName}}
+            </el-col>
+          </template>
         </el-table-column>
 
         <el-table-column
@@ -253,11 +271,6 @@
       </el-table-column>
   
   </el-table>
-
-<!--    <el-pagination :current-page="parseInt(tableData.currentPage)" style="float:right;" 
-                  @current-change="pageChange"  :total="tableData.totalCount" @
-                 layout="total, prev, pager, next, jumper" >
-    </el-pagination>    -->
     <el-pagination
       @current-change="pageChange"
       :current-page.sync="tableData.currentPage"
@@ -312,6 +325,7 @@
         requirementPlanOption:[ ],
         batchForm : [],
         userList : [],//用户列表
+        associateList : [],//联想列表
       }
       
     },
@@ -411,7 +425,7 @@
             data:[{ 
                 productPlatformId : this.orderForm.productPlatform.toString(),
                 functionTypeId : this.orderForm.functionType,
-                // this.orderForm.responsibleUserId,                               --------------------暂时没写
+                responsibleUserId : this.orderForm.responsibleUserId, 
                 requirementStatusId : this.orderForm.requirementStatus,
                 functionModuleFirstId :this.orderForm.functionModuleFirst,//功能一级分级
                 requirementPlan : this.orderForm.requirementPlan, //需求规划
@@ -518,7 +532,7 @@
                   break;
           case 3: this.batchForm[index].list = that.userList; 
                   break;
-          case 4: this.batchForm[index].list = [1,2,3,4,5,6];
+          case 4: this.batchForm[index].list = [1,2,3,4,5];
                   break;
         }
         
@@ -611,21 +625,7 @@
           })
           var selectListStr = selectListArr.toString();
           var url = "/api/dlmanagementtool/requirement/exportExcel/"+selectListStr
-          this.$http.get(url).then(({
-              data,
-              ok,
-              statusText
-          }) => {
-              if (ok && data.status == '0') {
-                  that.$message.success("导出成功！");
-              }else if (data.status == -2 || data.status == -3) {
-                      this.$store.commit('logout');
-                      localStorage.setItem("token","");
-                      this.$message.error("登录信息已经失效，请重新登录");
-                    }  else {
-                  that.$message.error(data.msg);
-              }
-          });
+          window.open(url);
       },
       /**
        * 导出全部需求
@@ -633,22 +633,8 @@
        */
       exportAllRequire: function(){
           var that = this;
-          var url = "/api/dlmanagementtool/requirement/exportAllExcel"
-          this.$http.get(url).then(({
-              data,
-              ok,
-              statusText
-          }) => {
-              if (ok && data.status == '0') {
-                  that.$message.success("导出成功");
-              }else if (data.status == -2 || data.status == -3) {
-                      this.$store.commit('logout');
-                      localStorage.setItem("token","");
-                      this.$message.error("登录信息已经失效，请重新登录");
-                    }  else {
-                  that.$message.error(data.msg);
-              }
-          });
+          var url = "/api/dlmanagementtool/export/exportAllExcel"
+          window.open(url);
       },
       /**
        * 批量删除
@@ -685,9 +671,35 @@
               }
           });
       },
+      /**
+       * 翻页
+       * @param  {[type]} val [description]
+       * @return {[type]}     [description]
+       */
        pageChange : function(val){
         this.orderForm.curPage = val;
           this.queryRequeryList(val)
+      },
+      filterFunctionList : function(id){
+          var functionObj = {
+              75 : "W-终",
+              76 : "W-经",
+              77 : "A-终",
+              78 : "A-经",
+              79 : "运营",
+              109 : "运维",
+              110 : "其他",
+          }
+          return functionObj[id]
+      },
+      /**
+       * 根据优先级标注颜色
+       * @param  {[type]} status [description]
+       * @return {[type]}        [description]
+       */
+      priorityClass : function(status){
+        var classArray = ['','first','second','third'];
+        return classArray[status];
       },
       /**
        * [sortChange 排序---改变传给后端的值]
@@ -745,17 +757,7 @@
        * @return {[type]}      [description]
        */
       handleSelect:function(item) {
-        this.orderForm.sellerName = item.companyName;
-        let reqData = {
-         Money:'',
-        Date:'', //这里最好换个变量名 date是js保留字
-        Ratio:''
-
-        }
-        this.$http.post('http://ip:port/loan/profit', reqData).then(({data})=>{
-          //data就是你想要的 数据
-          console.log(data)
-        })
+          this.orderForm.requirementName = item.value;
       },
       /**
        * [viewDetail 查看详情]
@@ -782,31 +784,33 @@
         /**
        * 模糊查询
        */
-      querySearch :function(queryString, call) {
-        var that = this;
-        //此处去请求后端的数据
-        that.fuzzyList='';
-        let reqData = {
-          companyName:queryString
-        }
-//         that.$http.post('/dladmin/present/getBizNameList.html',reqData,{emulateJSON:true}
-// ).then( ({data,ok,statusText}) => {
-//            if (ok && !data.status) {
-//             that.fuzzyList = data;
-//              // 调用 callback 返回建议列表的数据
-//             that.fuzzyList.forEach(function (item, index) {
-//               item.value=item.companyName
-//             })
-//             call(that.fuzzyList);
-//           }else{
-//              this.$message({
-//                       message: data.msg,
-//                       type: 'warning'
-//                     });
-//           }
-//         })
+       querySearch(queryString, cb) {
+              var that = this;
+              that.associateList = [];
 
-      },
+              var url = "/api/dlmanagementtool/requirement/fuzzyQueryRequirement";
+              var reqData = {
+                  requirementName: queryString,
+              };
+
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.requirementName;
+                          restaurant.id = item.id;
+                          that.associateList.push(restaurant);
+                      })
+                      cb(that.associateList);
+                  }
+              });
+
+          },
       //获得二级联动的mock
       getMockData :function() {
         this.$http.get('http://localhost:3000/functionModuleFirstOption').then(({data}) => {
@@ -852,5 +856,27 @@
  }
  .bread-title .el-breadcrumb__item__inner{
   font-size: 18px;
+  }
+  .first{
+    background-color: red ;
+    color: white;
+    text-align: center;
+  }
+  .second{
+    background-color: orange;
+    text-align: center;
+  }
+  .third {
+    background-color: yellow;
+    text-align: center;
+  }
+  .requireClass {
+    width: 100%;
+    text-align: left;
+  }
+
+  .el-table .cell, .el-table th>div{
+    padding-left: 15px !important;
+    padding-right: 5px !important;
   }
 </style>

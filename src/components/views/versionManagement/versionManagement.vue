@@ -89,24 +89,24 @@
     </div>
 <!-- 编辑栏 -->
       <el-row style="margin-top:20px;">
-        <el-col :span="4">
-          <el-button type="text" @click="addDialogVisible = true"><i class="el-icon-plus"></i>新增</el-button>
+        <el-col :span="2">
+          <el-button type="text" @click="addVersion"><i class="el-icon-plus"></i>新增</el-button>
           <el-dialog
             title="新增版本号"
             :visible.sync="addDialogVisible"
             size="tiny" >
             <el-form :model="addForm" label-width="150px" ref="addForm">
-              <el-form-item label="版本类型：" style="text-align:left" >
+              <el-form-item label="版本类型：" style="text-align:left" prop="versionTypeName">
                 <el-select size="small" v-model="addForm.versionType" placeholder="请选择">
                     <el-option :label="type.versionTypeName" :value="type.id" v-for="type in versionTypeList"></el-option>
                 </el-select>
               </el-form-item>  
-              <el-form-item label="版本号：" >
+              <el-form-item label="版本号：" prop="versionName">
                 <el-col :span="16">
                   <el-input v-model="addForm.versionName"></el-input>
                 </el-col>
               </el-form-item>
-              <el-form-item label="版本号状态：" style="text-align:left">
+              <el-form-item label="版本号状态：" style="text-align:left" prop="versionStatus">
                  <el-select size="small" v-model="addForm.versionStatus" placeholder="请选择">
                     <el-option label="启用" value="1"></el-option>
                     <el-option label="上线" value="2"></el-option>
@@ -114,7 +114,7 @@
                     <el-option label="挂起" value="4"></el-option>
                   </el-select>
               </el-form-item>
-              <el-form-item label="计划上线时间：" style="text-align:left" >
+              <el-form-item label="计划上线时间：" style="text-align:left" prop="planTime">
                     <el-date-picker
                       v-model="addForm.planTime"
                       align="right"
@@ -129,8 +129,48 @@
               <el-button type="primary" @click="createVersion">确 定</el-button>
             </span>
           </el-dialog>
+
+          <el-dialog
+            title="新增版本号"
+            :visible.sync="editDialogVisible"
+            size="tiny" >
+            <el-form :model="editForm" label-width="150px" ref="addForm">
+              <el-form-item label="版本类型：" style="text-align:left" prop="versionTypeName">
+                <el-select size="small" v-model="editForm.versionType" placeholder="请选择">
+                    <el-option :label="type.versionTypeName" :value="type.id" v-for="type in versionTypeList"></el-option>
+                </el-select>
+              </el-form-item>  
+              <el-form-item label="版本号：" prop="versionName">
+                <el-col :span="16">
+                  <el-input v-model="editForm.versionName"></el-input>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="版本号状态：" style="text-align:left" prop="versionStatus">
+                 <el-select size="small" v-model="editForm.versionStatus" placeholder="请选择">
+                    <el-option label="启用" value="1"></el-option>
+                    <el-option label="上线" value="2"></el-option>
+                    <el-option label="锁定" value="3"></el-option>
+                    <el-option label="挂起" value="4"></el-option>
+                  </el-select>
+              </el-form-item>
+              <el-form-item label="计划上线时间：" style="text-align:left" prop="planTime">
+                    <el-date-picker
+                      v-model="editForm.planTime"
+                      align="right"
+                      type="datetime"
+                      placeholder="选择日期" >
+                    </el-date-picker>
+              </el-form-item>
+            </el-form>
+            
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="editDialogVisible = false">取 消</el-button>
+              <el-button type="primary" @click="updateVersion">确 定</el-button>
+            </span>
+          </el-dialog>
+
         </el-col>
-        <el-col :span="20" style="text-align: right;">
+        <el-col :span="22" style="text-align: right;">
            <el-button type="text"  @click="changeVersionStatus(1)">启用</el-button>
            <el-button type="text"  @click="changeVersionStatus(2)">上线</el-button>
            <el-button type="text"  @click="changeVersionStatus(3)">锁定</el-button>
@@ -191,7 +231,7 @@
         </el-table-column>
         <el-table-column label="操作">
             <template scope="scope">
-              <el-button type="text">编辑</el-button>
+              <el-button type="text" @click="editVersion(scope.row)">编辑</el-button>
               <el-button type="text" @click="deleteVersionDialog(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -251,8 +291,15 @@
         versionList: [ ],
         multipleSelection: [],
         addDialogVisible:false,
+        editDialogVisible : false,
         deleteDialogVisible:false,
         addForm:{
+          versionType : '',
+          versionName : '',
+          planTime : '',
+          versionStatus: '1'
+        },
+        editForm:{
           versionType : '',
           versionName : '',
           planTime : '',
@@ -375,6 +422,25 @@
                       that.$message.error(data.msg);
                   }
             });
+      },
+      editVersion : function(row){
+        this.editForm.versionName = row.versionName;
+        this.editForm.versionType = row.versionTypeId;
+        this.editForm.versionStatus = row.versionStatus.toString();
+        this.editForm.planTime = row.planTime;
+
+        this.editDialogVisible = true;
+      },
+      updateVersion : function(){
+
+      },
+
+      addVersion : function(){
+        this.addForm.versionName = "";
+        this.addForm.versionType = "";
+        this.addForm.versionStatus = "";
+        this.addForm.planTime = "";
+        this.addDialogVisible = true
       },
       deleteVersionDialog:function(row){
           this.deleteForm.versionType = this.getVersionType(row)

@@ -5,12 +5,12 @@
     		<h3>基本信息</h3>
     	</el-col>
     	<el-col :span="8">
-    		<el-button type="primary" size="small" @click="copyRequirement">复制</el-button>
-    		<el-button type="primary" size="small" @click="isEditMode = true">编辑</el-button>
+    		<el-button type="primary" size="small" v-if="!isEditMode" @click="copyRequirement">复制</el-button>
+    		<el-button type="primary" size="small" v-if="!isEditMode" @click="isEditMode = true">编辑</el-button>
     	</el-col>
     </el-row>
-<!--   		<el-button @click="initDatas()">查询</el-button>
-        <el-button @click="debug()">debug</el-button> -->
+  		<el-button @click="initDatas()">查询</el-button>
+        <el-button @click="debug()">debug</el-button>
     <el-row>
     <el-col :span="16">
 	  <el-form :model="formData" :rules="rules" ref="formData" label-width="200px">
@@ -90,13 +90,13 @@
 				</el-form-item>
 			</el-col>
 			<el-col :span="24" style="text-align:left">
-				<el-form-item label="负责人员：" prop="ResponsePerson" required >
+				<el-form-item label="负责人：" prop="ResponsePerson" required >
 					<el-col v-if="isEditMode">
 						<el-select  size="small" v-model="formData.ResponsePerson" placeholder="请选择">
 							<el-option
 						      v-for="item in ProposerOption"
-						      :label="item.name"
-						      :value="item.value"
+						      :label="item.userName"
+						      :value="item.id"
 						      >
 						    </el-option>
 						
@@ -200,7 +200,7 @@
 		  		<el-col v-else :span="16" style="text-align:left">
 		  			{{requireDetail.functionTypeName}}
 		  		</el-col>
-		  		<el-col :span="8" v-if="formData.functionType == '9' ">
+		  		<el-col :span="8" v-if="formData.functionType == '72' ">
 		  			<el-col :span="8">
 		  				<span>Bug ID :</span>
 		  			</el-col>
@@ -222,7 +222,6 @@
 						    <el-radio :label="3">3</el-radio>
 						    <el-radio :label="4">4</el-radio>
 						    <el-radio :label="5">5</el-radio>
-						    <el-radio :label="6">6</el-radio>
 						</el-radio-group>					
 					</el-col>
 					<el-col v-else>
@@ -230,7 +229,7 @@
 					</el-col>
 				</el-form-item>	
 			</el-col>
-			<el-col :span="20" style="text-align:left">
+			<el-col :span="20" style="text-align:left" v-if="formData.requireProgress == 84 || formData.requireProgress == 85">
 				<el-form-item label="完成时间：" prop="completionTime">
 					<el-col v-if="isEditMode">
 						<el-date-picker
@@ -245,7 +244,7 @@
 					</el-col>
 				 </el-form-item>	
 	    	</el-col>
-	    	<el-col :span="20" style="text-align:left">
+	    	<el-col :span="20" style="text-align:left" v-if="formData.requireProgress == 84 || formData.requireProgress == 85">
 				<el-form-item label="评审时间：" prop="approveTime" >
 					<el-col v-if="isEditMode">
 						<el-date-picker
@@ -263,7 +262,7 @@
 		    <el-col :span="18">
 				<el-form-item label="需求背景：" prop="RqBack" style="text-align:left">
 					<el-col v-if="isEditMode">
-						<el-input :maxlength="parseInt(100)" v-model="formData.RqBack" type="textarea"></el-input>
+						<el-input :maxlength="parseInt(200)" v-model="formData.RqBack" type="textarea"></el-input>
 					</el-col>
 					<el-col v-else>
 						{{requireDetail.requirementBackground}}
@@ -273,7 +272,7 @@
 		    <el-col :span="18">
 				<el-form-item label="需求描述：" prop="Rqdescription" style="text-align:left">
 					<el-col v-if="isEditMode">
-						<el-input :maxlength="parseInt(100)" v-model="formData.Rqdescription" type="textarea"></el-input>
+						<el-input :maxlength="parseInt(200)" v-model="formData.Rqdescription" type="textarea"></el-input>
 					</el-col>
 					<el-col v-else>
 						{{requireDetail.requirementDisplay}}
@@ -283,7 +282,7 @@
 		    <el-col :span="18">
 				<el-form-item label="需求备注：" prop="RqNote" style="text-align:left">
 					<el-col v-if="isEditMode">
-						<el-input :maxlength="parseInt(100)" v-model="formData.RqNote" type="textarea"></el-input>
+						<el-input :maxlength="parseInt(200)" v-model="formData.RqNote" type="textarea"></el-input>
 					</el-col>
 					<el-col v-else>
 						{{requireDetail.requirementRemark}}
@@ -293,7 +292,7 @@
 
 	  </el-form>
 	  </el-col>
-		<el-col :span="8" style="border-left:1px dashed lightgray">
+		<el-col :span="8" style="border-left:1px dashed lightgray" v-if="requireDetail.requirementApply">
 			<el-form label-width="120px" style="text-align:left">
 				<el-col :span="16">
 					<el-form-item>
@@ -304,63 +303,63 @@
 	    		<el-row>
 	    			<el-col :span="12" style="text-align:left">
 	    				<el-form-item label="版本类型：">
-	    					{{requireDetail.requirementDisplay}}
+	    					{{requireDetail.requirementApply.applyType}}
 	    				</el-form-item>
 	    			</el-col>
 	    			<el-col :span="12" style="text-align:left">
 	    				<el-form-item label="版本号：">
-	    					{{requireDetail.versionName}}
+	    					{{requireDetail.requirementApply.versionName}}
 	    				</el-form-item>
 	    			</el-col>
 	    		</el-row>
 	    		<el-col>
 	    			<el-form-item label="项目分支：" >
-	    				{{requireDetail.branchName}}
+	    				{{requireDetail.requirementApply.projectBranch}}
 	    			</el-form-item>
 	    		</el-col>	
 	    		<el-col>
 	    			<el-form-item label="其他成员：" >
-	    				何苗，陈思宇，张可可
+	    				{{requireDetail.requirementApply.projectOthers}}
 	    			</el-form-item>
 	    		</el-col>	
 	    		<el-col>
 	    			<el-form-item label="启动时间：" >
-	    				2017-05-31 
+	    				{{requireDetail.requirementApply.startTimeStr}}
 	    			</el-form-item>
 	    		</el-col>
 	    		<el-row>
 	    			<el-col :span="12">
 		    			<el-form-item label="计划转测时间：" >
-		    				2017-05-31 
+		    				{{requireDetail.requirementApply.testTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
 		    		<el-col :span="12">
 		    			<el-form-item label="实际转测时间：" >
-		    				2017-05-31 
+		    				暂留
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>
 	    		<el-row>
 	    			<el-col :span="12">
 		    			<el-form-item label="计划QA时间：" >
-		    				2017-05-31 
+		    				{{requireDetail.requirementApply.qaTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
 		    		<el-col :span="12">
 		    			<el-form-item label="实际QA时间：" >
-		    				2017-05-31 
+		    				暂留
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>	
 	    		<el-row>
 	    			<el-col :span="12">
 		    			<el-form-item label="计划上线时间：" >
-		    				2017-05-31 
+		    				{{requireDetail.requirementApply.projectOthers}}
 		    			</el-form-item>
 		    		</el-col>	
 		    		<el-col :span="12">
 		    			<el-form-item label="实际上线时间：" >
-		    				2017-05-31 
+		    				暂留
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>	
@@ -390,10 +389,15 @@
 		</el-col>
 	</el-row>
 		<el-row>
-		 	<div style="text-align:center;">
+		 	<el-col style="text-align:center;" v-if="isEditMode">
 	        	<el-button type="primary" @click="saveRequirement">保存</el-button>
 	        	<el-button type="primary" @click="dialogKeepVisible=true">返回</el-button>
-	      	</div>			
+	      	</el-col>
+	      	<el-col style="text-align:center;" v-else>
+	      	<router-link :to="{ name: 'requirementManagement'}">
+					<el-button type="primary">返回</el-button>
+				</router-link>
+	      	</el-col>			
 		</el-row>
 
 		  <el-dialog title="提示" v-model="dialogKeepVisible" size="tiny" style="text-align:left">
@@ -446,7 +450,7 @@
         	productPlat : [],//产品平台
         	proposeTime:'', //提出时间
         	ResponsePerson:'', //负责人员
-        	requirementPlan:"",
+        	requirementPlan:"待规划",
         	checked:[],
         	firstFunctionModule:'',//一级功能模块
         	secondFunctionModule : '',//二级功能模块
@@ -454,7 +458,7 @@
         	priority : "",//优先级
         	bugID:'',
         	functionType:'',
-        	requireProgress : "",//需求进度
+        	requireProgress : 81,//需求进度
         	completionTime:'', //完成时间
         	approveTime:'',
         	RqBack:'背景' ,//需求背景
@@ -474,9 +478,7 @@
         // 需求详情
         requireDetail:{},
         dialogKeepVisible:false,
-        ProposerOption:[
-        	{name: '郭彩华', value:'guocaihua@danlu.com'},
-        ],
+        ProposerOption:[ ],
 
         rules:{
         	requirementName:[
@@ -488,9 +490,9 @@
         	Proposer:[{
         		required: true, message: '此项为必填', trigger: 'blur,change'
         	}],
-        	PakgeName:[
-        		{required: true, message: '此项为必填', trigger: 'change,blur'}
-        	],
+        	// PakgeName:[
+        	// 	{required: true, message: '此项为必填', trigger: 'change,blur'}
+        	// ],
         	productPlat:[{validator:selectValidate, trigger: 'change,blur'}],
         	firstFunctionModule:[{validator:selectValidate, trigger: 'change,blur'}],
         	requirementPlan:[{validator:selectValidate, trigger: 'change,blur'}],
@@ -539,6 +541,34 @@
                   		that.$message.error(data.msg);
                 	}
             });
+	    },
+	    /**
+	     * 获取负责人列表
+	     * @return {[type]} [description]
+	     */
+	    getResponsePerson:function(){
+				var that = this;
+				var reqData = {
+					curPage : 1,
+					size : 15,
+					data : [{ }]
+ 				}
+				var url = "/api/dlmanagementtool/user/searchUserListInPage"
+					this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                if (ok && data.status == '0') {
+	                	this.ProposerOption =  data.data.data;
+	                }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
+	                  that.$message.error(data.msg);
+	                }
+	            });
 	    },
     	/**
     	 * 初始化数据
@@ -606,6 +636,7 @@
 			if (!this.formData.firstFunctionModule) {
             	return false;
             };
+            that.formData.secondFunctionModule = "";
             that.initData.secondFunctionModule = [];
             // that.formData.secondFunctionModule = "";
             var reqData = {
@@ -697,6 +728,13 @@
     						proposeDeptName = item.name;
     					};
     				})
+    				// 负责人用户名
+    				var responsibleUserName = ""
+    				that.ProposerOption.forEach(function(item){
+    					if (item.id == that.formData.ResponsePerson) {
+    						responsibleUserName = item.userName
+    					};
+    				})
     				var reqData = {
     					"id" : this.$route.query.id || "",
 				        "requirementName": this.formData.requirementName,
@@ -713,12 +751,13 @@
 				        "functionTypeId": this.formData.functionType,
 				        "functionTypeName": functionTypeName,
 				        "priority": parseInt(this.formData.priority),
-				        "finishTime": this.formData.completionTime.valueOf(),
-				        "reviewTime": this.formData.approveTime.valueOf(),
+				        "finishTime": this.formData.completionTime ? this.formData.completionTime.valueOf() : "",
+				        "reviewTime": this.formData.approveTime? this.formData.approveTime.valueOf() : "",
 				        "proposeDeptId": this.formData.Proposer,
 				        "proposeDeptName": proposeDeptName,
 				        "proposeUserName": this.formData.proposerMaker,
-				        "responsibleUserName": this.formData.ResponsePerson,
+				        "responsibleUserId": this.formData.ResponsePerson,
+				        "responsibleUserName": responsibleUserName,
 				        "requirementBackground": this.formData.RqBack,
 				        "requirementDisplay": this.formData.Rqdescription,
 				        "requirementRemark": this.formData.RqNote,
@@ -784,7 +823,7 @@
 				    that.formData.approveTime =  that.requireDetail.reviewTime
 				    that.formData.Proposer =  that.requireDetail.proposeDeptId
 				    that.formData.proposerMaker =  that.requireDetail.proposeUserName
-				    that.formData.ResponsePerson =  that.requireDetail.responsibleUserName
+				    that.formData.ResponsePerson =  that.requireDetail.responsibleUserId
 				    that.formData.RqBack =  that.requireDetail.requirementBackground
 				    that.formData.Rqdescription  = that.requireDetail.requirementDisplay
 				    that.formData.RqNote =  that.requireDetail.requirementRemark
@@ -805,8 +844,10 @@
 	beforeRouteEnter: function (to,from,next) {
       		next(vm => {
       			vm.initDatas();
+      			vm.getResponsePerson();
          		if(vm.$route.query.addType =='add'){
          			vm.isEditMode = true;
+         			
          			// vm.Add();
          		}else if(vm.$route.query.addType =='assign'){
          			vm.isEditMode = false;

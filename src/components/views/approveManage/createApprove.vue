@@ -20,7 +20,7 @@
 					<el-col>
 						<el-form-item label="审批类型：" class="userMessage" prop="applyType" required>
 							<el-col >
-								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange">
+								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange" :disabled="disabled">
 									<el-radio  :label="1" >入版申请</el-radio>
 									<el-radio  :label="2" >修改项目信息</el-radio>
 								</el-radio-group>	
@@ -187,6 +187,7 @@
 			var data = {
 				pageFlage : false,//false :表示我发起的申请，true表示我审批的
 				// isEditMode : true, //是否是编辑模式哦
+				disabled : false,
 				approveForm:{
 					
 					applyType : 1, //审批类型
@@ -545,7 +546,7 @@
 	            var that = this;
 	            that.associateList = [];
 	            this.approveForm.requireTemp = ""
-	            var url = "/api/dlmanagementtool/requirement/fuzzyQueryRequirement";
+	            var url = "/api/dlmanagementtool/requirement/fuzzyQueryFinishedRequirement";
 	            var reqData = {
 	                requirementName: queryString,
 	            };

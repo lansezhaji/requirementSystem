@@ -28,7 +28,6 @@ new Vue({
  * @return {[type]}                          [description]
  */
 Vue.http.interceptors.push((request, next) => {
-  　console.log(this)//此处this为请求所在页面的Vue实例
    // modify request
    request.method = 'POST';//在请求之前可以进行一些预处理和配置
    request.headers.set('token', localStorage.getItem("token"));
