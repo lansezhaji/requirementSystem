@@ -12,7 +12,7 @@
 					<el-input v-model="loginForm.password" type="password" class="login-item"></el-input>
 				</el-form-item>
 				<el-form-item >
-					<el-button type="primary" @click="login()">登录</el-button>
+					<el-button type="primary" @click="login()" :disabled="!loginForm.account||!loginForm.password">登录</el-button>
 	  				<el-checkbox v-model="isDisplayBg">加载背景</el-checkbox>
 				</el-form-item>				
 			</el-form>
@@ -32,8 +32,8 @@
     	var data  ={
     		isDisplayBg : false,
     		loginForm : {
-    			account : "majun@danlu.com",
-    			password:"majun123"
+    			account : "",
+    			password:""
     		},
     		rules:{
     			account:[
@@ -51,13 +51,10 @@
    			var that = this;
    			this.$refs['loginForm'].validate((valide)=>{
    				if (valide) {
-
-   					// that.$store.state.user.tocken = 'sld8e(Dl2'
    					var reqData = {
    						userName : that.loginForm.account,
    						userPassword : that.loginForm.password,
    					}
-   					// var url = process.env.API_ROOT + 'dlmanagementtool/login/loginin';
    					var url = '/api/dlmanagementtool/login/loginin';
 		            this.$http.post(url,reqData).then(({
 		                data,

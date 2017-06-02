@@ -10,7 +10,87 @@
   </el-breadcrumb>
     <div class="retrieval  criteria Style">
   	<el-form :model="orderForm" ref="orderForm"  label-width="160px" class="query">
-    	<el-row type="flex" class="row-bg" justify="right">
+    	<el-row >
+        <el-col :span="18">
+          <el-col :span="8">
+          <el-form-item label="功能类型：" prop="functionType">
+            <el-select v-model="orderForm.functionType" size="small"  placeholder="请选择">
+                <el-option label="全部" value=""></el-option>
+                <el-option
+                  v-for="item in functionModuleFirst"
+                  :label="item.name"
+                  :value="item.id"
+                  >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          </el-col>
+          <el-col :span="8">
+          <el-form-item label="负责人：" prop="responsibleUserId">
+            <el-select  size="small" v-model="orderForm.responsibleUserId"  placeholder="请选择">
+                <el-option label="全部" value=""></el-option>
+                <el-option
+                  v-for="item in userList"
+                  :label="item.userName"
+                  :value="item.id"
+                  >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          </el-col>
+          <el-col :span="8">
+          <el-form-item label="需求进度：" prop="requirementStatus">
+            <el-select  size="small" v-model="orderForm.requirementStatus"  placeholder="请选择">
+                <el-option label="全部" value=""></el-option>
+                <el-option
+                  v-for="item in requirementStatusOption"
+                  :label="item.name"
+                  :value="item.id"
+                  >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          </el-col>
+            <el-col :span="8">
+            <el-form-item label="功能分类：" prop="functionModuleFirst">
+              <el-select  size="small" v-model="orderForm.functionModuleFirst"  placeholder="请选择">
+                <el-option label="全部" value=""></el-option>
+                <el-option
+                  v-for="item in functionalTypeOption"
+                  :label="item.name"
+                  :value="item.id"
+                  
+                  >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        <el-col :span="8">
+          <el-form-item label="需求规划：" prop="requirementPlan">
+            <el-select size="small" v-model="orderForm.requirementPlan"  placeholder="请选择">
+                <el-option label="全部" value=""></el-option>
+                <el-option
+                  v-for="item in requirementPlanOption"
+                  :label="item"
+                  :value="item"
+                  >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          </el-col>
+          <el-col :span="8">
+          <el-form-item label="需求名称:" prop="requirementName">
+            <el-autocomplete size="small" :maxlength="parseInt(100)"
+                  class="inline-input"
+                  v-model="orderForm.requirementName"
+                  :fetch-suggestions="querySearch"
+                  placeholder="请输入内容"
+                  :trigger-on-focus="false"
+                  @select="handleSelect"
+                ></el-autocomplete>
+          </el-form-item>
+          </el-col>        
+        </el-col>
     	  	<el-col :span="6">
     	  	<el-form-item label="功能平台：" prop="productPlatform">
 				<el-select size="small" v-model="orderForm.productPlatform" multiple placeholder="请选择">
@@ -23,86 +103,7 @@
 				  </el-select>
 		  	</el-form-item>
     		</el-col>
-			<el-col :span="6">
-				<el-form-item label="功能类型：" prop="functionType">
-					<el-select v-model="orderForm.functionType" size="small"  placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
-					    <el-option
-					      v-for="item in functionModuleFirst"
-					      :label="item.name"
-					      :value="item.id"
-					      >
-					    </el-option>
-					  </el-select>
-				</el-form-item>
-    		</el-col>
-    		<el-col :span="6">
-				<el-form-item label="负责人：" prop="responsibleUserId">
-					<el-select  size="small" v-model="orderForm.responsibleUserId"  placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
-					    <el-option
-					      v-for="item in userList"
-					      :label="item.userName"
-					      :value="item.id"
-					      >
-					    </el-option>
-					  </el-select>
-				</el-form-item>
-    		</el-col>
-        <el-col :span="6">
-        <el-form-item label="需求进度：" prop="requirementStatus">
-          <el-select  size="small" v-model="orderForm.requirementStatus"  placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
-              <el-option
-                v-for="item in requirementStatusOption"
-                :label="item.name"
-                :value="item.id"
-                >
-              </el-option>
-            </el-select>
-        </el-form-item>
-        </el-col>
-    	</el-row>
-    	<el-row type="flex" class="row-bg" justify="right" style="margin-top:20px;">
-    	  	<el-col :span="6">
-    	  	<el-form-item label="功能分类：" prop="functionModuleFirst">
-            <el-select  size="small" v-model="orderForm.functionModuleFirst"  placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
-              <el-option
-                v-for="item in functionalTypeOption"
-                :label="item.name"
-                :value="item.id"
-                
-                >
-              </el-option>
-            </el-select>
-		  	  </el-form-item>
-    		</el-col>
-			<el-col :span="6">
-				<el-form-item label="需求规划：" prop="requirementPlan">
-					<el-select size="small" v-model="orderForm.requirementPlan"  placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
-					    <el-option
-					      v-for="item in requirementPlanOption"
-					      :label="item"
-					      :value="item"
-					      >
-					    </el-option>
-					  </el-select>
-				</el-form-item>
-    		</el-col>
-    		<el-col :span="6">
-				<el-form-item label="需求名称:" prop="requirementName">
-          <el-autocomplete size="small" :maxlength="parseInt(100)"
-                class="inline-input"
-                v-model="orderForm.requirementName"
-                :fetch-suggestions="querySearch"
-                placeholder="请输入内容"
-                :trigger-on-focus="false"
-                @select="handleSelect"
-              ></el-autocomplete>
-        </el-form-item>
-    		</el-col>
+			
     	</el-row>
     	</el-form>
       <div style="text-align:center;">
@@ -554,8 +555,24 @@
                 modifyObj.requirementPlan = item.value
               }else if (item.typeId ==2 && item.value) { //需求进度
                 modifyObj.requirementStatusId = item.value
+                var requirementStatusName = ""
+                that.requirementStatusOption.forEach(function(status){
+                    if (modifyObj.requirementStatusId == status.id) {
+                      requirementStatusName = status.name
+                    };
+                })
+                modifyObj.requirementStatusName = requirementStatusName
               }else if (item.typeId ==3 && item.value) { //负责人
                 modifyObj.responsibleUserId = item.value
+                var userName = ""
+                //遍历获取name 
+                that.userList.forEach(function(user){
+                    if (modifyObj.responsibleUserId == user.id) {
+                        userName = user.userName
+                        return 
+                    };
+                })
+                modifyObj.responsibleUserName = userName
               }else if (item.typeId ==4 && item.value) { //优先级
                 modifyObj.priority = item.value
               }

@@ -150,7 +150,7 @@
           </el-dialog>
 
           <el-dialog
-            title="新增版本号"
+            title="编辑版本号"
             :visible.sync="editDialogVisible"
             size="tiny" >
             <el-form :model="editForm" label-width="150px" ref="addForm">
@@ -164,7 +164,7 @@
                   <el-input v-model="editForm.versionName"></el-input>
                 </el-col>
               </el-form-item>
-              <el-form-item label="版本号状态：" style="text-align:left" prop="versionStatus">
+              <el-form-item label="版本号状态：" style="text-align:left" prop="versionStatus" v-if="false">
                  <el-select size="small" v-model="editForm.versionStatus" placeholder="请选择">
                     <el-option label="启用" value="1"></el-option>
                     <el-option label="上线" value="2"></el-option>
@@ -188,12 +188,41 @@
             </span>
           </el-dialog>
 
+          <el-dialog
+            title="您正在停用以下版本，请填入相关信息"
+            :visible.sync="updateStatusToOnlineDialog"
+            size="tiny" >
+            <el-form :model="editForm" label-width="150px" ref="addForm" style="text-align:left">
+              <el-form-item label="版本类型：" style="text-align:left" prop="versionTypeName">
+                <el-select size="small" v-model="onLineForm.versionType" placeholder="请选择" disabled>
+                    <el-option :label="type.versionTypeName" :value="type.id" v-for="type in versionTypeList"></el-option>
+                </el-select>
+              </el-form-item>  
+              <el-form-item label="版本号：" prop="versionName">
+                {{onLineForm.versionName}}
+              </el-form-item>
+              <el-form-item label="实际上线时间：" style="text-align:left" prop="planTime">
+                    <el-date-picker
+                      v-model="onLineForm.truthTime"
+                      align="right"
+                      type="datetime"
+                      placeholder="选择日期" >
+                    </el-date-picker>
+              </el-form-item>
+            </el-form>
+            
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="updateStatusToOnlineDialog = false">取 消</el-button>
+              <el-button type="primary" @click="changeVersionStatus(1)" :disabled="!onLineForm.truthTime">确 定</el-button>
+            </span>
+          </el-dialog>
+
         </el-col>
         <el-col :span="22" style="text-align: right;">
-           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(1)">启用</el-button>
-           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(2)">上线</el-button>
-           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(3)">锁定</el-button>
-           <el-button type="text" :disabled="multipleSelection.length<=0" style="margin-right:60px;" @click="changeVersionStatus(4)">挂起</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(0)">启用</el-button>
+           <!-- <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(1)">上线</el-button> -->
+           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(2)">锁定</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0" style="margin-right:60px;" @click="changeVersionStatus(3)">挂起</el-button>
         </el-col>
       </el-row>
     <div class="retrieval  criteria Style" >
@@ -251,6 +280,7 @@
         <el-table-column label="操作">
             <template scope="scope">
               <el-button type="text" @click="editVersion(scope.row)">编辑</el-button>
+              <el-button type="text" @click="onlineVersion(scope.row)">上线</el-button>
               <el-button type="text" @click="deleteVersionDialog(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -313,6 +343,7 @@
         addDialogVisible:false,
         editDialogVisible : false,
         deleteDialogVisible:false,
+        updateStatusToOnlineDialog : false,//停用弹窗
         addForm:{
           versionType : '',
           versionName : '',
@@ -325,6 +356,11 @@
           versionName : '',
           planTime : '',
           versionStatus: '1'
+        },
+        onLineForm:{
+          versionType : '',
+          versionName : '',
+          truthTime   : ''
         },
         deleteForm:{
            versionType: '',
@@ -496,6 +532,18 @@
 
         this.editDialogVisible = true;
       },
+      /**
+       * 上线
+       * @param  {[type]} row [description]
+       * @return {[type]}     [description]
+       */
+      onlineVersion : function(row){
+        this.onLineForm.id = row.id;
+        this.onLineForm.versionName = row.versionName;
+        this.onLineForm.versionType = row.versionTypeId;
+        this.onLineForm.truthTime = ""
+        this.updateStatusToOnlineDialog = true;
+      },
       updateVersion : function(){
             var that = this;
             var url = '/api/dlmanagementtool/version/save';
@@ -638,7 +686,7 @@
        */
       changeVersionStatus : function(type){
           var that = this;
-          if (this.multipleSelection.length <=0) {
+          if (type !=1 && this.multipleSelection.length <=0) {
              this.$message.error('请先选择版本');
              return false
           }
@@ -650,7 +698,19 @@
               ids : ids.toString(),
               versionStatus : type
           }
-            var url = '/api/dlmanagementtool/version/updateStatus';
+          if (type == 1) {
+            reqData = {
+              id : that.onLineForm.id,
+              truthTime : that.onLineForm.truthTime.valueOf()
+            }
+          };
+          var urlArr = [
+            '/api/dlmanagementtool/version/updateStatusToUsing',
+            '/api/dlmanagementtool/version/updateStatusToOnline',
+            '/api/dlmanagementtool/version/updateStatusToLocking',
+            '/api/dlmanagementtool/version/updateStatusToHangup',
+          ]
+            var url = urlArr[type]
             this.$http.post(url,reqData).then(({
                 data,
                 ok,
@@ -659,6 +719,7 @@
                   if (ok && data.status == '0') {
                       that.$message.success("修改成功");
                       that.getVersionList();
+                      that.updateStatusToOnlineDialog = false
                     }else if (data.status == -2 || data.status == -3) {
                       this.$store.commit('logout');
                       localStorage.setItem("token","");

@@ -68,7 +68,7 @@
 
 			
 		  	<el-col :span="16">
-				<el-form-item label="需求包名称：" prop="PakgeName" >
+				<el-form-item label="需求包名称：" prop="PakgeName" v-if="formData.requireProgress == 84">
 					<el-col  v-if="isEditMode">
 						<el-input size="small" v-model="formData.PakgeName" placeholder="最大长度为50个字符" :maxlength="parseInt(50)"></el-input>
 					</el-col>
@@ -306,7 +306,7 @@
 	    		<el-row>
 	    			<el-col :span="12" style="text-align:left">
 	    				<el-form-item label="版本类型：">
-	    					{{requireDetail.requirementApply.applyType}}
+	    					{{requireDetail.requirementApply.applyType==1?"入版申请":"修改项目信息"}}
 	    				</el-form-item>
 	    			</el-col>
 	    			<el-col :span="12" style="text-align:left">
@@ -357,7 +357,7 @@
 	    		<el-row>
 	    			<el-col :span="12">
 		    			<el-form-item label="计划上线时间：" >
-		    				{{requireDetail.requirementApply.projectOthers}}
+		    				{{requireDetail.requirementApply.truthTimeStart}}
 		    			</el-form-item>
 		    		</el-col>	
 		    		<el-col :span="12">
@@ -493,9 +493,9 @@
         	Proposer:[{
         		required: true, message: '此项为必填', trigger: 'blur,change'
         	}],
-        	// PakgeName:[
-        	// 	{required: true, message: '此项为必填', trigger: 'change,blur'}
-        	// ],
+        	PakgeName:[
+        		{required: true, message: '此项为必填', trigger: 'change,blur'}
+        	],
         	productPlat:[{validator:selectValidate, trigger: 'change,blur'}],
         	firstFunctionModule:[{validator:selectValidate, trigger: 'change,blur'}],
         	requirementPlan:[{validator:selectValidate, trigger: 'change,blur'}],
@@ -820,7 +820,7 @@
 				    that.formData.PakgeName  =  that.requireDetail.packageName
 				    that.formData.proposeTime =  that.requireDetail.proposeTime
 				    that.formData.firstFunctionModule = that.requireDetail.functionModuleFirstId
-				    that.formData.secondFunctionModule =  that.requireDetail.functionModuleSecondId
+				    
 				    that.formData.functionType =  that.requireDetail.functionTypeId
 				    that.formData.priority =  that.requireDetail.priority
 				    that.formData.completionTime =  that.requireDetail.finishTime
@@ -837,6 +837,10 @@
 
 				    that.formData.productPlat = that.requireDetail.productPlatformName.split(',');
 				    that.getSecondFunction();
+				    //填充二级功能模块
+				    setTimeout(function(){
+				    	that.formData.secondFunctionModule =  that.requireDetail.functionModuleSecondId
+				    },500)
                 } else {
                   that.$message.error(data.msg);
                 }
