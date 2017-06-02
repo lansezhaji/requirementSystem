@@ -20,7 +20,7 @@
 					<el-col>
 						<el-form-item label="审批类型：" class="userMessage" prop="applyType" required>
 							<el-col >
-								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange" :disabled="disabled">
+								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange" >
 									<el-radio  :label="1" >入版申请</el-radio>
 									<el-radio  :label="2" >修改项目信息</el-radio>
 								</el-radio-group>	
@@ -45,17 +45,17 @@
 					<el-col>
 						<el-form-item label="项目分支：" class="userMessage" prop="projectBranch">
 							<el-col :span="8">
-								<el-input v-model="approveForm.projectBranch"></el-input>	
+								<el-input v-model="approveForm.projectBranch" :disabled="disabled"></el-input>	
 							</el-col>
 						</el-form-item>
 					</el-col>
 					<el-col>
 						<el-form-item label="需求内容：" class="userMessage" required>
 							<el-row v-for="(content,index) in approveForm.requirementInfos">
-								<el-col :span="8">
+								<el-col :span="7">
 									{{content.requirementName}}
 								</el-col>
-								<el-col :span="3" :offset="1" >
+								<el-col :span="5" :offset="1" >
 									<span>产品经理：</span>
 									<span>{{content.responsibleUserName}}</span>
 								</el-col>
@@ -64,13 +64,13 @@
 									<span>{{content.functionBugId}}</span>
 								</el-col>
 								<el-col :span="4">
-									<el-button type="default" size="small" @click="deleteRequireMent(index)">删除</el-button>
+									<el-button type="default" size="small" @click="deleteRequireMent(index)" :disabled="approveForm.requirementInfos.length==1">删除</el-button>
 								</el-col>
 							</el-row>
 							<el-autocomplete v-model="approveForm.requirementName" 
 							:fetch-suggestions="querySearch"  placeholder="最多60个字符" 
-							:trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
-							<el-button type="primary" size="small" @click="addRequireMent" :disabled="!approveForm.requireTemp">增加需求</el-button>
+							:trigger-on-focus="false" @select="handleSelect" :disabled="disabled"></el-autocomplete>
+							<el-button type="primary" size="small" @click="addRequireMent" :disabled="!approveForm.requireTemp || disabled">增加需求</el-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -79,6 +79,7 @@
 								<el-date-picker
 							      v-model="approveForm.startTime"
 							      type="datetime"
+							      :disabled="disabled"
 							      placeholder="选择时间">
 							    </el-date-picker>	
 							</el-col>
@@ -90,6 +91,7 @@
 							<el-date-picker
 						      v-model="approveForm.testTime"
 						      type="datetime"
+						      :disabled="disabled"
 						      placeholder="选择时间">
 						    </el-date-picker>
 						</el-form-item>
@@ -99,34 +101,53 @@
 							<el-date-picker
 						      v-model="approveForm.qaTime"
 						      type="datetime"
+						      :disabled="disabled"
 						      placeholder="选择时间">
 						    </el-date-picker>
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item label="项目经理：" class="userMessage"  prop="projectUserName">
-							<el-col :span="8">
-								<el-input v-model="approveForm.projectUserName"></el-input>	
-							</el-col>
+						<el-form-item label="项目经理：" class="userMessage"  prop="projectUserId">
+							<el-select  size="small" v-model="approveForm.projectUserId" :disabled="disabled" placeholder="请选择">
+							    <el-option
+							      v-for="item in userList"
+							      :label="item.userName"
+							      :value="item.id"
+							      >
+							    </el-option>
+						  	</el-select>
 						</el-form-item>
+						
 					</el-col>
 					<el-col>
 						<el-form-item label="项目其他成员：" class="userMessage" prop="projectOthers">
-							<el-col :span="15">
-								<el-input v-model="approveForm.projectOthers"></el-input>	
-							</el-col>
+							  <el-select
+							    v-model="approveForm.projectOthers"
+							    multiple
+							    filterable
+							    remote
+							    :disabled="disabled"
+							    placeholder="请输入关键词"
+							    :remote-method="remoteMethod"
+							    :loading="loading">
+							    <el-option
+							      v-for="item in userListTemp"
+							      :label="item.userName"
+							      :value="item.userName">
+							    </el-option>
+							  </el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="申请入版类型：" prop="versionTypeId">
-							<el-select v-model="approveForm.versionTypeId" @change="getVersionList">
+							<el-select v-model="approveForm.versionTypeId" @change="getVersionList" :disabled="disabled">
 					            <el-option v-for="type in versionTypeList" :label="type.versionTypeName" :value="type.id"></el-option>
 					        </el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="选择版本号：" prop="versionId">
-							<el-select v-model="approveForm.versionId">
+							<el-select v-model="approveForm.versionId" :disabled="disabled">
 								<el-option v-for="type in versionList" :label="type.versionName" :value="type.id"></el-option>
 							</el-select>
 						</el-form-item>
@@ -137,6 +158,7 @@
 							<el-input
 							  type="textarea"
 							  :rows="3"
+							  :disabled="disabled"
 							  placeholder="请输入内容"
 							  v-model="approveForm.remark">
 							</el-input>			
@@ -144,8 +166,9 @@
 					</el-col>
 				</el-row>
 				<el-row type="flex" justify="center">
-					<el-col :span="2">
-						<el-button @click="updateApproveInfo" type="primary">提交</el-button>
+					<el-col :span="4">
+						<el-button @click="updateApproveInfo" :disabled="disabled" type="primary">提交</el-button>
+						<el-button @click="returnLastPage">返回</el-button>
 					</el-col>
 				</el-row>			
 			</el-form>
@@ -171,15 +194,15 @@
 				if (!value || this.$route.query.id)  {
 				  callback();
 				} else {
-					var url = '/api/dlmanagementtool/requirement/checkNameRepeat';
+					var url = '/api/dlmanagementtool/apply/checkProjectNameRepeat';
 					var reqData = {
-						requirementName : value
+						projectName : value
 					}
 		            this.$http.post(url,reqData).then(({ data, ok, statusText }) => {
 		                if (ok && data.status == '0' && !data.data) {
 		                	callback();
 		                }else{
-		                  	callback(new Error('暂时没写，记得调一下'));
+		                  	callback(new Error('项目名称已存在'));
 		                }
 		            });
 				}
@@ -214,13 +237,16 @@
 					approveTime : [],
 					versionTypeId : "",
 					versionId :"",
-					projectUserName : "",
-					projectOthers : "",//
+					projectUserId : "",
+					projectOthers : [],//
 					requirementInfos : [ ],
 				},
 				tableData: [ ],
+				userList : [],//用户列表
+				userListTemp : [],
 				versionTypeList : [],//版本类型列表
 				versionList : [],//版本号列表
+				loading : false,
 				rules:{
 					applyType: [{
 						validator:selectValidate,trigger:'blur'
@@ -242,11 +268,11 @@
 					qaTime: [{
 						validator:selectValidate,trigger:'blur'
 					}],
-					projectUserName: [{
-						required:true,message:"该项为必填项",trigger:'blur'
+					projectUserId: [{
+						validator:selectValidate,trigger:'blur'
 					}],
 					projectOthers: [{
-						required:true,message:"该项为必填项",trigger:'blur'
+						validator:selectValidate,trigger:'blur'
 					}],
 					versionTypeId: [{
 						validator:selectValidate,trigger:'blur'
@@ -324,6 +350,7 @@
 				var that  = this;
 				this.$refs['approveForm'].validate(valide =>{
 					if (valide) {
+						// 版本列表
 						var versionTypeName = ""
 						that.versionTypeList.forEach(function(item){
 							if (item.id == that.approveForm.versionTypeId) {
@@ -336,7 +363,7 @@
 								versionName = item.versionName
 							};
 						})
-
+						// 项目名称
 						var projectName = ""
 						if (that.approveForm.applyType == 1) {
 							projectName = that.approveForm.projectName
@@ -365,18 +392,26 @@
 							this.$message.error("请至少选择一个需求");
 							return false;
 						};
+						// 项目负责人
+						var projectUserName = ""
+						this.userList.forEach(function(item){
+							if (that.approveForm.projectUserId ==item.id) {
+								projectUserName = item.userName;
+							};
+						})
+
 						var reqData =  {
 							 id : (that.approveForm.applyType == 2) ? that.approveForm.projectId : "",
 						     applyType: that.approveForm.applyType,
 						     projectName : projectName,
 						     projectBranch: that.approveForm.projectBranch,
 						     requirementIds: requireArr.toString(),
-						     startTime: that.approveForm.startTime,
-						     testTime: that.approveForm.testTime,
-						     qaTime: that.approveForm.qaTime,
-						     // projectUserId: null,
-						     projectUserName: that.approveForm.projectUserName,
-						     projectOthers: that.approveForm.projectOthers,
+						     startTime: that.approveForm.startTime.valueOf(),
+						     testTime: that.approveForm.testTime.valueOf(),
+						     qaTime: that.approveForm.qaTime.valueOf(),
+						     projectUserId: that.approveForm.projectUserId,
+						     projectUserName : projectUserName,
+						     projectOthers: that.approveForm.projectOthers.toString(),
 						     versionTypeId: that.approveForm.versionTypeId,
 						     versionTypeName : versionTypeName ,
 						     versionId: that.approveForm.versionId,
@@ -418,6 +453,56 @@
 				this.$refs['approveForm'].resetFields();
 			},
 			/**
+			 * [remoteMethod description]
+			 * @param  {[type]} query [description]
+			 * @return {[type]}       [description]
+			 */
+			remoteMethod :function(query) {
+		        if (query !== '') {
+		          this.loading = true;
+		          setTimeout(() => {
+		            this.loading = false;
+		            this.userListTemp = this.userList.filter(item => {
+		              return item.userName.toLowerCase()
+                		.indexOf(query.toLowerCase()) > -1;
+		            });
+		          }, 200);
+		        } else {
+		          this.userListTemp = [];
+		        }
+		      },
+			   /**
+		       * [bulkEdit 搜索]
+		       * @return {[type]} [description]
+		       */
+		      getUserList : function(userName){
+		        var that = this;
+
+		        var reqData = {
+		          curPage : 1,
+		          size : 5,
+		          data:[{
+		            userName    : userName || "",      
+		          }]
+		        }
+		        var url = "/api/dlmanagementtool/user/searchUserListInPage"
+		          this.$http.post(url,reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == '0') {
+		                    this.userList =  data.data.data;
+		                  }else if (data.status == -2 || data.status == -3) {
+		                    this.$store.commit('logout');
+		                    localStorage.setItem("token","");
+		                    this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
+		                    that.$message.error(data.msg);
+		                  }
+		              });
+		      },
+			/**
 			 * 获取项目详细信息
 			 * @return {[type]} [description]
 			 */
@@ -433,6 +518,7 @@
 	                statusText
 	            }) => {
 	                if (ok && data.status == '0') {
+	                	that.disabled = false;
 						that.approveForm.projectBranch = data.data.projectBranch;//审批分支
 						that.approveForm.startTime = data.data.startTime;//审批启动时间
 						that.approveForm.testTime = data.data.testTime;//项目转测时间
@@ -440,14 +526,15 @@
 						that.approveForm.remark=data.data.remark;//备注内容
 						that.approveForm.requireName = data.data.requireName;
 						that.approveForm.versionTypeId = data.data.versionTypeId;
-						that.approveForm.projectUserName = data.data.projectUserName;
-						that.approveForm.projectOthers = data.data.projectOthers;//
+						that.approveForm.projectUserId = data.data.projectUserId;
+						that.approveForm.projectOthers = data.data.projectOthers.split(",");//  ---------------------------------
 						that.approveForm.requirementInfos = data.data.requirementInfos;
 
 						setTimeout(function(){
 							that.approveForm.versionId =data.data.versionId;
 						},500)
 	                } else if (data.status == 1) {
+	                	that.disabled = true;
 	                	that.approveForm.projectBranch = "";
 	                	that.approveForm.projectName = "";
 						that.approveForm.startTime = "";
@@ -457,11 +544,18 @@
 						that.approveForm.requireName = "";
 						that.approveForm.versionTypeId = "";
 						that.approveForm.projectUserName = "";
-						that.approveForm.projectOthers = "";
+						that.approveForm.projectOthers = [];
 						that.approveForm.requirementInfos = "";
 	                    that.$message.error(data.msg);
 	                }
 	            });
+			},
+			/**
+			 * 返回上一页
+			 * @return {[type]} [description]
+			 */
+			returnLastPage :function(){
+				this.$router.go(-1)
 			},
 			/**
 			 * 申请类型更改
@@ -470,7 +564,7 @@
 			applyTypeChange : function(){
 				var that = this;
 				if (parseInt(this.approveForm.applyType) == 2) {
-
+					  this.disabled = true;
 			          var url = "/api/dlmanagementtool/apply/getPassedProjects"
 			          this.$http.get(url).then(({
 			              data,
@@ -478,21 +572,24 @@
 			              statusText
 			          }) => {
 			              if (ok && data.status == '0') {
+			              	  this.approveForm.projectId = this.$route.query.id || ""
 			                  that.requireLise = data.data;
 			              } else {
 			                  that.$message.error(data.msg);
 			              }
 			          });
 				}else{
+					this.disabled = false;
 						that.approveForm.projectBranch = "";
 						that.approveForm.startTime = "";
 						that.approveForm.testTime = "";
 						that.approveForm.qaTime = "";
 						that.approveForm.remark="";
+						that.approveForm.projectUserId = "";
 						that.approveForm.requireName = "";
 						that.approveForm.versionTypeId = "";
 						that.approveForm.projectUserName = "";
-						that.approveForm.projectOthers = "";
+						that.approveForm.projectOthers = [];
 						that.approveForm.requirementInfos = "";
 				}
 			},
@@ -514,7 +611,7 @@
 						this.approveForm.requirementInfos.push({
 							id : that.approveForm.requireTemp.id,
 							requirementName : that.approveForm.requireTemp.value,
-							responsibleUserName:that.approveForm.requireTemp.proposeUserName,
+							responsibleUserName:that.approveForm.requireTemp.responsibleUserName,
 							functionBugId : that.approveForm.requireTemp.functionBugId
 						})
 				 };
@@ -531,7 +628,6 @@
 				if (this.approveForm.requirementInfos.length>1) {
 					this.approveForm.requirementInfos.splice(index,1);
 				};
-				
 			},
 			querySearchItem : function(index){
 				console.log("1111"+index);
@@ -562,7 +658,7 @@
 	                        var restaurant = {};
 	                        restaurant.value = item.requirementName;
 	                        restaurant.id = item.id;
-	                        restaurant.proposeUserName = item.proposeUserName;
+	                        restaurant.responsibleUserName = item.responsibleUserName;
 	                        restaurant.functionBugId = item.functionBugId
 	                        that.associateList.push(restaurant);
 	                    })
@@ -585,6 +681,11 @@
 
         		vm.pageFlage = vm.$route.name == 'myApprove' 
         		vm.getVersionTypeList();
+        		vm.getUserList();
+        		if (vm.$route.query.id) {
+        			vm.approveForm.applyType = 2
+        			
+        		};
 	        });
 	    }
 	}

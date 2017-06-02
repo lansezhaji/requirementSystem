@@ -120,9 +120,7 @@
 			
 		</el-row>
 		<el-row style="margin-top:30px">
-		<router-link  :to="{ name: 'myApprove'}">
-				<el-button type="primary">返回</el-button>
-			</router-link>
+			<el-button @click="returnLastPage">返回</el-button>
 		</el-row>
 	</el-row>
 
@@ -204,6 +202,13 @@
 			getTime : function(time){
 				var timeStr = new Date(time);
 				return timeStr.toLocaleString();
+			},
+			/**
+			 * 返回上一页
+			 * @return {[type]} [description]
+			 */
+			returnLastPage :function(){
+				this.$router.go(-1)
 			}
 
 		},

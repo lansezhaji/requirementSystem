@@ -204,8 +204,11 @@
 		  			<el-col :span="8">
 		  				<span>Bug ID :</span>
 		  			</el-col>
-		  			<el-col :span="8">
+		  			<el-col :span="8" v-if="isEditMode">
 		  				<el-input v-model="formData.bugID"></el-input>
+		  			</el-col>
+		  			<el-col :span="8" v-else>
+		  				{{requireDetail.functionBugId}}
 		  			</el-col>
 					
 		  		</el-col>
@@ -394,9 +397,9 @@
 	        	<el-button type="primary" @click="dialogKeepVisible=true">返回</el-button>
 	      	</el-col>
 	      	<el-col style="text-align:center;" v-else>
-	      	<router-link :to="{ name: 'requirementManagement'}">
-					<el-button type="primary">返回</el-button>
-				</router-link>
+				<el-row style="margin-top:30px">
+					<el-button @click="returnLastPage">返回</el-button>
+				</el-row>
 	      	</el-col>			
 		</el-row>
 
@@ -749,6 +752,7 @@
 				        "functionModuleSecondId":  parseInt(this.formData.secondFunctionModule),
 				        "functionModuleSecondName":functionModuleSecondName,
 				        "functionTypeId": this.formData.functionType,
+				        "functionBugId":this.formData.bugID || null,
 				        "functionTypeName": functionTypeName,
 				        "priority": parseInt(this.formData.priority),
 				        "finishTime": this.formData.completionTime ? this.formData.completionTime.valueOf() : "",
@@ -829,6 +833,7 @@
 				    that.formData.RqNote =  that.requireDetail.requirementRemark
 				    that.formData.requirementPlan = that.requireDetail.requirementPlan
 				    that.formData.requireStart =  that.requireDetail.requirementStart
+				    that.formData.bugID = that.requireDetail.functionBugId
 
 				    that.formData.productPlat = that.requireDetail.productPlatformName.split(',');
 				    that.getSecondFunction();
@@ -837,7 +842,13 @@
                 }
             });
     	},
-
+			/**
+			 * 返回上一页
+			 * @return {[type]} [description]
+			 */
+			returnLastPage :function(){
+				this.$router.go(-1)
+			}
 
 
     },

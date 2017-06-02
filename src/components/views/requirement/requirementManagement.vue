@@ -550,13 +550,13 @@
                 id : require.id
             };
             that.batchForm.forEach(function(item){
-              if (item.typeId ==1 && item.value) {
+              if (item.typeId ==1 && item.value) {  //需求规划
                 modifyObj.requirementPlan = item.value
-              }else if (item.typeId ==2 && item.value) {
+              }else if (item.typeId ==2 && item.value) { //需求进度
                 modifyObj.requirementStatusId = item.value
-              }else if (item.typeId ==3 && item.value) {
-                // modifyObj.requirementPlan = item.value
-              }else if (item.typeId ==4 && item.value) {
+              }else if (item.typeId ==3 && item.value) { //负责人
+                modifyObj.responsibleUserId = item.value
+              }else if (item.typeId ==4 && item.value) { //优先级
                 modifyObj.priority = item.value
               }
             })

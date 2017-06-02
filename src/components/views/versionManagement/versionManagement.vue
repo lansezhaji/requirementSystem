@@ -8,26 +8,35 @@
 <!--             <el-button @click="getVersionTypeList()">查询</el-button>
         <el-button @click="debug()">debug</el-button> -->
     <div class="retrieval  criteria Style">
-  	<el-form :model="form" label-width="160px">
+  	<el-form :model="form" label-width="160px" ref="versionManagement">
   	<el-row class="row-bg" justify="right" style="margin-top:20px;"> 
       	<el-col :span="6">
-	      	<el-form-item label="版本号状态：" style="text-align:left">
-				 <el-select size="small" v-model="form.versionStatus" placeholder="请选择">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="上线" value="2"></el-option>
-            <el-option label="锁定" value="3"></el-option>
-            <el-option label="挂起" value="4"></el-option>
-				  </el-select>
-			</el-form-item>
+	      	<el-form-item label="版本号状态：" style="text-align:left" prop="versionStatus">
+    				 <el-select size="small" v-model="form.versionStatus" placeholder="请选择">
+                <el-option label="全部" value="0" ></el-option>
+                <el-option label="启用" value="1"></el-option>
+                <el-option label="上线" value="2"></el-option>
+                <el-option label="锁定" value="3"></el-option>
+                <el-option label="挂起" value="4"></el-option>
+    				  </el-select>
+    			</el-form-item>
   		</el-col>
   		<el-col :span="6" >
-        <el-form-item label="版本号：" style="text-align:left">
-          <el-input  size="small" v-model="form.versionName"></el-input>
+        <el-form-item label="版本号：" style="text-align:left" prop="versionName">
+          <el-autocomplete size="small" :maxlength="parseInt(100)"
+                class="inline-input"
+                v-model="form.versionName"
+                :fetch-suggestions="querySearch"
+                placeholder="请输入内容"
+                :trigger-on-focus="false"
+                @select="handleSelect"
+              ></el-autocomplete>
         </el-form-item>
   		</el-col>
       <el-col :span="6" >
-        <el-form-item label="版本类型：" style="text-align:left">
+        <el-form-item label="版本类型：" style="text-align:left" prop="versionType">
           <el-select v-model="form.versionType">
+            <el-option label="" value="">全部</el-option>
             <el-option v-for="type in versionTypeList" :label="type.versionTypeName" :value="type.id"></el-option>
           </el-select>
         </el-form-item>
@@ -41,6 +50,8 @@
                          <el-date-picker size="small"
                         v-model="form.planeOnlineDateFirst"
                         type="date"
+                        :picker-options="pickerOptions1"
+                        @change="datePicker1change"
                         placeholder="选择日期"
                        >
                       </el-date-picker>
@@ -50,7 +61,10 @@
                     <el-col :span="12">
                       <el-form-item prop="planeOnlineDateSecond" style="text-align:left">
                         <el-date-picker
-                        v-model="form.planeOnlineDateSecond" size="small"
+                        v-model="form.planeOnlineDateSecond" 
+                        size="small"
+                        :picker-options="pickerOptions2"
+                        @change="datePicker2change"
                         type="date"
                         placeholder="选择日期"
                         >
@@ -64,6 +78,8 @@
                          <el-date-picker size="small"
                         v-model="form.actualOnlineDateFirst"
                         type="date"
+                        :picker-options="pickerOptions3"
+                        @change="datePicker3change"
                         placeholder="选择日期"
                        >
                       </el-date-picker>
@@ -75,6 +91,8 @@
                         <el-date-picker
                         v-model="form.actualOnlineDateSecond" size="small"
                         type="date"
+                        :picker-options="pickerOptions4"
+                        @change="datePicker4change"
                         placeholder="选择日期"
                         >
                       </el-date-picker>
@@ -84,6 +102,7 @@
         </el-row>
   	 <div style="text-align:center;">
         <el-button type="primary" @click="getVersionList()">查询</el-button>
+        <el-button type="primary" @click="resetForm('versionManagement')">重置</el-button>
       </div>
   	</el-form>
     </div>
@@ -171,10 +190,10 @@
 
         </el-col>
         <el-col :span="22" style="text-align: right;">
-           <el-button type="text"  @click="changeVersionStatus(1)">启用</el-button>
-           <el-button type="text"  @click="changeVersionStatus(2)">上线</el-button>
-           <el-button type="text"  @click="changeVersionStatus(3)">锁定</el-button>
-           <el-button type="text" style="margin-right:60px;" @click="changeVersionStatus(4)">挂起</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(1)">启用</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(2)">上线</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(3)">锁定</el-button>
+           <el-button type="text" :disabled="multipleSelection.length<=0" style="margin-right:60px;" @click="changeVersionStatus(4)">挂起</el-button>
         </el-col>
       </el-row>
     <div class="retrieval  criteria Style" >
@@ -239,7 +258,7 @@
       <el-pagination
         @current-change="pageChange"
         :current-page.sync="returnData.currentPage"
-        :page-size="5"
+        :page-size="form.size"
         layout="total, prev, pager, next"
         :total="returnData.totalCount">
       </el-pagination>  
@@ -278,13 +297,14 @@
         form:{
           version:'',
           versionType:'',
-          versionStatus:'',
+          versionStatus:'0',
+          versionName : '',
           planeOnlineDateFirst:'',
           planeOnlineDateSecond:'',
           actualOnlineDateFirst:'',
           actualOnlineDateSecond:'',
-          curPage:"1",
-          size: "3"
+          curPage:1,
+          size: 10
         },
         returnData : "",//返回数据
         versionTypeList : [],//版本类型列表
@@ -300,6 +320,7 @@
           versionStatus: '1'
         },
         editForm:{
+          id : '',
           versionType : '',
           versionName : '',
           planTime : '',
@@ -309,7 +330,13 @@
            versionType: '',
            version:'',
            time:""
-        }
+        },
+        associateList:[],//联想列表
+        // 时间插件选项
+        pickerOptions1: { },
+        pickerOptions2: { },
+        pickerOptions3: { },
+        pickerOptions4: { },
       }
     },
     methods:{
@@ -349,13 +376,13 @@
 
             
             var reqData ={
-              // versionType     : that.form.versionStatus,
-              // versionName     : that.form.versionName,
-              // versionStatus   : that.form.versionStatus,
-              // planTimeStart   : that.form.planeOnlineDateFirst,
-              // planTimeEnd     : that.form.planeOnlineDateSecond,
-              // truthTimeStart  : that.form.actualOnlineDateFirst,
-              // truthTimeEnd    : that.form.actualOnlineDateSecond,
+              versionTypeId     : parseInt(that.form.versionType) || null,
+              versionName     : that.form.versionName || null,
+              versionStatus   : parseInt(that.form.versionStatus) || null,
+              planTimeStart   : that.form.planeOnlineDateFirst  || null,
+              planTimeEnd     : that.form.planeOnlineDateSecond  || null,
+              truthTimeStart  : that.form.actualOnlineDateFirst  || null,
+              truthTimeEnd    : that.form.actualOnlineDateSecond  || null,
               curPage         : that.form.curPage.toString(),
               size            : that.form.size.toString()
 
@@ -398,11 +425,11 @@
             var that = this;
             var url = '/api/dlmanagementtool/version/save';
             var reqData ={
-              id : "",
+              id : null,
               versionName : this.addForm.versionName,
-              versionTypeId : this.addForm.versionType,
-              versionStatus : this.addForm.versionStatus,
-              planTime  : this.addForm.planTime
+              versionTypeId : parseInt(this.addForm.versionType) || null,
+              versionStatus : parseInt(this.addForm.versionStatus) || null,
+              planTime  : this.addForm.planTime.valueOf()
 
             }
             this.$http.post(url,reqData).then(({
@@ -423,7 +450,45 @@
                   }
             });
       },
+        /**
+       * 模糊查询版本号
+       */
+       querySearch(queryString, cb) {
+              var that = this;
+              that.associateList = [];
+
+              var url = "/api/dlmanagementtool/version/fuzzyQueryVersion";
+              var reqData = {
+                  versionName: queryString,
+              };
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.versionName;
+                          restaurant.id = item.id;
+                          that.associateList.push(restaurant);
+                      })
+                      cb(that.associateList);
+                  }
+              });
+
+          },
+          /**
+           * [handleSelect 联想匹配函数选中]
+           * @param  {[type]} item [description]
+           * @return {[type]}      [description]
+           */
+          handleSelect:function(item) {
+              this.form.versionName = item.value;
+          },
       editVersion : function(row){
+        this.editForm.id = row.id;
         this.editForm.versionName = row.versionName;
         this.editForm.versionType = row.versionTypeId;
         this.editForm.versionStatus = row.versionStatus.toString();
@@ -432,9 +497,46 @@
         this.editDialogVisible = true;
       },
       updateVersion : function(){
+            var that = this;
+            var url = '/api/dlmanagementtool/version/save';
+            var reqData ={
+              id : this.editForm.id,
+              versionName : this.editForm.versionName,
+              versionTypeId : parseInt(this.editForm.versionType) || null,
+              versionStatus : parseInt(this.editForm.versionStatus) || null,
+              planTime  : this.editForm.planTime ? this.editForm.planTime.valueOf() : ""
 
+            }
+            this.$http.post(url,reqData).then(({
+                data,
+                ok,
+                statusText
+            }) => {
+                  if (ok && data.status == '0') {
+                      that.$message.success("保存成功");
+                      that.editDialogVisible = false;
+                      that.getVersionList();
+                    }else if (data.status == -2 || data.status == -3) {
+                      this.$store.commit('logout');
+                      localStorage.setItem("token","");
+                      this.$message.error("登录信息已经失效，请重新登录");
+                    }  else {
+                      that.$message.error(data.msg);
+                  }
+            });
       },
-
+      /**
+       * 重置表单
+       * @param  {[type]} formName [description]
+       * @return {[type]}          [description]
+       */
+      resetForm :function(formName) {
+          this.$refs[formName].resetFields();
+          this.form.planeOnlineDateFirst = "";
+          this.form.planeOnlineDateSecond = "";
+          this.form.actualOnlineDateFirst = "";
+          this.form.actualOnlineDateSecond = "";
+      } ,
       addVersion : function(){
         this.addForm.versionName = "";
         this.addForm.versionType = "";
@@ -475,7 +577,43 @@
                   }
             });
       },
-
+          /**
+           * 时间插件--时间区间限制
+           * @param  {[type]} val [description]
+           * @return {[type]}     [description]
+           */
+          datePicker1change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions2 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker2change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions1 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker3change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions4 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker4change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions3 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
       /**
        * 获取版本号状态
        * @param  {[type]} row [description]
@@ -501,7 +639,7 @@
       changeVersionStatus : function(type){
           var that = this;
           if (this.multipleSelection.length <=0) {
-             this.$message.error('请先购选选择版本');
+             this.$message.error('请先选择版本');
              return false
           }
           var ids = []
@@ -543,6 +681,9 @@
     },
     beforeRouteEnter: function (to,from,next) {
         next(vm => {
+            if (vm.$route.query.typeId ) {
+              vm.form.versionType = vm.$route.query.typeId;
+            }
             vm.getVersionTypeList();
             vm.getVersionList();
         }); 

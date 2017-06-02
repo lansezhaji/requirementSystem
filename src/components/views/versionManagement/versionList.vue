@@ -9,7 +9,7 @@
       <el-form :model="orderForm" ref="orderForm"  label-width="120px" class="query" style="text-align:left">
         <el-row type="flex" class="row-bg" justify="right">
               <el-col :span="8">
-                <el-form-item label="版本类型：">
+                <el-form-item label="版本类型：" prop="versionType">
                   <el-select  size="small" v-model="orderForm.versionType"  placeholder="请选择">
                     <el-option label="全部" value=""></el-option>
                     <el-option
@@ -23,20 +23,28 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                 <el-form-item label="版本号：">
+                 <el-form-item label="版本号：" prop="versionName">
                   <el-select size="small" v-model="orderForm.versionName"  placeholder="请选择">
                     <el-option label="全部" value=""></el-option>
                     <el-option
-                      v-for="item in versionList"
+                      v-for="item in versionAllList"
                       :label="item.versionName"
                       :value="item.versionName"
                       >
                     </el-option>
                   </el-select>
+<!--                   <el-autocomplete size="small" :maxlength="parseInt(100)"
+                    class="inline-input"
+                    v-model="orderForm.versionName"
+                    :fetch-suggestions="queryVersionSearch"
+                    placeholder="请输入内容"
+                    :trigger-on-focus="false"
+                    @select="handleVersionSelect"
+                  ></el-autocomplete> -->
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                 <el-form-item label="版本状态：">
+                 <el-form-item label="版本状态：" prop="versionStatus">
                     <el-select size="small" v-model="orderForm.versionStatus" placeholder="请选择">
                       <el-option label="全部" value=""></el-option>
                       <el-option label="启用" value=1></el-option>
@@ -49,59 +57,65 @@
         </el-row>
 
     <el-row type="flex" class="row-bg" justify="right">
-              <el-col :span="8">
-                <el-form-item label="项目经理：">
+      <el-col :span="16">
+            <el-col :span="12">
+                <el-form-item label="项目经理：" prop="projectManagement">
                   <el-col :span="20">
-                    <el-input size="small" v-model="orderForm.projectManagement"></el-input>
+                    <el-select  size="small" v-model="orderForm.projectManagement"  placeholder="请选择">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option
+                          v-for="item in userList"
+                          :label="item.userName"
+                          :value="item.userName"
+                          >
+                        </el-option>
+                    </el-select>
                   </el-col>
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
-                 <el-form-item label="产品经理：">
+              <el-col :span="12">
+                 <el-form-item label="产品经理：" prop="prodcutManagement">
                   <el-select size="small" v-model="orderForm.prodcutManagement"  placeholder="请选择">
                     <el-option
-                      v-for="item in prodcutManagementOption"
-                      :key="item.value"
-                      :label="item.name"
-                      :value="item.value" >
+                      v-for="item in userList"
+                      :label="item.userName"
+                      :value="item.userName"
+                      >
                     </el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
-                 <el-form-item label="项目成员：">
-                  <el-col :span="20">
-                    <el-input size="small" v-model="orderForm.projectMember"></el-input>
-                  </el-col>
-                </el-form-item>
-              </el-col>
-        </el-row>
-        
-         <el-row type="flex" class="row-bg" justify="right">
-              <el-col :span="8">
-                <el-form-item label="项目分支：">
+              
+              <el-col :span="12">
+                <el-form-item label="项目分支：" prop="projectFeature">
                   <el-col :span="20">
                     <el-input size="small" v-model="orderForm.projectFeature"></el-input>
                   </el-col>
                 </el-form-item>
               </el-col>
              
-              <el-col :span="8">
-                 <el-form-item label="需求名称：">
+              <el-col :span="12">
+                 <el-form-item label="需求名称：" prop="requirementName">
                   <el-col :span="20">
-                    <el-input size="small" v-model="orderForm.requirementName"></el-input>
+                    <el-autocomplete size="small" :maxlength="parseInt(100)"
+                        class="inline-input"
+                        v-model="orderForm.requirementName"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :trigger-on-focus="false"
+                        @select="handleSelect"
+                      ></el-autocomplete>
                   </el-col>
                 </el-form-item>
               </el-col>
-        </el-row>
-
-         <el-row type="flex" class="row-bg" justify="right">
            <el-col :span="12">  
                 <el-form-item label="计划转测时间：" >
                    <el-col :span="10">
-                      <el-form-item prop="planeTransfDateFirst">
+                      <el-form-item  >
                          <el-date-picker size="small"
                         v-model="orderForm.planeTransfDateFirst"
+                        :picker-options="pickerOptions1"
+                        @change="datePicker1change"
                         type="date"
                         placeholder="选择日期"
                        >
@@ -110,9 +124,11 @@
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="planeTransfDateSecond">
+                      <el-form-item  >
                         <el-date-picker
                         v-model="orderForm.planeTransfDateSecond" size="small"
+                        :picker-options="pickerOptions2"
+                        @change="datePicker2change"
                         type="date"
                         placeholder="选择日期"
                         >
@@ -124,9 +140,11 @@
               <el-col :span="12">
                 <el-form-item label="计划 QA 时间：" >
                    <el-col :span="10">
-                      <el-form-item prop="planeQADateFirst">
+                      <el-form-item >
                          <el-date-picker size="small"
                         v-model="orderForm.planeQADateFirst"
+                        :picker-options="pickerOptions3"
+                        @change="datePicker3change"
                         type="date"
                         placeholder="选择日期"
                        >
@@ -135,9 +153,11 @@
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="planeQADateSecond">
+                      <el-form-item >
                         <el-date-picker
                         v-model="orderForm.planeQADateSecond" size="small"
+                        :picker-options="pickerOptions4"
+                        @change="datePicker4change"
                         type="date"
                         placeholder="选择日期"
                         >
@@ -146,40 +166,39 @@
                     </el-col>
                 </el-form-item>
               </el-col>
-        </el-row>
-
-        <el-row type="flex" class="row-bg" justify="right">
            <el-col :span="12">  
                 <el-form-item label="计划上线时间：" >
                    <el-col :span="10">
-                      <el-form-item prop="planeOnlineDateFirst">
                          <el-date-picker size="small"
                         v-model="orderForm.planeOnlineDateFirst"
+                        :picker-options="pickerOptions5"
+                        @change="datePicker5change"
                         type="date"
                         placeholder="选择日期"
                        >
                       </el-date-picker>
-                      </el-form-item>
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="planeOnlineDateSecond">
                         <el-date-picker
                         v-model="orderForm.planeOnlineDateSecond" size="small"
+                        :picker-options="pickerOptions6"
+                        @change="datePicker6change"
                         type="date"
                         placeholder="选择日期"
                         >
                       </el-date-picker>
-                      </el-form-item>
                     </el-col>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="实际上线时间：" >
                    <el-col :span="10">
-                      <el-form-item prop="actualOnlineDateFirst">
+                      <el-form-item >
                          <el-date-picker size="small"
                         v-model="orderForm.actualOnlineDateFirst"
+                        :picker-options="pickerOptions7"
+                        @change="datePicker7change"
                         type="date"
                         placeholder="选择日期"
                        >
@@ -188,10 +207,12 @@
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="actualOnlineDateSecond">
+                      <el-form-item >
                         <el-date-picker
                         v-model="orderForm.actualOnlineDateSecond" size="small"
                         type="date"
+                        :picker-options="pickerOptions8"
+                        @change="datePicker8change"
                         placeholder="选择日期"
                         >
                       </el-date-picker>
@@ -199,11 +220,32 @@
                     </el-col>
                 </el-form-item>
               </el-col>
+      </el-col>
+            <el-col :span="8">
+                 <el-form-item label="项目成员：" prop="projectMember">
+                  <el-col :span="20">
+                    <el-select
+                        v-model="orderForm.projectMember"
+                        multiple
+                        filterable
+                        remote
+                        placeholder="请输入关键词"
+                        :remote-method="remoteMethod"
+                        :loading="loading">
+                        <el-option
+                          v-for="item in userListTemp"
+                          :label="item.userName"
+                          :value="item.userName">
+                        </el-option>
+                      </el-select>
+                  </el-col>
+                </el-form-item>
+              </el-col>
         </el-row>
 
       <div style="text-align:center;">
         <el-button type="primary" @click="getVersionList()">搜索</el-button>
-        <el-button type="primary">重置</el-button>
+        <el-button type="primary" @click="resetForm('orderForm')">重置</el-button>
       </div>
       </el-form> 
     </div>
@@ -213,73 +255,86 @@
        <el-table
     :data="versionList" border
     style="width: 100%;text-align:left">
-    <el-table-column type="expand">
+    <el-table-column type="expand" >
       <template scope="scope">
-          <el-row style="text-align:left">
+          <el-row style="text-align:left" v-for="(projectInfo,index) in scope.row.requirementApplies" v-if="scope.row.requirementApplies.length>0" class="projectInfo">
             <el-form >
-            <el-col :span="23">
-              <el-row >
-                <el-col :span="3" >
-                  <strong>项目基本信息：</strong>
-                </el-col>
-                <el-col :span="4">
-                  <el-form-item label="项目名称：">
-                      {{scope.row.requirementApplies[0].projectName}}
-                  </el-form-item>
-                  <el-form-item label="项目经理：">
-                      {{scope.row.requirementApplies[0].projectUserName}}
-                  </el-form-item>
-                  <el-form-item label="启动时间：" style="border-bottom:1px dashed lightgray">
-                      {{scope.row.requirementApplies[0].startTimeStr}}
-                  </el-form-item>
-                </el-col>
-                <el-col :span="16">
-                  <el-form-item label="项目分支：">
-                      {{scope.row.requirementApplies[0].projectBranch}}
-                  </el-form-item>
-                  <el-form-item label="项目成员：">
-                     {{scope.row.requirementApplies[0].projectOthers}}
-                  </el-form-item>
-                  <el-form-item style="border-bottom:1px dashed lightgray">
-                      <el-col :span="6">
-                        <strong>计划转测时间：</strong>
-                        <span>{{scope.row.requirementApplies[0].testTimeStr}}</span>
-                      </el-col>
-                      <el-col :span="6">
-                        <strong>实际转测时间：</strong>
-                        <span>待填</span>
-                      </el-col>
-                      <el-col :span="6">
-                        <strong>计划QA时间：</strong>
-                        <span>{{scope.row.requirementApplies[0].qaTimeStr}}</span>
-                      </el-col>
-                      <el-col :span="6">
-                        <strong>实际QA时间：</strong>
-                        <span>待填</span>
-                      </el-col>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row v-for="require in scope.row.requirementApplies[0].requirementInfos">
-                <el-col :span="3">
-                  <strong>需求信息：</strong>
-                </el-col>
-                <el-col :span="16">
-                  <el-form-item label="需求名称：">
-                      {{require.requirementName}}
-                  </el-form-item>
-                </el-col>
-                <el-col :span="5">
-                  <el-form-item label="产品经理：">
-                      {{require.responsibleUserName}}
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-col>
-            <el-col :span="1">
-              <el-button>编辑</el-button>
-            </el-col>
+              <el-col :span="1" style="line-height:100px;text-align:center">
+                  {{projectInfo.id}}
+              </el-col>
+              <el-col :span="22">
+                <el-row >
+                  <el-col :span="3" style="line-height:100px;text-align:left">
+                    <strong>项目基本信息：</strong>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="项目名称：">
+                        {{projectInfo.projectName}}
+                    </el-form-item>
+                    <el-form-item label="项目经理：">
+                        {{projectInfo.projectUserName}}
+                    </el-form-item>
+                    <el-form-item label="启动时间：" >
+                        {{projectInfo.startTimeStr}}
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="项目分支：">
+                        {{projectInfo.projectBranch}}
+                    </el-form-item>
+                    <el-form-item label="项目成员：">
+                       {{projectInfo.projectOthers}}
+                    </el-form-item>
+                    <el-form-item >
+                        <el-col :span="12">
+                          <strong>计划转测时间：</strong>
+                          <span>{{projectInfo.testTimeStr}}</span>
+                        </el-col>
+                        <el-col :span="12">
+                          <strong>实际转测时间：</strong>
+                          <span>待填</span>
+                        </el-col>
+                        <el-col :span="12">
+                          <strong>计划QA时间：</strong>
+                          <span>{{projectInfo.qaTimeStr}}</span>
+                        </el-col>
+                        <el-col :span="12">
+                          <strong>实际QA时间：</strong>
+                          <span>待填</span>
+                        </el-col>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row style="border-top:1px dashed lightgray">
+                    <el-col :span="3" style="line-height:30px;text-align:left">
+                      <strong>需求信息：</strong>
+                    </el-col >
+                    <el-col :span="21">
+                      <el-col v-for="require in projectInfo.requirementInfos" >
+                        
+                        <el-col :span="9">
+                          <el-form-item label="需求名称：">
+                              <el-button @click="viewDetail(require)" type="text">{{require.requirementName}}</el-button>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                          <el-form-item label="产品经理：">
+                              {{require.responsibleUserName}}
+                          </el-form-item>
+                        </el-col>
+                      </el-col>                      
+                    </el-col>
+                
+                </el-row>
+
+              </el-col>
+              <el-col :span="1">
+                <el-button @click="editApprove(projectInfo.id)">编辑</el-button>
+              </el-col>
             </el-form>
+          </el-row>
+          <el-row v-else>
+            暂无相关信息
           </el-row>
       </template>
     </el-table-column>
@@ -322,7 +377,7 @@
   <el-pagination
         @current-change="pageChange"
         :current-page.sync="returnData.currentPage"
-        :page-size="5"
+        :page-size="orderForm.size"
         layout="total, prev, pager, next"
         :total="returnData.totalCount">
       </el-pagination> 
@@ -345,27 +400,41 @@
           planeQADateSecond:'',
           projectManagement:'',//项目经理
           prodcutManagement:'', //产品经理
-          projectMember:'',
+          projectMember:[],
           planeOnlineDateFirst:'',
           planeOnlineDateSecond:'',
           actualOnlineDateFirst:'',
           actualOnlineDateSecond:'',
           projectFeature:'',
           requirementName:'',
-          curPage : "1",
-          size : "5"
+          curPage : 1,
+          size : 10
 
         },
         returnData : {
           currentPage  : 1,
-          totalCount : 45
+          totalCount : 0
         },//版本列表所有返回数据
+        loading : false,
+        userList : [],//人员列表
+        userListTemp : [],
         versionList : [],//版本号列表
+        versionAllList : [],//版本号列表
         tableData3: [ ],
+        associateList : [],//联想查询版本号列表
         versionTypeList:[ ],
         versionNumOption:[ ],
         versionStatusOption:[ ],
-        prodcutManagementOption:[ ]
+        prodcutManagementOption:[ ],
+        // 时间插件选项
+        pickerOptions1: { },
+        pickerOptions2: { },
+        pickerOptions3: { },
+        pickerOptions4: { },
+        pickerOptions5: { },
+        pickerOptions6: { },
+        pickerOptions7: { },
+        pickerOptions8: { },
       }
     },
     methods:{
@@ -440,6 +509,38 @@
             });
       },
       /**
+       * 获取人员列表
+       * @param  {[type]} userName [description]
+       * @return {[type]}          [description]
+       */
+          getUserList : function(userName){
+            var that = this;
+
+            var reqData = {
+              curPage : 1,
+              size : 5,
+              data:[{
+                userName    : userName || "",      
+              }]
+            }
+            var url = "/api/dlmanagementtool/user/searchUserListInPage"
+              this.$http.post(url,reqData).then(({
+                      data,
+                      ok,
+                      statusText
+                  }) => {
+                      if (ok && data.status == '0') {
+                        this.userList =  data.data.data;
+                      }else if (data.status == -2 || data.status == -3) {
+                        this.$store.commit('logout');
+                        localStorage.setItem("token","");
+                        this.$message.error("登录信息已经失效，请重新登录");
+                      }  else {
+                        that.$message.error(data.msg);
+                      }
+                  });
+          },
+      /**
        * 获取版本号列表
        * @return {[type]} [description]
        */
@@ -451,10 +552,12 @@
               versionName : that.orderForm.versionName || null ,
               versionStatus : that.orderForm.versionStatus || null,
               projectUserName : that.orderForm.projectManagement || null,
-              projectOthers : that.orderForm.projectMember || null,
+              projectOthers : that.orderForm.projectMember.toString() || null,
               responsibleUserName  : that.orderForm.prodcutManagement || null,
               branchName : that.orderForm.projectFeature || null,
               requirementName : that.orderForm.requirementName || null,
+              testTimeStart   : that.orderForm.planeTransfDateFirst || null,
+              testTimeEnd     : that.orderForm.planeTransfDateSecond || null,
               planTimeStart   : that.orderForm.planeOnlineDateFirst || null,
               planTimeEnd     : that.orderForm.planeOnlineDateSecond || null,
               truthTimeStart  : that.orderForm.actualOnlineDateFirst || null,
@@ -463,7 +566,6 @@
               qaTimeEnd       : that.orderForm.planeQADateSecond || null,
               curPage         : that.orderForm.curPage.toString(),
               size            : that.orderForm.size.toString()
-
             }
             this.$http.post(url,reqData).then(({
                 data,
@@ -473,6 +575,9 @@
                   if (ok && data.status == '0') {
                       that.returnData = data.data
                       that.versionList= data.data.data;
+                      if (that.versionAllList.length<=0) {
+                          that.versionAllList = that.versionList
+                      };
                     }else if (data.status == -2 || data.status == -3) {
                       this.$store.commit('logout');
                       localStorage.setItem("token","");
@@ -496,6 +601,47 @@
         return typeName;
       },
       /**
+       * 重置表单
+       * @param  {[type]} formName [description]
+       * @return {[type]}          [description]
+       */
+      resetForm :function(formName) {
+          this.$refs[formName].resetFields();
+          this.orderForm.planeTransfDateFirst   = '';
+          this.orderForm.planeTransfDateSecond  = '';
+          this.orderForm.planeQADateFirst       = '';
+          this.orderForm.planeQADateSecond      = '';
+          this.orderForm.planeOnlineDateFirst   = '';
+          this.orderForm.planeOnlineDateSecond  = '';
+          this.orderForm.actualOnlineDateFirst  = '';
+          this.orderForm.actualOnlineDateSecond = '';
+      } ,
+      /**
+       * [viewDetail 查看详情]
+       * @return {[type]} [description]
+       */
+      viewDetail : function(req) {
+        this.$router.push({
+          name:'addRequirement',
+          query:{
+            "addType":"assign",
+            "id":req.id
+          }
+        })
+      },
+      /**
+       * 编辑项目
+       * @return {[type]} [description]
+       */
+      editApprove : function(id){
+        this.$router.push({
+          name:'createApprove',
+          query:{
+            "id":id
+          }
+        })
+      },
+      /**
        * 获取版本号状态
        * @param  {[type]} row [description]
        * @return {[type]}     [description]
@@ -504,6 +650,166 @@
         var statusArray = ['','启用','上线','锁定','挂起'] ;
         return statusArray[row.versionStatus]
       },
+      /**
+       * [remoteMethod description]
+       * @param  {[type]} query [description]
+       * @return {[type]}       [description]
+       */
+      remoteMethod :function(query) {
+            if (query !== '') {
+              this.loading = true;
+              setTimeout(() => {
+                this.loading = false;
+                this.userListTemp = this.userList.filter(item => {
+                  return item.userName.toLowerCase()
+                    .indexOf(query.toLowerCase()) > -1;
+                });
+              }, 200);
+            } else {
+              this.userListTemp = [];
+            }
+          },
+        /**
+       * 模糊查询版本号
+       */
+       queryVersionSearch(queryString, cb) {
+              var that = this;
+              that.associateList = [];
+
+              var url = "/api/dlmanagementtool/version/fuzzyQueryVersion";
+              var reqData = {
+                  versionName: queryString,
+              };
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.versionName;
+                          restaurant.id = item.id;
+                          that.associateList.push(restaurant);
+                      })
+                      cb(that.associateList);
+                  }
+              });
+
+          },
+            /**
+           * 模糊查询
+           */
+           querySearch(queryString, cb) {
+              var that = this;
+              that.associateList = [];
+
+              var url = "/api/dlmanagementtool/requirement/fuzzyQueryRequirement";
+              var reqData = {
+                  requirementName: queryString,
+              };
+
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.requirementName;
+                          restaurant.id = item.id;
+                          that.associateList.push(restaurant);
+                      })
+                      cb(that.associateList);
+                  }
+              });
+
+          },
+          /**
+           * [handleSelect 联想匹配函数选中]
+           * @param  {[type]} item [description]
+           * @return {[type]}      [description]
+           */
+          handleSelect:function(item) {
+              this.orderForm.requirementName = item.value;
+          },
+
+          handleVersionSelect:function(item) {
+              this.orderForm.versionName = item.value;
+          },
+
+          /**
+           * 时间插件--时间区间限制
+           * @param  {[type]} val [description]
+           * @return {[type]}     [description]
+           */
+          datePicker1change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions2 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker2change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions1 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker3change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions4 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker4change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions3 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker5change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions6 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker6change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions5 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker7change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions8 = {
+                  disabledDate(time) {
+                      return time.getTime() <  endDate - 2.88e7;
+                  }
+              };
+          },
+          datePicker8change : function(val) {
+              let endDate = new Date(val);
+              this.pickerOptions7 = {
+                  disabledDate(time) {
+                      return time.getTime() >  endDate - 2.88e7;
+                  }
+              };
+          },
       /**
        * 翻页
        * @param  {[type]} val [description]
@@ -516,6 +822,8 @@
     },
     beforeRouteEnter: function (to,from,next) {
         next(vm => {
+            vm.getUserList();
+            vm.getVersionTypeList();
             vm.getVersionList();
         }); 
     }
@@ -537,5 +845,12 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+  .projectInfo{
+    border-bottom: 1px solid gray;
+    margin-top: 10px;
+  }
+  .projectInfo .el-form-item{
+    margin-bottom: 0px;
   }
 </style>

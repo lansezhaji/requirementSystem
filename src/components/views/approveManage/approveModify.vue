@@ -152,6 +152,12 @@
 										
 					</el-row>		
 				</el-form>
+				<el-row style="margin-top:30px">
+<!-- 					<el-button type="text" @click="recalReplay(scope.row.id,false)">撤回</el-button>
+					<el-button type="text" @click="handelApprove(scope.row,true)">同意</el-button>
+					<el-button type="text" @click="handelApprove(scope.row,false)">驳回</el-button> -->
+					<el-button @click="returnLastPage">返回</el-button>
+				</el-row>
 			</el-row>			
 		</el-col>
 
@@ -229,9 +235,12 @@
 				};					
 			},
 			compareProjectName : function(index){
-				if (this.approveOrgDetail.requirementInfos[index].requirementName != this.approveNewDetail.requirementInfos[index].requirementName) {
+
+				if (!this.approveOrgDetail.requirementInfos[index] || !this.approveNewDetail.requirementInfos[index] ){
 					return 'diff'
-				};	
+				}else if (this.approveOrgDetail.requirementInfos[index].requirementName != this.approveNewDetail.requirementInfos[index].requirementName) {
+					return 'diff'
+				}
 			},
 			/**
 			 * 时间转换
@@ -274,6 +283,13 @@
 			 */
 			clearForm : function(){
 
+			},
+			/**
+			 * 返回上一页
+			 * @return {[type]} [description]
+			 */
+			returnLastPage :function(){
+				this.$router.go(-1)
 			}
 		},
 		beforeRouteEnter: function(to, from, next) {

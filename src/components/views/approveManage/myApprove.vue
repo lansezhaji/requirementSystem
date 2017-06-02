@@ -10,7 +10,21 @@
 				<el-row>
 					<el-col :span="8">
 						<el-form-item label="审批单号：" class="userMessage" prop="approveNo">
-							<el-input v-model="approveForm.approveNo"></el-input>					
+							<el-col :span="16">
+								<el-input v-model="approveForm.approveNo"></el-input>	
+							</el-col>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="需求名称：" class="userMessage" prop="requireName">		
+							<el-autocomplete size="small" :maxlength="parseInt(100)"
+				                class="inline-input"
+				                v-model="approveForm.requireName"
+				                :fetch-suggestions="querySearch"
+				                placeholder="请输入内容"
+				                :trigger-on-focus="false"
+				                @select="handleSelect"
+				              ></el-autocomplete>		
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -23,28 +37,23 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="版本类型：" class="userMessage">
-							<el-select v-model="approveForm.versionType">
+						<el-form-item label="版本类型：" class="userMessage" prop="versionType">
+							<el-select v-model="approveForm.versionType" @change="getVersionList">
+								<el-option label="全部" value=""></el-option>
 								<el-option :label="type.versionTypeName" :value="type.id" v-for="type in initData.versionTypeList"></el-option>
 							</el-select>				
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="需求名称：" class="userMessage">
-							<el-input v-model="approveForm.requireName"></el-input>					
+						<el-form-item label="选择版本号：" class="userMessage" prop="approveVersion">
+							<el-select v-model="approveForm.approveVersion">
+								<el-option label="全部" value=""></el-option>
+								<el-option v-for="type in versionList" :label="type.versionName" :value="type.id"></el-option>
+							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="申请时间：" class="userMessage">
-							<el-date-picker
-						      v-model="approveForm.approveTime"
-						      type="daterange"
-						      placeholder="选择日期范围">
-						    </el-date-picker>					
-						</el-form-item>
-					</el-col>
-					<el-col :span="8">
-						<el-form-item label="审批状态：" class="userMessage">
+						<el-form-item label="审批状态：" class="userMessage" prop="approveStatus">
 							<el-select v-model="approveForm.approveStatus">
 								<el-option label="全部" value=""></el-option>
 								<el-option label="等待审批" value=1></el-option>
@@ -54,23 +63,57 @@
 							</el-select>						
 						</el-form-item>
 					</el-col>
+					
+					
 					<el-col :span="8" v-if="!pageFlage">
-						<el-form-item label="申请人：" class="userMessage">
-							<el-input v-model="approveForm.approvePersion"></el-input>					
-						</el-form-item>
-					</el-col>	
-					<el-col :span="8">
-						<el-form-item label="版本号：" class="userMessage">
-							<el-select v-model="approveForm.approveVersion">
-								<el-option label="1.0.0" value="01"></el-option>
-							</el-select>						
-						</el-form-item>
-					</el-col>	
-					<el-col :span="8">
-						<el-form-item label="产品经理：" class="userMessage">
-							<el-select v-model="approveForm.productManage">
-								<el-option label="夏瑞" value="01"></el-option>
+						<el-form-item label="申请人：" class="userMessage" prop="approvePersion">
+							<el-select  size="small" v-model="approveForm.approvePersion"  placeholder="请选择">
+					            <el-option label="全部" value=""></el-option>
+							    <el-option
+							      v-for="item in userList"
+							      :label="item.userName"
+							      :value="item.id"
+							      >
+							    </el-option>
 							</el-select>				
+						</el-form-item>
+					</el-col>	
+						
+					<el-col :span="8">
+						<el-form-item label="产品经理：" class="userMessage" prop="responsibleUserId">
+							<el-select  size="small" v-model="approveForm.responsibleUserId"  placeholder="请选择">
+					            <el-option label="全部" value=""></el-option>
+							    <el-option
+							      v-for="item in userList"
+							      :label="item.userName"
+							      :value="item.id"
+							      >
+							    </el-option>
+							</el-select>			
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="申请时间：" class="userMessage" prop="approveTime">
+							<el-col :span="10" class="time">
+								<el-date-picker
+							      v-model="approveForm.createStartTime"
+							      width="100px"
+							      :picker-options="pickerOptions1"
+                                  @change="datePicker1change"
+							      placeholder="选择日期">
+							    </el-date-picker>	
+							</el-col>
+							<el-col :span="1">
+								-
+							</el-col>
+							<el-col :span="10" class="time">
+								<el-date-picker
+							      v-model="approveForm.createEndTime"
+							      :picker-options="pickerOptions2"
+                                  @change="datePicker2change"
+							      placeholder="选择日期">
+							    </el-date-picker>
+							</el-col>
 						</el-form-item>
 					</el-col>					
 				</el-row>
@@ -101,17 +144,21 @@
 							{{getApplyType(scope.row.applyType)}}
 						</template>
 				    </el-table-column>
-				    <el-table-column prop="createTimeStr" label="申请时间" min-width="180px"> </el-table-column>
-				    <el-table-column prop="updateTimeStr" label="最后审批时间" min-width="180px"> </el-table-column>
-				    <el-table-column prop="userName" label="申请人" min-width="100px" v-if="!pageFlage"> </el-table-column>
-				    <el-table-column prop="versionTypeId" label="版本类型" min-width="100px">
+				    <el-table-column prop="createTimeStr" label="申请时间" min-width="150px"> </el-table-column>
+				    <el-table-column prop="updateTimeStr" label="最后审批时间" min-width="150px"> </el-table-column>
+				    <el-table-column prop="userName" label="申请人" min-width="100px" v-if="!pageFlage" show-overflow-tooltip> </el-table-column>
+				    <el-table-column prop="versionTypeId" label="版本类型" min-width="100px" show-overflow-tooltip>
 				    	<template scope="scope">
 				    		{{filterVertionType(scope.row.versionTypeId)}}
 				    	</template>
 				    </el-table-column>
-				    <el-table-column prop="versionId" label="版本号" min-width="150px" show-overflow-tooltip> </el-table-column>
-				    <el-table-column prop="projectName" label="需求名称" min-width="200px" show-overflow-tooltip> </el-table-column>
-				    <el-table-column prop="projectUserName" label="产品经理" min-width="100px"> </el-table-column>
+				    <el-table-column prop="versionName" label="版本号" min-width="120px" show-overflow-tooltip> </el-table-column>
+				    <el-table-column prop="projectName" label="需求名称" min-width="200px" show-overflow-tooltip>
+				    	<template scope="scope">
+				    		{{getRequireName(scope.row)}}
+				    	</template>
+				    </el-table-column>
+				    <el-table-column prop="projectUserName" label="产品经理" min-width="100px" show-overflow-tooltip> </el-table-column>
 				    <el-table-column prop="applyStatus" label="审批状态" min-width="100px" >
 				    	<template scope="scope" >
 				    		<el-col :class="applyStatusClass(scope.row.applyStatus)">
@@ -197,14 +244,17 @@
 					approveType : "",
 					versionType : "",
 					requireName : "",
-					approveTime : [],
+					createStartTime : "",
+	            	createEndTime   : "",
 					approveStatus : "",
 					approveVersion : "",
 					approvePersion : "",
-					productManage : "",
+					responsibleUserId : "",
 					curPage : 1,
 					size : 10,
 				},
+				versionList : [],//版本号列表
+				userList : [],
 				initData : {
 					versionTypeList : []
 				},
@@ -219,7 +269,10 @@
 					agree: false,
 					idea : "",
 					pass : false
-				}
+				},
+				// 时间插件选项
+				pickerOptions1: { },
+            	pickerOptions2: { },
 			}
 			return data
 		},
@@ -247,14 +300,43 @@
 		                }
 		            });
 		      },
+		      /**
+		       * [bulkEdit 搜索]
+		       * @return {[type]} [description]
+		       */
+		      getUserList : function(userName){
+		        var that = this;
+
+		        var reqData = {
+		          curPage : 1,
+		          size : 5,
+		          data:[{
+		            userName    : userName || "",      
+		          }]
+		        }
+		        var url = "/api/dlmanagementtool/user/searchUserListInPage"
+		          this.$http.post(url,reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == '0') {
+		                    this.userList =  data.data.data;
+		                  }else if (data.status == -2 || data.status == -3) {
+		                    this.$store.commit('logout');
+		                    localStorage.setItem("token","");
+		                    this.$message.error("登录信息已经失效，请重新登录");
+		                  }  else {
+		                    that.$message.error(data.msg);
+		                  }
+		              });
+		      },
 			/**
 			 * 搜索我发起的审批
 			 * @return {[type]} [description]
 			 */
 			queryMyApprove : function(){
 	            var that = this;
-			    that.approveForm.versionId = "";
-	            
 	            if (this.pageFlage) {
 	            	var url = '/api/dlmanagementtool/apply/proposedApply';
 	            }else{
@@ -263,13 +345,14 @@
 	            var reqData ={
 	            	applyCode 		: this.approveForm.approveNo || null, //单号
 	            	applyType 		: this.approveForm.approveType || null, //审批类型
-	            	requirementName : this.approveForm.requireName.trim() ,//需求名称
-	            	// createStartTime : "",
-	            	// createEndTime   : "",
+	            	requirementName : this.approveForm.requireName.trim() || null ,//需求名称
+	            	userId 			: parseInt(this.approveForm.approvePersion)||null,
+	            	createStartTime : this.approveForm.createStartTime,
+	            	createEndTime   : this.approveForm.createEndTime,
 	            	applyStatus 	: parseInt(this.approveForm.approveStatus) ,//状态
-	            	// versionId 		: "",
-	            	// responsibleUserId : "",
-	            	// versionTypeId 	: this.approveForm.versionType,
+	            	versionId 		: parseInt(this.approveForm.approveVersion) || null,
+	            	responsibleUserId : parseInt(this.approveForm.responsibleUserId) || null,
+	            	versionTypeId 	: parseInt(this.approveForm.versionType) || null ,
 	              	curPage         : this.approveForm.curPage,
 	              	size            : this.approveForm.size
 	            }
@@ -290,6 +373,35 @@
 	            });
 			},
 			/**
+			 * 获取版本号列表
+			 * @return {[type]} [description]
+			 */
+			getVersionList : function(){
+	            var that = this;
+			    that.approveForm.approveVersion = "";
+	            var url = '/api/dlmanagementtool/version/list';
+	            var reqData ={
+	            	versionTypeId 	: this.approveForm.versionTypeId,
+	              	curPage         : 1,
+	              	size            : 10
+	            }
+	            this.$http.post(url,reqData).then(({
+	                data,
+	                ok,
+	                statusText
+	            }) => {
+	                  if (ok && data.status == '0') {
+	                      that.versionList= data.data.data;
+                    }else if (data.status == -2 || data.status == -3) {
+	                  	this.$store.commit('logout');
+   						localStorage.setItem("token","");
+   						this.$message.error("登录信息已经失效，请重新登录");
+	                  }  else {
+	                      that.$message.error(data.msg);
+	                  }
+	            });
+			},
+			/**
 			 * 过滤审批类型
 			 * @return {[type]} [description]
 			 */
@@ -300,6 +412,44 @@
 					return "修改项目信息"
 				}
 			},
+		        /**
+		       * 模糊查询
+		       */
+		       querySearch(queryString, cb) {
+		              var that = this;
+		              that.associateList = [];
+
+		              var url = "/api/dlmanagementtool/requirement/fuzzyQueryRequirement";
+		              var reqData = {
+		                  requirementName: queryString,
+		              };
+
+		              this.$http.post(url, reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == 0) {
+		                    var list = data.data;
+		                      list.forEach(function(item) {
+		                          var restaurant = {};
+		                          restaurant.value = item.requirementName;
+		                          restaurant.id = item.id;
+		                          that.associateList.push(restaurant);
+		                      })
+		                      cb(that.associateList);
+		                  }
+		              });
+
+		          },
+		    /**
+		       * [handleSelect 联想匹配函数选中]
+		       * @param  {[type]} item [description]
+		       * @return {[type]}      [description]
+		       */
+		      handleSelect:function(item) {
+		          this.approveForm.requireName = item.value;
+		      },
 			/**
 			 * 过滤版本类型
 			 * @return {[type]} [description]
@@ -325,6 +475,40 @@
 				var applyArray = ['','等待审批','通过','驳回','撤回'];
 				return applyArray[status];
 			},
+			/**
+			 * 获取需求名称
+			 * @return {[type]} [description]
+			 */
+			getRequireName : function(row){
+				var requrementName = [];
+				if (row.requirementInfos.length >0) {
+					row.requirementInfos.forEach(function(item){
+						requrementName.push(item.requirementName)
+					})
+				}
+				return requrementName.toString();
+			},
+			/**
+	         * 时间插件--时间区间限制
+	         * @param  {[type]} val [description]
+	         * @return {[type]}     [description]
+	         */
+	        datePicker1change : function(val) {
+	            let endDate = new Date(val);
+	            this.pickerOptions2 = {
+	                disabledDate(time) {
+	                    return time.getTime() <  endDate - 2.88e7;
+	                }
+	            };
+	        },
+	        datePicker2change : function(val) {
+	            let endDate = new Date(val);
+	            this.pickerOptions1 = {
+	                disabledDate(time) {
+	                    return time.getTime() >  endDate - 2.88e7;
+	                }
+	            };
+	        },
 			/**
 			 * 更新审批状态
 			 * @return {[type]} [description]
@@ -392,6 +576,8 @@
 			 */
 			clearForm : function(){
 				this.$refs['approveForm'].resetFields();
+				this.approveForm.createStartTime = "";
+				this.approveForm.createEndTime = "";
 			},
 			pageChange : function(val){
 				this.approveForm.curPage = val;
@@ -414,6 +600,7 @@
         		vm.pageFlage = vm.$route.name == 'myApprove' 
         		vm.getVersionTypeList();
         		vm.queryMyApprove();
+        		vm.getUserList();
 	        });
 	    }
 	}
@@ -460,5 +647,8 @@
 		background-color: gray;
 		color: white;
 		text-align: center;
+	}
+	.el-date-editor.el-input{
+		max-width: 150px ;
 	}
 </style>
