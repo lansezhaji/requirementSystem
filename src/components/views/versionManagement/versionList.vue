@@ -329,7 +329,9 @@
 
               </el-col>
               <el-col :span="1">
-                <el-button @click="editApprove(projectInfo.id)">编辑</el-button>
+                <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+                    <el-button @click="editApprove(projectInfo.id)" :disabled="!versionAdmin">编辑</el-button>
+                </el-tooltip>
               </el-col>
             </el-form>
           </el-row>
@@ -374,13 +376,15 @@
       prop="truthTimeStr">
     </el-table-column>
   </el-table>
-  <el-pagination
-        @current-change="pageChange"
-        :current-page.sync="returnData.currentPage"
-        :page-size="orderForm.size"
-        layout="total, prev, pager, next"
-        :total="returnData.totalCount">
-      </el-pagination> 
+      <el-pagination
+      @size-change="sizeChange"
+      @current-change="pageChange"
+      :current-page="returnData.currentPage"
+      :page-sizes="[10, 25, 50, 100]"
+      :page-size="orderForm.size"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="returnData.totalCount">
+    </el-pagination>
     </div>
   </div>
 </template>
@@ -411,6 +415,7 @@
           size : 10
 
         },
+        versionAdmin : false,//管理版本的权限
         returnData : {
           currentPage  : 1,
           totalCount : 0
@@ -554,14 +559,14 @@
               projectUserName : that.orderForm.projectManagement || null,
               projectOthers : that.orderForm.projectMember.toString() || null,
               responsibleUserName  : that.orderForm.prodcutManagement || null,
-              branchName : that.orderForm.projectFeature || null,
+              projectBranch : that.orderForm.projectFeature || null,
               requirementName : that.orderForm.requirementName || null,
-              testTimeStart   : that.orderForm.planeTransfDateFirst || null,
-              testTimeEnd     : that.orderForm.planeTransfDateSecond || null,
-              planTimeStart   : that.orderForm.planeOnlineDateFirst || null,
-              planTimeEnd     : that.orderForm.planeOnlineDateSecond || null,
-              truthTimeStart  : that.orderForm.actualOnlineDateFirst || null,
-              truthTimeEnd    : that.orderForm.actualOnlineDateSecond || null,
+              testTimeStart   : that.getLocalTime(that.orderForm.planeTransfDateFirst,0),
+              testTimeEnd     : that.getLocalTime(that.orderForm.planeTransfDateSecond,1),
+              planTimeStart   : that.getLocalTime(that.orderForm.planeOnlineDateFirst,0),
+              planTimeEnd     : that.getLocalTime(that.orderForm.planeOnlineDateSecond,1),
+              truthTimeStart  : that.getLocalTime(that.orderForm.actualOnlineDateFirst,0),
+              truthTimeEnd    : that.getLocalTime(that.orderForm.actualOnlineDateSecond,1),
               qaTimeStart     : that.orderForm.planeQADateFirst || null,
               qaTimeEnd       : that.orderForm.planeQADateSecond || null,
               curPage         : that.orderForm.curPage.toString(),
@@ -587,6 +592,36 @@
                   }
             });
        },
+       /**
+        * 时间转换
+        * @param  {[type]} time [description]
+        * @return {[type]}      [description]
+        */
+       getLocalTime : function(time,endFlag){
+                if (!time) {
+                  return null
+                } 
+                var timeTemp = time.valueOf() + endFlag*(24 * 60 * 60 * 1000 - 1) + 8*60*60*1000;
+                var localTime = new Date(timeTemp)
+
+                var checkTime = function(i) {
+                      if (i < 10) {
+                          i = "0" + i
+                      }
+                      return i
+                  }
+                var ymdhis = "";
+                ymdhis += checkTime(localTime.getUTCFullYear()) + "-";
+                ymdhis += checkTime((localTime.getUTCMonth() + 1)) + "-";
+                ymdhis += checkTime(localTime.getUTCDate());
+                // if (isFull === true) {
+                    ymdhis += " " + checkTime(localTime.getUTCHours()) + ":";
+                    ymdhis += checkTime(localTime.getUTCMinutes()) + ":";
+                    ymdhis += checkTime(localTime.getUTCSeconds());
+                // }
+                return ymdhis;
+           },
+
        /**
        * 版本类型过滤
        * @return {[type]} [description]
@@ -819,12 +854,17 @@
         this.orderForm.curPage = val;
         this.getVersionList(val)
       },
+      sizeChange : function(val){
+          this.orderForm.size = val;
+          this.getVersionList()
+      },
     },
     beforeRouteEnter: function (to,from,next) {
         next(vm => {
             vm.getUserList();
             vm.getVersionTypeList();
             vm.getVersionList();
+            vm.versionAdmin = (localStorage.getItem('versionAdmin') == '1')
         }); 
     }
   }

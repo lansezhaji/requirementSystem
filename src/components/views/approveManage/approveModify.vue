@@ -213,7 +213,7 @@
 	                statusText
 	            }) => {
 	                if (ok && data.status == '0') {
-	                	that.approveOrgDetail = data.data[1] || ""
+	                	// that.approveOrgDetail = data.data[1] || ""
 	                    that.approveNewDetail = data.data[0] || ""
 
 	                }else if (data.status == -2 || data.status == -3) {
@@ -235,8 +235,9 @@
 				};					
 			},
 			compareProjectName : function(index){
-
-				if (!this.approveOrgDetail.requirementInfos[index] || !this.approveNewDetail.requirementInfos[index] ){
+				if (this.approveOrgDetail== '{}' || this.approveNewDetail == '{}') {
+					return 'diff'
+				}else if (!this.approveOrgDetail.requirementInfos[index] || !this.approveNewDetail.requirementInfos[index] ){
 					return 'diff'
 				}else if (this.approveOrgDetail.requirementInfos[index].requirementName != this.approveNewDetail.requirementInfos[index].requirementName) {
 					return 'diff'

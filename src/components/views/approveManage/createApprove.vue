@@ -17,7 +17,7 @@
 			<el-form label-width="150px" style="text-align:left" :model="approveForm" ref="approveForm" :rules="rules">
 
 				<el-row >
-					<el-col>
+					<el-col v-if="!this.$route.query.id">
 						<el-form-item label="审批类型：" class="userMessage" prop="applyType" required>
 							<el-col >
 								<el-radio-group v-model="approveForm.applyType" @change="applyTypeChange" >
@@ -28,7 +28,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-form-item v-if="approveForm.applyType == 1" label="项目名称：" class="userMessage" prop="projectName">
+						<el-form-item v-if="approveForm.applyType == 1 || this.$route.query.id" label="项目名称：" class="userMessage" prop="projectName">
 							<el-col :span="8" >
 								<el-input v-model="approveForm.projectName"></el-input>	
 							</el-col>
@@ -111,7 +111,7 @@
 							<el-select  size="small" v-model="approveForm.projectUserId" :disabled="disabled" placeholder="请选择">
 							    <el-option
 							      v-for="item in userList"
-							      :label="item.userName"
+							      :label="item.name"
 							      :value="item.id"
 							      >
 							    </el-option>
@@ -132,8 +132,8 @@
 							    :loading="loading">
 							    <el-option
 							      v-for="item in userListTemp"
-							      :label="item.userName"
-							      :value="item.userName">
+							      :label="item.name"
+							      :value="item.name">
 							    </el-option>
 							  </el-select>
 						</el-form-item>
@@ -170,7 +170,19 @@
 						<el-button @click="updateApproveInfo" :disabled="disabled" type="primary">提交</el-button>
 						<el-button @click="returnLastPage">返回</el-button>
 					</el-col>
-				</el-row>			
+				</el-row>	
+						<!-- 审批提交提示窗口 -->
+				    <el-dialog
+			            title="提示："
+			            :visible.sync="approveUpdateDialog"
+			            size="tiny" >
+			            <el-col>
+			            	您的审批已经提交，请耐心等待审批结果
+			            </el-col>
+			            <span slot="footer" class="dialog-footer">
+			              <el-button type="primary" @click="ensureUpdate">确 定</el-button>
+			            </span>
+			        </el-dialog>
 			</el-form>
 
 		</el-row>
@@ -211,6 +223,7 @@
 				pageFlage : false,//false :表示我发起的申请，true表示我审批的
 				// isEditMode : true, //是否是编辑模式哦
 				disabled : false,
+				requireAdmin : false,
 				approveForm:{
 					
 					applyType : 1, //审批类型
@@ -240,7 +253,9 @@
 					projectUserId : "",
 					projectOthers : [],//
 					requirementInfos : [ ],
+					
 				},
+				approveUpdateDialog : false,
 				tableData: [ ],
 				userList : [],//用户列表
 				userListTemp : [],
@@ -365,7 +380,7 @@
 						})
 						// 项目名称
 						var projectName = ""
-						if (that.approveForm.applyType == 1) {
+						if (that.approveForm.applyType == 1 || that.$route.query.id) {
 							projectName = that.approveForm.projectName
 						}else{
 							that.requireLise.forEach(function(item){
@@ -396,12 +411,12 @@
 						var projectUserName = ""
 						this.userList.forEach(function(item){
 							if (that.approveForm.projectUserId ==item.id) {
-								projectUserName = item.userName;
+								projectUserName = item.name;
 							};
 						})
 
 						var reqData =  {
-							 id : (that.approveForm.applyType == 2) ? that.approveForm.projectId : "",
+							 id : that.approveForm.projectId || "",
 						     applyType: that.approveForm.applyType,
 						     projectName : projectName,
 						     projectBranch: that.approveForm.projectBranch,
@@ -427,10 +442,16 @@
 					        statusText
 					    }) => {
 					        if (ok && data.status == '0') {
-					            that.$message.success("保存成功");
-					            that.$router.push({
-					            	name : "myApprove"
-					            });
+					        	var versionAdmin = localStorage.getItem("versionAdmin");
+					        	if (versionAdmin == '1') {
+					        		that.$message.success("保存成功");
+						            that.$router.push({
+						            	name : "myExamined"
+						            });
+					        	}else{
+					        		that.approveUpdateDialog = true
+					        	}
+					            
 				        }else if (data.status == -2 || data.status == -3) {
 		                  	this.$store.commit('logout');
 	   						localStorage.setItem("token","");
@@ -444,6 +465,16 @@
 					}
 				})
 				
+			},
+			/**
+			 * 审批申请成功，跳转到列表页
+			 * @return {[type]} [description]
+			 */
+			ensureUpdate : function(){
+				this.approveUpdateDialog = false
+				this.$router.push({
+	            	name : "myApprove"
+	            });
 			},
 			/**
 			 * 清空表单
@@ -463,7 +494,7 @@
 		          setTimeout(() => {
 		            this.loading = false;
 		            this.userListTemp = this.userList.filter(item => {
-		              return item.userName.toLowerCase()
+		              return item.name.toLowerCase()
                 		.indexOf(query.toLowerCase()) > -1;
 		            });
 		          }, 200);
@@ -520,6 +551,7 @@
 	                if (ok && data.status == '0') {
 	                	that.disabled = false;
 						that.approveForm.projectBranch = data.data.projectBranch;//审批分支
+						that.approveForm.projectName = data.data.projectName;//审批分支
 						that.approveForm.startTime = data.data.startTime;//审批启动时间
 						that.approveForm.testTime = data.data.testTime;//项目转测时间
 						that.approveForm.qaTime = data.data.qaTime;//项目过QA时间
@@ -529,10 +561,10 @@
 						that.approveForm.projectUserId = data.data.projectUserId;
 						that.approveForm.projectOthers = data.data.projectOthers.split(",");//  ---------------------------------
 						that.approveForm.requirementInfos = data.data.requirementInfos;
-
 						setTimeout(function(){
 							that.approveForm.versionId =data.data.versionId;
 						},500)
+						
 	                } else if (data.status == 1) {
 	                	that.disabled = true;
 	                	that.approveForm.projectBranch = "";
@@ -682,9 +714,10 @@
         		vm.pageFlage = vm.$route.name == 'myApprove' 
         		vm.getVersionTypeList();
         		vm.getUserList();
+        		
         		if (vm.$route.query.id) {
-        			vm.approveForm.applyType = 2
-        			
+        			vm.approveForm.projectId = vm.$route.query.id
+        			vm.getProjectDetail();
         		};
 	        });
 	    }

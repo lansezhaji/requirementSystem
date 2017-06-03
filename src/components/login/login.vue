@@ -16,7 +16,29 @@
 	  				<el-checkbox v-model="isDisplayBg">加载背景</el-checkbox>
 				</el-form-item>				
 			</el-form>
-			
+		    <el-dialog
+	            title="请完善您的个人信息："
+	            :visible.sync="userUpdateDialog"
+	            size="tiny" >
+				<el-form label-width="150px" :model="userForm" :rules="rules" ref="userForm" style="text-align:left">
+					<el-form-item label="登录账户：" style="text-align:left" required>
+		                <el-col>
+		                  {{userForm.userName}}
+		                </el-col>
+		              </el-form-item>  
+					<el-form-item label="真实姓名：" prop="trueName" >
+						<el-input v-model="userForm.trueName" class="login-item"></el-input>
+					</el-form-item>
+					<el-form-item label="用户角色：" style="text-align:left" required>
+		                {{userForm.role}}
+		            </el-form-item>			
+				</el-form>
+	            
+	            <span slot="footer" class="dialog-footer">
+	              <el-button @click="userUpdateDialog = false">取 消</el-button>
+	              <el-button type="primary" @click="updateUserInfo()">保 存</el-button>
+	            </span>
+	        </el-dialog>
 		</el-col>
 		<el-col v-if="isDisplayBg">
 			<iframe id="background" src="http://www.jq22.com/js/a5.html"></iframe> 
@@ -35,13 +57,23 @@
     			account : "",
     			password:""
     		},
+    		userUpdateDialog : false,
+    		userForm : {
+    			userName : "",
+    			trueName : "",
+    			role : ""
+    		},
     		rules:{
     			account:[
     				{required:true,message:"请输入用户名",trigger:'blur'}
     			],
     			password:[
     				{ required: true, message: '请输入密码', trigger: 'blur' },
-    			]
+    			],
+    			trueName:[
+    				{ required: true, message: '请输入您的真实姓名', trigger: 'blur' },
+    			],
+    			
     		}
     	}
       return data
@@ -62,11 +94,26 @@
 		                statusText
 		            }) => {
 		                if (ok && data.status == '0') {
-		                	that.$store.state.user.token = data.data.token;
-		                	that.$store.state.user.name = data.data.userName;
-		                	that.$message.success(data.msg);
-						    localStorage.setItem("token",data.data.token);
-						    localStorage.setItem("name",data.data.userName);
+		                	// 判断是否初始化了姓名信息
+		                	if (data.data.name) {
+			                	that.$store.state.user.token = data.data.token;
+			                	that.$store.state.user.name = data.data.userName;
+			                	that.$message.success(data.msg);
+							    localStorage.setItem("token",data.data.token);
+							    localStorage.setItem("superAdmin",data.data.superAdmin);
+							    localStorage.setItem("memberAdmin",data.data.memberAdmin);
+							    localStorage.setItem("versionAdmin",data.data.versionAdmin);
+							    localStorage.setItem("requireAdmin",data.data.requireAdmin);
+							    localStorage.setItem("name",data.data.name);		                		
+							    localStorage.setItem("userName",data.data.userName);		                		
+		                	}else{
+		                		this.userForm.userName = data.data.userName
+		                		this.userForm.role = data.data.role
+		                		this.userForm.id = data.data.id
+		                		localStorage.setItem("token",data.data.token);
+		                		this.userUpdateDialog = true;
+		                	}
+
 						    // 判断用户权限
 						    if (data.data.requireAdmin) {
 				    	        that.$router.push({
@@ -83,7 +130,35 @@
 		            });
    				}
    			})
-   		}
+   		},
+   		/**
+   		 * 保存用户基本信息
+   		 * @return {[type]} [description]
+   		 */
+   		updateUserInfo : function(){
+   			this.$refs['userForm'].validate((valide)=>{
+   				if (valide) {
+					var that = this;
+					var url = "/api/dlmanagementtool/user/updateUserName"
+					var reqData = {
+						id : this.userForm.id,
+						name : this.userForm.trueName
+					}
+					this.$http.post(url,reqData).then(({
+		                data,
+		                ok,
+		                statusText
+		            }) => {
+		                if (ok && data.status == '0') {
+		                	that.login();
+		                }else {
+		                  that.$message.error(data.msg);
+		                }
+		            });   					
+   				};
+   			})
+
+   		},
     }
   }
 </script>

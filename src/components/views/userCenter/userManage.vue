@@ -88,7 +88,9 @@
 				    </el-table-column>
 				    <el-table-column  label="操作" >
 				    	<template  scope="scope">
-				    		<el-button type="text" @click="editUserMessage(scope.row)">编辑</el-button>
+				    		<el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="memberAdmin">
+				    			<el-button type="text" @click="editUserMessage(scope.row)" :disabled="!memberAdmin">编辑</el-button>
+				    		</el-tooltip>
 				    	</template>
 				    </el-table-column>
 			  </el-table>
@@ -96,6 +98,11 @@
 				  <el-form label-width="150px">
 				  	<el-form-item label="账户：" style="text-align:left">
 				  		{{EditForm.userName}}
+				  	</el-form-item>
+				  	<el-form-item label="姓名：" style="text-align:left">
+				  		<el-col :span="12">
+				  			<el-input v-model="EditForm.name"></el-input>
+				  		</el-col>
 				  	</el-form-item>
 				  	<el-form-item label="权限：" style="text-align:left">
 				  		<el-col><el-checkbox label="具有管理需求权限" v-model="EditForm.requireAdmin"></el-checkbox></el-col>
@@ -114,11 +121,13 @@
 				    <el-button type="default" @click="editDialogVisible = false">取 消</el-button>
 				  </span>
 				</el-dialog>
-			  <el-pagination
+		      <el-pagination
+		        @size-change="sizeChange"
 		        @current-change="pageChange"
-		        :current-page.sync="returnData.currentPage"
+		        :current-page="returnData.currentPage"
+		        :page-sizes="[10, 25, 50, 100]"
 		        :page-size="userForm.size"
-		        layout="total, prev, pager, next"
+		        layout="total, sizes, prev, pager, next, jumper"
 		        :total="returnData.totalCount">
 		      </el-pagination>  
 		</el-row>
@@ -140,6 +149,7 @@
 					curPage : 1 ,
 					size : 10
 				},
+				memberAdmin : false,//具有修改人员的权限
 				returnData: {
 					totalCount : 1
 				},
@@ -214,7 +224,9 @@
 			 */
 			editUserMessage: function(row){
 
+				this.EditForm.id = row.id;
 				this.EditForm.userName = row.userName;
+				this.EditForm.name = row.name;
 				this.EditForm.requireAdmin  = row.requireAdmin == 1 ;
 				this.EditForm.memberAdmin = row.memberAdmin == 1;
 				this.EditForm.versionAdmin = row.versionAdmin== 1;
@@ -230,6 +242,10 @@
 				this.userForm.curPage = val;
 				this.queryUserList(val)
 			},
+			sizeChange : function(val){
+				this.userForm.size = val;
+				this.queryUserList()
+			},
 			/**
 			 * 更新用户信息
 			 * @return {[type]} [description]
@@ -238,7 +254,8 @@
 				var that = this;
 				var url = "/api/dlmanagementtool/user/updateUser"
 				var reqData = {
-					userName : this.EditForm.userName,
+					id : this.EditForm.id,
+					name : this.EditForm.name,
 					requireAdmin : this.EditForm.requireAdmin ? 1 : 0,
 					versionAdmin : this.EditForm.versionAdmin ? 1 : 0,
 					memberAdmin : this.EditForm.memberAdmin ? 1 : 0,
@@ -252,9 +269,6 @@
 	                if (ok && data.status == '0') {
 	                	that.$message.success(data.msg);
 	                	this.editDialogVisible = false;
-	                	// that.userForm.requireAdmin = that.EditForm.requireAdmin
-	                	// that.userForm.versionAdmin = that.EditForm.versionAdmin
-	                	// that.userForm.memberAdmin = that.EditForm.memberAdmin
 	                	that.queryUserList();
 	                }else if (data.status == -2 || data.status == -3) {
 	                  	this.$store.commit('logout');
@@ -269,6 +283,7 @@
 	    beforeRouteEnter: function (to,from,next) {
 	        next(vm => {
 	            vm.queryUserList();
+	            vm.memberAdmin = (localStorage.getItem("memberAdmin")=='1' ? true : false);
 	        }); 
 	    }
 	}

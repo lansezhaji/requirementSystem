@@ -284,14 +284,16 @@
               <el-button type="text" @click="deleteVersionDialog(scope.row)">删除</el-button>
             </template>
         </el-table-column>
-      </el-table>
+      </el-table> 
       <el-pagination
+        @size-change="sizeChange"
         @current-change="pageChange"
-        :current-page.sync="returnData.currentPage"
+        :current-page="returnData.currentPage"
+        :page-sizes="[10, 25, 50, 100]"
         :page-size="form.size"
-        layout="total, prev, pager, next"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="returnData.totalCount">
-      </el-pagination>  
+      </el-pagination> 
           <el-dialog
             title="确定删除版本信息？"
             :visible.sync="deleteDialogVisible"
@@ -403,6 +405,36 @@
             });
       },
       /**
+        * 时间转换
+        * @param  {[type]} time [description]
+        * @return {[type]}      [description]
+        */
+       getLocalTime : function(time,endFlag){
+                if (!time) {
+                  return null
+                } 
+                var timeTemp = time.valueOf() + endFlag*(24 * 60 * 60 * 1000 - 1) + 8*60*60*1000;
+                var localTime = new Date(timeTemp)
+
+                var checkTime = function(i) {
+                      if (i < 10) {
+                          i = "0" + i
+                      }
+                      return i
+                  }
+                var ymdhis = "";
+                ymdhis += checkTime(localTime.getUTCFullYear()) + "-";
+                ymdhis += checkTime((localTime.getUTCMonth() + 1)) + "-";
+                ymdhis += checkTime(localTime.getUTCDate());
+                // if (isFull === true) {
+                    ymdhis += " " + checkTime(localTime.getUTCHours()) + ":";
+                    ymdhis += checkTime(localTime.getUTCMinutes()) + ":";
+                    ymdhis += checkTime(localTime.getUTCSeconds());
+                // }
+                return ymdhis;
+           },
+
+      /**
        * 获取版本号列表
        * @return {[type]} [description]
        */
@@ -415,10 +447,10 @@
               versionTypeId     : parseInt(that.form.versionType) || null,
               versionName     : that.form.versionName || null,
               versionStatus   : parseInt(that.form.versionStatus) || null,
-              planTimeStart   : that.form.planeOnlineDateFirst  || null,
-              planTimeEnd     : that.form.planeOnlineDateSecond  || null,
-              truthTimeStart  : that.form.actualOnlineDateFirst  || null,
-              truthTimeEnd    : that.form.actualOnlineDateSecond  || null,
+              planTimeStart   : that.getLocalTime(that.form.planeOnlineDateFirst,0),
+              planTimeEnd     : that.getLocalTime(that.form.planeOnlineDateSecond,1),
+              truthTimeStart  : that.getLocalTime(that.form.actualOnlineDateFirst,0),
+              truthTimeEnd    : that.getLocalTime(that.form.actualOnlineDateSecond,1),
               curPage         : that.form.curPage.toString(),
               size            : that.form.size.toString()
 
@@ -738,6 +770,10 @@
       pageChange : function(val){
         this.form.curPage = val;
         this.getVersionList(val)
+      },
+      sizeChange : function(val){
+          this.form.size = val;
+          this.getVersionList()
       },
     },
     beforeRouteEnter: function (to,from,next) {

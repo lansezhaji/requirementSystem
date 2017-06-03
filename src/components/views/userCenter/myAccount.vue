@@ -86,7 +86,7 @@
 		        var that = this;
 	            var url = '/api/dlmanagementtool/user/getUserInfo';
 	            var reqData = {
-	            	userName : localStorage.getItem("name")
+	            	userName : localStorage.getItem("userName")
 	            }
 	            this.$http.post(url,reqData).then(({
 	                data,

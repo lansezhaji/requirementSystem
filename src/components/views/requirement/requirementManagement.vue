@@ -221,8 +221,7 @@
           prop="priority"
           label="优先级"
           min-width="40" >
-          <template scope="scope">
-            <!-- <el-col :class="priorityClass(scope.row.priority)"> -->
+          <template scope="scope" >
             <el-col >
               {{scope.row.priority}}
             </el-col>
@@ -271,14 +270,16 @@
         </template>
       </el-table-column>
   
-  </el-table>
+  </el-table> 
     <el-pagination
+      @size-change="sizeChange"
       @current-change="pageChange"
-      :current-page.sync="tableData.currentPage"
-      :page-size="5"
-      layout="total, prev, pager, next"
+      :current-page="tableData.currentPage"
+      :page-sizes="[10, 25, 50, 100]"
+      :page-size="orderForm.size"
+      layout="total, sizes, prev, pager, next, jumper"
       :total="tableData.totalCount">
-    </el-pagination>   
+    </el-pagination>
   </div>
   </div>
 </template>
@@ -304,7 +305,7 @@
           requirementPlan:'', //需求规划
           requirementName:'',
           curPage:'',
-          size:'',
+          size:10,
     		},
         tableData:{
           data:[],
@@ -422,7 +423,7 @@
           var url = "/api/dlmanagementtool/requirement/list"
           var reqData = {
             curPage : pageIndex || 1,
-            size : 5,
+            size : that.orderForm.size,
             data:[{ 
                 productPlatformId : this.orderForm.productPlatform.toString(),
                 functionTypeId : this.orderForm.functionType,
@@ -694,8 +695,12 @@
        * @return {[type]}     [description]
        */
        pageChange : function(val){
-        this.orderForm.curPage = val;
+          this.orderForm.curPage = val;
           this.queryRequeryList(val)
+      },
+      sizeChange : function(val){
+          this.orderForm.size = val;
+          this.queryRequeryList()
       },
       filterFunctionList : function(id){
           var functionObj = {

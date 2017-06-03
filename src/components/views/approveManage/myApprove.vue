@@ -132,7 +132,10 @@
 		<el-row type="flex" justify="left" v-if="pageFlage" style="margin-top:20px">
 				<el-col :span="2">
 					<router-link to="/createApprove">
-						<el-button  type="text">+发起新的审批</el-button>
+						<el-tooltip content="当前用户暂无权限" placement="top" :disabled="requireAdmin">
+				    			<el-button  type="text" :disabled="!requireAdmin">+发起新的审批</el-button>
+				    		</el-tooltip>
+						
 					</router-link>
 				</el-col>
 		</el-row>
@@ -224,13 +227,15 @@
 				    <el-button type="primary" @click="updateApprove">确 定</el-button>
 				  </span>
 				</el-dialog>
-			  	<el-pagination
-					@current-change="pageChange"
-					:current-page.sync="approveForm.curPage"
-					:page-size="approveForm.size"
-					layout="total, prev, pager, next"
-					:total="returnData.totalCount">
-			    </el-pagination> 
+			    <el-pagination
+			      @size-change="sizeChange"
+			      @current-change="pageChange"
+			      :current-page="approveForm.curPage"
+			      :page-sizes="[10, 25, 50, 100]"
+			      :page-size="approveForm.size"
+			      layout="total, sizes, prev, pager, next, jumper"
+			      :total="returnData.totalCount">
+			    </el-pagination>
 		</el-row>
 	</el-row>
 </template>
@@ -253,6 +258,7 @@
 					curPage : 1,
 					size : 10,
 				},
+				requireAdmin : false,
 				versionList : [],//版本号列表
 				userList : [],
 				initData : {
@@ -331,6 +337,35 @@
 		                  }
 		              });
 		      },
+		      /**
+		        * 时间转换
+		        * @param  {[type]} time [description]
+		        * @return {[type]}      [description]
+		        */
+		       getLocalTime : function(time,endFlag){
+		          	if (!time) {
+		            	return null
+		          	}	
+		          	var timeTemp = time.valueOf() + endFlag*(24 * 60 * 60 * 1000 - 1) + 8*60*60*1000;
+		          	var localTime = new Date(timeTemp)
+
+	            	var checkTime = function(i) {
+	                    if (i < 10) {
+	                        i = "0" + i
+	                    }
+	                    return i
+	                }
+		            var ymdhis = "";
+		            ymdhis += checkTime(localTime.getUTCFullYear()) + "-";
+		            ymdhis += checkTime((localTime.getUTCMonth() + 1)) + "-";
+		            ymdhis += checkTime(localTime.getUTCDate());
+		            // if (isFull === true) {
+		                ymdhis += " " + checkTime(localTime.getUTCHours()) + ":";
+		                ymdhis += checkTime(localTime.getUTCMinutes()) + ":";
+		                ymdhis += checkTime(localTime.getUTCSeconds());
+		            // }
+		            return ymdhis;
+		       },
 			/**
 			 * 搜索我发起的审批
 			 * @return {[type]} [description]
@@ -347,8 +382,8 @@
 	            	applyType 		: this.approveForm.approveType || null, //审批类型
 	            	requirementName : this.approveForm.requireName.trim() || null ,//需求名称
 	            	userId 			: parseInt(this.approveForm.approvePersion)||null,
-	            	createStartTime : this.approveForm.createStartTime,
-	            	createEndTime   : this.approveForm.createEndTime,
+	            	createStartTime : this.getLocalTime(this.approveForm.createStartTime,0),
+	            	createEndTime   : this.getLocalTime(this.approveForm.createEndTime,1),
 	            	applyStatus 	: parseInt(this.approveForm.approveStatus) ,//状态
 	            	versionId 		: parseInt(this.approveForm.approveVersion) || null,
 	            	responsibleUserId : parseInt(this.approveForm.responsibleUserId) || null,
@@ -583,6 +618,10 @@
 				this.approveForm.curPage = val;
 				this.queryMyApprove(val)
 			},
+			sizeChange : function(val){
+				this.approveForm.size = val;
+				this.queryMyApprove()
+			},
 			/**
 			 * 处理审批申请
 			 * @return {[type]} [description]
@@ -597,7 +636,9 @@
 		},
 		beforeRouteEnter: function(to, from, next) {
         next(vm => {
+        		vm.clearForm();
         		vm.pageFlage = vm.$route.name == 'myApprove' 
+        		vm.requireAdmin = (localStorage.getItem("requireAdmin")=='1');
         		vm.getVersionTypeList();
         		vm.queryMyApprove();
         		vm.getUserList();

@@ -9,7 +9,7 @@
 		<el-col :span="6">
 			<el-col  class="toptitle">
 				<span>欢迎您：</span>
-				<span>{{userName}}</span>
+				<span>{{name}}</span>
 				<el-button type="default" class="logout" @click="logout()">退出登录</el-button>
 			</el-col>
 		</el-col>
@@ -21,7 +21,7 @@
     name: 'rvSide',
     data: function() {
       return {
-        userName : localStorage.getItem("name")
+        name : localStorage.getItem("name")
       }
     },
    methods: {
