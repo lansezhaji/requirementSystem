@@ -103,7 +103,7 @@
           show-overflow-tooltip>
           <template scope="scope">
               <router-link :to="{ name: 'versionManagement', query: {typeId:scope.row.id}}">
-                  <el-button  type="text">查看</el-button>
+                  <el-button  type="text" size="small">查看</el-button>
               </router-link>
               <el-button type="text" size="small" @click="toEdit(scope.row)">
                 编辑

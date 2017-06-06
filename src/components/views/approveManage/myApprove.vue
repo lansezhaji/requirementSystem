@@ -167,23 +167,23 @@
 				    </el-table-column>
 				    <el-table-column prop="createTimeStr" label="申请时间" min-width="150px"> </el-table-column>
 				    <el-table-column prop="updateTimeStr" label="最后审批时间" min-width="150px"> </el-table-column>
-				    <el-table-column prop="name" label="申请人" min-width="100px" v-if="!pageFlage" show-overflow-tooltip> </el-table-column>
+				    <el-table-column prop="userName" label="申请人" min-width="100px" v-if="!pageFlage" show-overflow-tooltip> </el-table-column>
 				    <el-table-column prop="versionTypeId" label="版本类型" min-width="100px" show-overflow-tooltip>
 				    	<template scope="scope">
 				    		{{filterVertionType(scope.row.versionTypeId)}}
 				    	</template>
 				    </el-table-column>
 				    <el-table-column prop="versionName" label="版本号" min-width="120px" show-overflow-tooltip> </el-table-column>
-				    <el-table-column prop="projectName" label="需求名称" min-width="200px" show-overflow-tooltip>
-				    	<template scope="scope">
-				    		<el-col v-for="requireN in scope.row.requirementInfos">
+				    <el-table-column prop="projectName" label="需求名称" min-width="200px" show-overflow-tooltip >
+				    	<template scope="scope" >
+				    		<el-col v-for="requireN in scope.row.requirementInfos" style="line-height:30px">
 				    			{{requireN.requirementName}}&nbsp
 				    		</el-col>
 				    	</template>
 				    </el-table-column>
 				    <el-table-column  label="产品经理" min-width="100px" show-overflow-tooltip>
 				    	<template scope="scope">
-				    		<el-col v-for="requireN in scope.row.requirementInfos">
+				    		<el-col v-for="requireN in scope.row.requirementInfos" >
 				    			{{requireN.responsibleUserName}}&nbsp
 				    		</el-col>
 				    	</template>
@@ -413,12 +413,14 @@
 	            	applyCode 		: this.approveForm.approveNo || null, //单号
 	            	applyType 		: this.approveForm.approveType || null, //审批类型
 	            	requirementName : this.approveForm.requireName.trim() || null ,//需求名称
-	            	userId 			: parseInt(this.approveForm.approvePersion)||null,
+	            	// userId 			: parseInt(this.approveForm.approvePersion)||null,
+	            	userName 			: this.approveForm.approvePersionName||null,
 	            	createStartTime : this.getLocalTime(this.approveForm.createStartTime,0),
 	            	createEndTime   : this.getLocalTime(this.approveForm.createEndTime,1),
 	            	applyStatus 	: parseInt(this.approveForm.approveStatus) ,//状态
 	            	versionId 		: parseInt(this.approveForm.approveVersion) || null,
-	            	responsibleUserId : parseInt(this.approveForm.responsibleUserId) || null,
+	            	// responsibleUserId : parseInt(this.approveForm.responsibleUserId) || null,
+	            	responsibleUserName : this.approveForm.responsibleUserName || null,
 	            	versionTypeId 	: parseInt(this.approveForm.versionType) || null ,
 	              	curPage         : this.approveForm.curPage,
 	              	size            : this.approveForm.size
@@ -521,7 +523,7 @@
 
 		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
 		              var reqData = {
-		                  name: queryString,
+		                  userName: queryString,
 		              };
 
 		              this.$http.post(url, reqData).then(({
@@ -533,7 +535,7 @@
 		                    var list = data.data;
 		                      list.forEach(function(item) {
 		                          var restaurant = {};
-		                          restaurant.value = item.name;
+		                          restaurant.value = item.userName;
 		                          restaurant.id = item.id;
 		                          that.associateApplyer.push(restaurant);
 		                      })
@@ -543,7 +545,7 @@
 
 		          },
 		          handleApplyPersonSelect : function(val){
-		              this.approveForm.approvePersion = val.id
+		              this.approveForm.approvePersionName = val.value
 		          },
 		    /**
 		       * [handleSelect 联想匹配函数选中]
@@ -575,7 +577,7 @@
 
 	              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
 	              var reqData = {
-	                  name: queryString,
+	                  userName: queryString,
 	              };
 
 	              this.$http.post(url, reqData).then(({
@@ -587,7 +589,7 @@
 	                    var list = data.data;
 	                      list.forEach(function(item) {
 	                          var restaurant = {};
-	                          restaurant.value = item.name;
+	                          restaurant.value = item.userName;
 	                          restaurant.id = item.id;
 	                          that.associateReponser.push(restaurant);
 	                      })
@@ -597,7 +599,7 @@
 
 	          },
 	          handleProductSelect : function(val){
-	              this.approveForm.responsibleUserId = val.id
+	              this.approveForm.responsibleUserName = val.value
 	          },
 			applyStatusClass : function(status){
 				var classArray = ['','wait','pass','refuse','recall'];
@@ -712,8 +714,10 @@
 			 */
 			clearForm : function(){
 				this.$refs['approveForm'].resetFields();
-				this.approveForm.createStartTime = "";
-				this.approveForm.createEndTime = "";
+				var date = new Date();
+				var dateTime = date.getTime();
+				this.approveForm.createStartTime = dateTime - 2*30*24*60*60*1000;
+				this.approveForm.createEndTime = dateTime;
 				this.approveForm.queryApplyPerson = ""
 				this.approveForm.approvePersion = ""
 			},

@@ -250,8 +250,8 @@
                         :loading="loading">
                         <el-option
                           v-for="item in userListTemp"
-                          :label="item.name"
-                          :value="item.name">
+                          :label="item.userName"
+                          :value="item.userName">
                         </el-option>
                       </el-select>
                   </el-col>
@@ -362,8 +362,7 @@
       <template scope="scope">{{ scope.row.id }}</template>
     </el-table-column>
     <el-table-column
-      label="版本类型"
-      prop="name">
+      label="版本类型" >
       <template scope="scope">
             <el-col>
               {{getVersionType(scope.row)}}
@@ -679,7 +678,7 @@
 
               var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
               var reqData = {
-                  name: queryString,
+                  userName: queryString,
               };
 
               this.$http.post(url, reqData).then(({
@@ -691,7 +690,7 @@
                     var list = data.data;
                       list.forEach(function(item) {
                           var restaurant = {};
-                          restaurant.value = item.name;
+                          restaurant.value = item.userName;
                           restaurant.id = item.id;
                           that.associateReponser.push(restaurant);
                       })
@@ -709,7 +708,7 @@
 
               var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
               var reqData = {
-                  name: queryString,
+                  userName: queryString,
               };
 
               this.$http.post(url, reqData).then(({
@@ -721,7 +720,7 @@
                     var list = data.data;
                       list.forEach(function(item) {
                           var restaurant = {};
-                          restaurant.value = item.name;
+                          restaurant.value = item.userName;
                           restaurant.id = item.id;
                           that.associateProjector.push(restaurant);
                       })
@@ -778,7 +777,7 @@
               setTimeout(() => {
                 this.loading = false;
                 this.userListTemp = this.userList.filter(item => {
-                  return item.name.toLowerCase()
+                  return item.userName.toLowerCase()
                     .indexOf(query.toLowerCase()) > -1;
                 });
               }, 200);

@@ -131,14 +131,22 @@
 					</el-col>
 					<el-col>
 						<el-form-item label="项目经理：" class="userMessage"  prop="projectUserId">
-							<el-select  size="small" v-model="approveForm.projectUserId" :disabled="disabled" placeholder="请选择">
+<!-- 							<el-select  size="small" v-model="approveForm.projectUserId" :disabled="disabled" placeholder="请选择">
 							    <el-option
 							      v-for="item in userList"
-							      :label="item.name"
+							      :label="item.userName"
 							      :value="item.id"
 							      >
 							    </el-option>
-						  	</el-select>
+						  	</el-select> -->
+						  	<el-autocomplete size="small" :maxlength="parseInt(100)"
+		                      class="inline-input"
+		                      v-model="approveForm.projectUserName"
+		                      :fetch-suggestions="queryProjector"
+		                      placeholder="请输入内容"
+		                      :trigger-on-focus="false"
+		                      @select="handleProjectSelect"
+		                    ></el-autocomplete>
 						</el-form-item>
 						
 					</el-col>
@@ -155,8 +163,8 @@
 							    :loading="loading">
 							    <el-option
 							      v-for="item in userListTemp"
-							      :label="item.name"
-							      :value="item.name">
+							      :label="item.userName"
+							      :value="item.userName">
 							    </el-option>
 							  </el-select>
 						</el-form-item>
@@ -276,10 +284,12 @@
 					versionTypeId : "",
 					versionId :"",
 					projectUserId : "",
+					projectUserName : "",
 					projectOthers : [],//
 					requirementInfos : [ ],
 					
 				},
+				associateProjector: [],
 				approveUpdateDialog : false,
 				tableData: [ ],
 				userList : [],//用户列表
@@ -436,7 +446,7 @@
 						var projectUserName = ""
 						this.userList.forEach(function(item){
 							if (that.approveForm.projectUserId ==item.id) {
-								projectUserName = item.name;
+								projectUserName = item.userName;
 							};
 						})
 
@@ -446,11 +456,11 @@
 						     projectName : projectName,
 						     projectBranch: that.approveForm.projectBranch,
 						     requirementIds: requireArr.toString(),
-						     startTime: that.approveForm.startTime.valueOf(),
-						     planTestTime: that.approveForm.planTestTime.valueOf(),
-						     truthTestTime: that.approveForm.truthTestTime.valueOf(),
-						     planQaTime: that.approveForm.planQaTime.valueOf(),
-						     truthQaTime: that.approveForm.truthQaTime.valueOf(),
+						     startTime: that.approveForm.startTime ? that.approveForm.startTime.valueOf() : null,
+						     planTestTime: that.approveForm.planTestTime ? that.approveForm.planTestTime.valueOf() : null,
+						     truthTestTime: that.approveForm.truthTestTime ? that.approveForm.truthTestTime.valueOf() : null,
+						     planQaTime: that.approveForm.planQaTime ? that.approveForm.planQaTime.valueOf() : null,
+						     truthQaTime: that.approveForm.truthQaTime ? that.approveForm.truthQaTime.valueOf() : null,
 						     projectUserId: that.approveForm.projectUserId,
 						     projectUserName : projectUserName,
 						     projectOthers: that.approveForm.projectOthers.toString(),
@@ -524,7 +534,7 @@
 		          setTimeout(() => {
 		            this.loading = false;
 		            this.userListTemp = this.userList.filter(item => {
-		              return item.name.toLowerCase()
+		              return item.userName.toLowerCase()
                 		.indexOf(query.toLowerCase()) > -1;
 		            });
 		          }, 200);
@@ -563,6 +573,42 @@
 		                  }
 		              });
 		      },
+		      /**
+		       * 模糊查询项目经理
+		       * @param  {[type]}   queryString [description]
+		       * @param  {Function} cb          [description]
+		       * @return {[type]}               [description]
+		       */
+		      queryProjector(queryString, cb) {
+              var that = this;
+              that.associateProjector = [];
+
+              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+              var reqData = {
+                  userName: queryString,
+              };
+
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.userName;
+                          restaurant.id = item.id;
+                          that.associateProjector.push(restaurant);
+                      })
+                      cb(that.associateProjector);
+                  }
+              });
+
+          },
+          handleProjectSelect : function(val){
+              this.approveForm.projectUserId = val.id
+          },
 			/**
 			 * 获取项目详细信息
 			 * @return {[type]} [description]
@@ -591,6 +637,7 @@
 						that.approveForm.requireName = data.data.requireName;
 						that.approveForm.versionTypeId = data.data.versionTypeId;
 						that.approveForm.projectUserId = data.data.projectUserId;
+						that.approveForm.projectUserName = data.data.projectUserName;
 						that.approveForm.projectOthers = data.data.projectOthers.split(",");//  ---------------------------------
 						that.approveForm.requirementInfos = data.data.requirementInfos;
 						setTimeout(function(){
@@ -701,7 +748,7 @@
 				console.log("1111"+index);
 			},
 			/**
-	         * 使用店铺联想输入
+	         * 需求名称联想
 	         * @param  {[type]}   queryString 输入的值
 	         * @param  {Function} cb          即callback,传入筛选后的数组
 	         * @return {[type]}               [description]

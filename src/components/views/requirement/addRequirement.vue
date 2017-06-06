@@ -95,7 +95,7 @@
 						<el-select  size="small" v-model="formData.ResponsePerson" placeholder="请选择">
 							<el-option
 						      v-for="item in ProposerOption"
-						      :label="item.name"
+						      :label="item.userName"
 						      :value="item.id"
 						      >
 						    </el-option>
@@ -735,7 +735,7 @@
     				var responsibleUserName = ""
     				that.ProposerOption.forEach(function(item){
     					if (item.id == that.formData.ResponsePerson) {
-    						responsibleUserName = item.name
+    						responsibleUserName = item.userName
     					};
     				})
     				var reqData = {

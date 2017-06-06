@@ -24,7 +24,7 @@
 					<el-form-item label="姓名：">
 						<el-autocomplete size="small" :maxlength="parseInt(100)"
 		                  class="inline-input"
-		                  v-model="userForm.name"
+		                  v-model="userForm.userName"
 		                  :fetch-suggestions="queryNameSearch"
 		                  placeholder="请输入内容"
 		                  :trigger-on-focus="false"
@@ -75,8 +75,8 @@
 				    		</el-col>
 				    	</template>
 				    </el-table-column>
-				    <el-table-column prop="userName" label="账号"  > </el-table-column>
-				    <el-table-column prop="name" label="姓名" > </el-table-column>
+				    <el-table-column prop="account" label="账号"  > </el-table-column>
+				    <el-table-column prop="userName" label="姓名" > </el-table-column>
 				    <el-table-column  label="管理需求" >
 				    	<template scope="scope">
 				    		<el-col style="color:#2fa6ff" >
@@ -117,11 +117,11 @@
 			  <el-dialog title="编辑账户" :visible.sync="editDialogVisible" size="tiny" >
 				  <el-form label-width="150px">
 				  	<el-form-item label="账户：" style="text-align:left">
-				  		{{EditForm.userName}}
+				  		{{EditForm.account}}
 				  	</el-form-item>
 				  	<el-form-item label="姓名：" style="text-align:left">
 				  		<el-col :span="12">
-				  			<el-input v-model="EditForm.name"></el-input>
+				  			<el-input v-model="EditForm.userName"></el-input>
 				  		</el-col>
 				  	</el-form-item>
 				  	<el-form-item label="权限：" style="text-align:left">
@@ -161,7 +161,7 @@
 			var data = {
 				userForm:{
 					account:"",
-					name : "",
+					userName : "",
 					userStatus:"2",
 					requireAdmin : false,
 					versionAdmin : false,
@@ -177,7 +177,7 @@
 				},
 				EditForm : {
 					account:"",
-					name : "",
+					userName : "",
 					userStatus:1,
 					requireAdmin : false,
 					versionAdmin : false,
@@ -198,8 +198,8 @@
 					curPage : that.userForm.curPage,
 					size : that.userForm.size,
 					data:[{
-						userName 		: that.userForm.account,
-						name	 		: that.userForm.name,
+						account 		: that.userForm.account,
+						userName	 		: that.userForm.userName,
 						requireAdmin	: that.userForm.requireAdmin ? 1 : 0,
 						versionAdmin	: that.userForm.versionAdmin ? 1 : 0,
 						memberAdmin		: that.userForm.memberAdmin ? 1 : 0,
@@ -247,8 +247,8 @@
 			editUserMessage: function(row){
 
 				this.EditForm.id = row.id;
+				this.EditForm.account = row.account;
 				this.EditForm.userName = row.userName;
-				this.EditForm.name = row.name;
 				this.EditForm.requireAdmin  = row.requireAdmin == 1 ;
 				this.EditForm.memberAdmin = row.memberAdmin == 1;
 				this.EditForm.versionAdmin = row.versionAdmin== 1;
@@ -277,7 +277,7 @@
 
 		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
 		              var reqData = {
-		                  userName: queryString,
+		                  account: queryString,
 		              };
 
 		              this.$http.post(url, reqData).then(({
@@ -289,7 +289,7 @@
 		                    var list = data.data;
 		                      list.forEach(function(item) {
 		                          var restaurant = {};
-		                          restaurant.value = item.userName;
+		                          restaurant.value = item.account;
 		                          restaurant.id = item.id;
 		                          that.associateList.push(restaurant);
 		                      })
@@ -304,7 +304,7 @@
 
 		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
 		              var reqData = {
-		                  name: queryString,
+		                  userName: queryString,
 		              };
 
 		              this.$http.post(url, reqData).then(({
@@ -316,7 +316,7 @@
 		                    var list = data.data;
 		                      list.forEach(function(item) {
 		                          var restaurant = {};
-		                          restaurant.value = item.name;
+		                          restaurant.value = item.userName;
 		                          restaurant.id = item.id;
 		                          that.associateNameList.push(restaurant);
 		                      })
@@ -329,7 +329,7 @@
 			        	this.userForm.account = val.value
 			      },
 			      handleNameSelect : function(val) {
-			        	this.userForm.name = val.value
+			        	this.userForm.userName = val.value
 			      },
 			/**
 			 * 更新用户信息
@@ -340,7 +340,7 @@
 				var url = "/api/dlmanagementtool/user/updateUser"
 				var reqData = {
 					id : this.EditForm.id,
-					name : this.EditForm.name,
+					userName : this.EditForm.userName,
 					requireAdmin : this.EditForm.requireAdmin ? 1 : 0,
 					versionAdmin : this.EditForm.versionAdmin ? 1 : 0,
 					memberAdmin : this.EditForm.memberAdmin ? 1 : 0,

@@ -11,7 +11,7 @@
 			<el-form label-width="150px">
 				<el-col :span="10">
 					<el-form-item label="账号：" class="userMessage">
-						<span >{{userForm.userName}}</span>						
+						<span >{{userForm.account}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">
@@ -21,7 +21,7 @@
 				</el-col>
 				<el-col :span="10">
 					<el-form-item label="姓名：" class="userMessage">
-						<span >{{userForm.name}}</span>						
+						<span >{{userForm.userName}}</span>						
 					</el-form-item>
 				</el-col>
 				<el-col :span="10">

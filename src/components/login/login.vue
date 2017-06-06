@@ -6,7 +6,7 @@
 			</el-row>
 			<el-form label-width="150px" :model="loginForm" :rules="rules" ref="loginForm" style="text-align:left">
 				<el-form-item label="账户：" prop="account" >
-					<el-input v-model="loginForm.account" class="login-item"></el-input>
+					<el-input v-model="loginForm.account" class="login-item" placeholder="请输入LDAP账号"></el-input>
 				</el-form-item>
 				<el-form-item label="密码：" prop="password">
 					<el-input v-model="loginForm.password" type="password" class="login-item"></el-input>
@@ -23,7 +23,7 @@
 				<el-form label-width="150px" :model="userForm" :rules="rules" ref="userForm" style="text-align:left">
 					<el-form-item label="登录账户：" style="text-align:left" required>
 		                <el-col>
-		                  {{userForm.userName}}
+		                  {{userForm.account}}
 		                </el-col>
 		              </el-form-item>  
 					<el-form-item label="真实姓名：" prop="trueName" >
@@ -59,7 +59,7 @@
     		},
     		userUpdateDialog : false,
     		userForm : {
-    			userName : "",
+    			account : "",
     			trueName : "",
     			role : ""
     		},
@@ -84,7 +84,7 @@
    			this.$refs['loginForm'].validate((valide)=>{
    				if (valide) {
    					var reqData = {
-   						userName : that.loginForm.account,
+   						account : that.loginForm.account,
    						userPassword : that.loginForm.password,
    					}
    					var url = '/api/dlmanagementtool/login/loginin';
@@ -95,20 +95,20 @@
 		            }) => {
 		                if (ok && data.status == '0') {
 		                	// 判断是否初始化了姓名信息
-		                	if (data.data.name) {
+		                	if (data.data.userName) {
 			                	that.$store.state.user.token = data.data.token;
-			                	that.$store.state.user.name = data.data.userName;
+			                	that.$store.state.user.userName = data.data.account;
 			                	that.$message.success(data.msg);
 							    localStorage.setItem("token",data.data.token);
 							    localStorage.setItem("superAdmin",data.data.superAdmin);
 							    localStorage.setItem("memberAdmin",data.data.memberAdmin);
 							    localStorage.setItem("versionAdmin",data.data.versionAdmin);
 							    localStorage.setItem("requireAdmin",data.data.requireAdmin);
-							    localStorage.setItem("name",data.data.name);		                		
 							    localStorage.setItem("userName",data.data.userName);		                		
+							    localStorage.setItem("account",data.data.account);		                		
 							    localStorage.setItem("userId",data.data.id);		                		
 		                	}else{
-		                		this.userForm.userName = data.data.userName
+		                		this.userForm.account = data.data.account
 		                		this.userForm.role = data.data.role
 		                		this.userForm.id = data.data.id
 		                		localStorage.setItem("token",data.data.token);
@@ -118,11 +118,11 @@
 						    // 判断用户权限
 						    if (data.data.requireAdmin) {
 				    	        that.$router.push({
-						          name:'requirementManagement' 
+						          userName:'requirementManagement' 
 						        })
 						    }else{
 						    	that.$router.push({
-						          name:'versionList' 
+						          userName:'versionList' 
 						        })
 						    }
 		                } else {
@@ -143,7 +143,7 @@
 					var url = "/api/dlmanagementtool/user/updateUserName"
 					var reqData = {
 						id : this.userForm.id,
-						name : this.userForm.trueName
+						userName : this.userForm.trueName
 					}
 					this.$http.post(url,reqData).then(({
 		                data,
