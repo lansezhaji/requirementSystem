@@ -106,6 +106,7 @@
 							    localStorage.setItem("requireAdmin",data.data.requireAdmin);
 							    localStorage.setItem("name",data.data.name);		                		
 							    localStorage.setItem("userName",data.data.userName);		                		
+							    localStorage.setItem("userId",data.data.id);		                		
 		                	}else{
 		                		this.userForm.userName = data.data.userName
 		                		this.userForm.role = data.data.role
@@ -150,6 +151,7 @@
 		                statusText
 		            }) => {
 		                if (ok && data.status == '0') {
+		                	that.userUpdateDialog = false;
 		                	that.login();
 		                }else {
 		                  that.$message.error(data.msg);

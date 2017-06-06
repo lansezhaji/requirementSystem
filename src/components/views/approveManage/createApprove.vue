@@ -7,8 +7,8 @@
 			<el-breadcrumb-item>
 				<h3>发起申请</h3>
 			</el-breadcrumb-item>
-			<el-button @click="getUserInfo()">查询</el-button>
-        	<el-button @click="debug()">debug</el-button>
+<!-- 			<el-button @click="getUserInfo()">查询</el-button>
+        	<el-button @click="debug()">debug</el-button> -->
 		</el-breadcrumb>
 		<el-row class="content">
 			<el-row class="history title" >
@@ -87,9 +87,9 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="计划转测时间：" prop="testTime" required>
+						<el-form-item label="计划转测时间：" prop="planTestTime" required>
 							<el-date-picker
-						      v-model="approveForm.testTime"
+						      v-model="approveForm.planTestTime"
 						      type="datetime"
 						      :disabled="disabled"
 						      placeholder="选择时间">
@@ -97,9 +97,32 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="计划QA时间：" prop="qaTime" required>
+						<el-form-item label="计划QA时间：" prop="planQaTime" required>
 							<el-date-picker
-						      v-model="approveForm.qaTime"
+						      v-model="approveForm.planQaTime"
+						      type="datetime"
+						      :disabled="disabled"
+						      placeholder="选择时间">
+						    </el-date-picker>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8" v-if="this.$route.query.id">
+						<span>&nbsp</span>
+					</el-col>
+					<el-col :span="8" v-if="this.$route.query.id">
+						<el-form-item label="实际转测时间：" prop="truthTestTime" required>
+							<el-date-picker
+						      v-model="approveForm.truthTestTime"
+						      type="datetime"
+						      :disabled="disabled"
+						      placeholder="选择时间">
+						    </el-date-picker>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8" v-if="this.$route.query.id">
+						<el-form-item label="实际QA时间：" prop="truthQaTime" required>
+							<el-date-picker
+						      v-model="approveForm.truthQaTime"
 						      type="datetime"
 						      :disabled="disabled"
 						      placeholder="选择时间">
@@ -243,8 +266,10 @@
 						bugzId : ""
 					}],
 					startTime : "",//审批启动时间
-					testTime : "",//项目转测时间
-					qaTime : "",//项目过QA时间
+					planTestTime : "",//计划转测时间
+					truthTestTime : "",//实际转测时间
+					planQaTime : "",//计划过QA时间
+					truthQaTime : "",//实际过QA时间
 					remark:"",//备注内容
 					requireName : "",
 					approveTime : [],
@@ -277,10 +302,10 @@
 					startTime: [{
 						validator:selectValidate,trigger:'blur'
 					}],
-					testTime: [{
+					planTestTime: [{
 						validator:selectValidate,trigger:'blur'
 					}],
-					qaTime: [{
+					planQaTime: [{
 						validator:selectValidate,trigger:'blur'
 					}],
 					projectUserId: [{
@@ -422,8 +447,10 @@
 						     projectBranch: that.approveForm.projectBranch,
 						     requirementIds: requireArr.toString(),
 						     startTime: that.approveForm.startTime.valueOf(),
-						     testTime: that.approveForm.testTime.valueOf(),
-						     qaTime: that.approveForm.qaTime.valueOf(),
+						     planTestTime: that.approveForm.planTestTime.valueOf(),
+						     truthTestTime: that.approveForm.truthTestTime.valueOf(),
+						     planQaTime: that.approveForm.planQaTime.valueOf(),
+						     truthQaTime: that.approveForm.truthQaTime.valueOf(),
 						     projectUserId: that.approveForm.projectUserId,
 						     projectUserName : projectUserName,
 						     projectOthers: that.approveForm.projectOthers.toString(),
@@ -436,6 +463,9 @@
 						console.log(reqData);
 
 					    var url = "/api/dlmanagementtool/apply/save"
+					    if (this.$route.query.id) {
+					    	url = "/api/dlmanagementtool/apply/edit"
+					    };
 					    this.$http.post(url,reqData).then(({
 					        data,
 					        ok,
@@ -553,8 +583,10 @@
 						that.approveForm.projectBranch = data.data.projectBranch;//审批分支
 						that.approveForm.projectName = data.data.projectName;//审批分支
 						that.approveForm.startTime = data.data.startTime;//审批启动时间
-						that.approveForm.testTime = data.data.testTime;//项目转测时间
-						that.approveForm.qaTime = data.data.qaTime;//项目过QA时间
+						that.approveForm.planTestTime = data.data.planTestTime;//项目转测时间
+						that.approveForm.truthTestTime = data.data.truthTestTime;//项目转测时间
+						that.approveForm.planQaTime = data.data.planQaTime;//项目过QA时间
+						that.approveForm.truthQaTime = data.data.truthQaTime;//项目过QA时间
 						that.approveForm.remark=data.data.remark;//备注内容
 						that.approveForm.requireName = data.data.requireName;
 						that.approveForm.versionTypeId = data.data.versionTypeId;
@@ -570,8 +602,10 @@
 	                	that.approveForm.projectBranch = "";
 	                	that.approveForm.projectName = "";
 						that.approveForm.startTime = "";
-						that.approveForm.testTime = "";
-						that.approveForm.qaTime = "";
+						that.approveForm.planTestTime = "";
+						that.approveForm.truthTestTime = "";
+						that.approveForm.planQaTime = "";
+						that.approveForm.truthQaTime = "";
 						that.approveForm.remark="";
 						that.approveForm.requireName = "";
 						that.approveForm.versionTypeId = "";
@@ -614,8 +648,10 @@
 					this.disabled = false;
 						that.approveForm.projectBranch = "";
 						that.approveForm.startTime = "";
-						that.approveForm.testTime = "";
-						that.approveForm.qaTime = "";
+						that.approveForm.planTestTime = "";
+						that.approveForm.truthTestTime = "";
+						that.approveForm.planQaTime = "";
+						that.approveForm.truthQaTime = "";
 						that.approveForm.remark="";
 						that.approveForm.projectUserId = "";
 						that.approveForm.requireName = "";

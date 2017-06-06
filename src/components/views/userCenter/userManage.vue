@@ -10,12 +10,26 @@
 			<el-form :model="userForm" :rules="rules" ref="userForm" label-width="100px">
 				<el-col :span="5">
 					<el-form-item label="账号：">
-						<el-input v-model="userForm.account"></el-input>
+						<el-autocomplete size="small" :maxlength="parseInt(100)"
+		                  class="inline-input"
+		                  v-model="userForm.account"
+		                  :fetch-suggestions="querySearch"
+		                  placeholder="请输入内容"
+		                  :trigger-on-focus="false"
+		                  @select="handleSelect"
+		                ></el-autocomplete>
 					</el-form-item>
 				</el-col>
 				<el-col :span="5">
 					<el-form-item label="姓名：">
-						<el-input v-model="userForm.name"></el-input>
+						<el-autocomplete size="small" :maxlength="parseInt(100)"
+		                  class="inline-input"
+		                  v-model="userForm.name"
+		                  :fetch-suggestions="queryNameSearch"
+		                  placeholder="请输入内容"
+		                  :trigger-on-focus="false"
+		                  @select="handleNameSelect"
+		                ></el-autocomplete>
 					</el-form-item>
 				</el-col>
 				<el-col :span="4">
@@ -54,7 +68,13 @@
 		</el-row>
 		<el-row class="content">
 			  <el-table :data="returnData.data" stripe style="width: 100%;text-align:left" >
-				    <el-table-column prop="id" label="序号"  > </el-table-column>
+				    <el-table-column  label="序号" style="text-align:center" >
+				    	<template scope="scope">
+				    		<el-col >
+				    			{{scope.row.id}}
+				    		</el-col>
+				    	</template>
+				    </el-table-column>
 				    <el-table-column prop="userName" label="账号"  > </el-table-column>
 				    <el-table-column prop="name" label="姓名" > </el-table-column>
 				    <el-table-column  label="管理需求" >
@@ -149,6 +169,8 @@
 					curPage : 1 ,
 					size : 10
 				},
+				associateList:[],
+				associateNameList:[],
 				memberAdmin : false,//具有修改人员的权限
 				returnData: {
 					totalCount : 1
@@ -246,6 +268,69 @@
 				this.userForm.size = val;
 				this.queryUserList()
 			},
+        	/**
+		       * 模糊查询
+		       */
+		       querySearch(queryString, cb) {
+		              var that = this;
+		              that.associateList = [];
+
+		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+		              var reqData = {
+		                  userName: queryString,
+		              };
+
+		              this.$http.post(url, reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == 0) {
+		                    var list = data.data;
+		                      list.forEach(function(item) {
+		                          var restaurant = {};
+		                          restaurant.value = item.userName;
+		                          restaurant.id = item.id;
+		                          that.associateList.push(restaurant);
+		                      })
+		                      cb(that.associateList);
+		                  }
+		              });
+
+		          },
+		           queryNameSearch(queryString, cb) {
+		              var that = this;
+		              that.associateNameList = [];
+
+		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+		              var reqData = {
+		                  name: queryString,
+		              };
+
+		              this.$http.post(url, reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == 0) {
+		                    var list = data.data;
+		                      list.forEach(function(item) {
+		                          var restaurant = {};
+		                          restaurant.value = item.name;
+		                          restaurant.id = item.id;
+		                          that.associateNameList.push(restaurant);
+		                      })
+		                      cb(that.associateNameList);
+		                  }
+		              });
+
+		          },
+		          handleSelect : function(val) {
+			        	this.userForm.account = val.value
+			      },
+			      handleNameSelect : function(val) {
+			        	this.userForm.name = val.value
+			      },
 			/**
 			 * 更新用户信息
 			 * @return {[type]} [description]

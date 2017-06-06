@@ -26,16 +26,15 @@
           </el-form-item>
           </el-col>
           <el-col :span="8">
-          <el-form-item label="负责人：" prop="responsibleUserId">
-            <el-select  size="small" v-model="orderForm.responsibleUserId"  placeholder="请选择">
-                <el-option label="全部" value=""></el-option>
-                <el-option
-                  v-for="item in userList"
-                  :label="item.userName"
-                  :value="item.id"
-                  >
-                </el-option>
-              </el-select>
+          <el-form-item label="负责人：" prop="responsibleUserName">
+              <el-autocomplete size="small" :maxlength="parseInt(100)"
+                  class="inline-input"
+                  v-model="orderForm.responsibleUserName"
+                  :fetch-suggestions="queryUser"
+                  placeholder="请输入内容"
+                  :trigger-on-focus="false"
+                  @select="handleUserSelect"
+                ></el-autocomplete>
           </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -188,7 +187,7 @@
     <el-table-column
       prop="functionModuleFirst"
       label="功能分类"
-      min-width="100">
+      min-width="120">
         <template scope="scope">
             {{scope.row.functionModuleFirstName}}-{{scope.row.functionModuleSecondName}}
         </template>
@@ -196,7 +195,7 @@
         <el-table-column label="功能平台" style="font-size:12px;">
           <el-table-column v-for="it in functionalPlatformOption" 
             :label="filterFunctionList(it.id)" 
-            min-width="55">
+            min-width="40">
             <template scope="scope" >
               <i :class="getProductCheck(scope.row.productPlatformId,it.id)"></i>
             </template>
@@ -214,15 +213,15 @@
           prop="requirementName"
           label="需求名称"
           show-overflow-tooltip
-          min-width="200">
+          min-width="450">
         </el-table-column>
 
         <el-table-column
           prop="priority"
           label="优先级"
-          min-width="40" >
+          min-width="60" >
           <template scope="scope" >
-            <el-col >
+            <el-col style="text-align:center" >
               {{scope.row.priority}}
             </el-col>
           </template>
@@ -232,27 +231,27 @@
           prop="requirementPlan"
           label="需求规划"
           show-overflow-tooltip
-          min-width="120">
+          min-width="80">
         </el-table-column>
 
         <el-table-column
           prop="requirementStart"
           label="需求启动"
           show-overflow-tooltip
-          min-width="120">
+          min-width="80">
         </el-table-column>
 
         <el-table-column
           prop="responsibleUserName"
           label="负责人"
           show-overflow-tooltip
-          min-width="100">
+          min-width="70">
         </el-table-column>
 
         <el-table-column
           prop="requirementStatusName"
           label="需求进度"
-          min-width="100">
+          min-width="80">
           <template scope="scope">
             <!-- <el-col :class="requireStatusClass(scope.row.requirementStatusName)"> -->
             <el-col >
@@ -264,7 +263,7 @@
         <el-table-column
         fixed="right"
         label="操作"
-        width="100">
+        width="50">
         <template scope="scope">
           <el-button @click="viewDetail(scope.row)" type="text" size="small">查看</el-button>
         </template>
@@ -299,6 +298,7 @@
     			productPlatform: [],
     			functionType: '',
           responsibleUserId: '',
+          responsibleUserName : '',
           requirementStatus: '',
           functionModuleFirst:'', //功能一级分级
           functionModuleSecond:'',
@@ -328,6 +328,7 @@
         batchForm : [],
         userList : [],//用户列表
         associateList : [],//联想列表
+        associateUserList : [],//联想列表
       }
       
     },
@@ -451,6 +452,39 @@
           });
       },
       /**
+           * 模糊查询
+           */
+           queryUser(queryString, cb) {
+                  var that = this;
+                  that.associateUserList = [];
+
+                  var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+                  var reqData = {
+                      name: queryString,
+                  };
+
+                  this.$http.post(url, reqData).then(({
+                      data,
+                      ok,
+                      statusText
+                  }) => {
+                      if (ok && data.status == 0) {
+                        var list = data.data;
+                          list.forEach(function(item) {
+                              var restaurant = {};
+                              restaurant.value = item.name;
+                              restaurant.id = item.id;
+                              that.associateUserList.push(restaurant);
+                          })
+                          cb(that.associateUserList);
+                      }
+                  });
+
+              },
+              handleUserSelect : function(val){
+                  this.orderForm.responsibleUserId = val.id
+              },
+      /**
        * 校验是否被选中
        * @return {[type]} [description]
        */
@@ -469,6 +503,7 @@
        */
       resetForm :function(formName) {
           this.$refs[formName].resetFields();
+          this.orderForm.responsibleUserId = ''
       } ,
       /**
        * [bulkEdit 搜索]
@@ -898,7 +933,7 @@
   }
 
   .el-table .cell, .el-table th>div{
-    padding-left: 15px !important;
+    padding-left: 5px !important;
     padding-right: 5px !important;
   }
 </style>

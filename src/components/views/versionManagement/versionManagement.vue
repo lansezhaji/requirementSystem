@@ -59,7 +59,7 @@
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="planeOnlineDateSecond" style="text-align:left">
+                      <el-form-item prop="planeOnlineDateSecond" style="text-align:left" label-width="0px">
                         <el-date-picker
                         v-model="form.planeOnlineDateSecond" 
                         size="small"
@@ -87,7 +87,7 @@
                     </el-col>
                    
                     <el-col :span="12">
-                      <el-form-item prop="actualOnlineDateSecond" style="text-align:left">
+                      <el-form-item prop="actualOnlineDateSecond" style="text-align:left" label-width="0px">
                         <el-date-picker
                         v-model="form.actualOnlineDateSecond" size="small"
                         type="date"

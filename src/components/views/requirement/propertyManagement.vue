@@ -2,6 +2,7 @@
   <div class="propertyManagement">
      <el-breadcrumb separator=">" class="bread-title retrieval  criteria">
 		  <el-breadcrumb-item>属性管理</el-breadcrumb-item>
+        <el-button @click="debug()">debug</el-button>
 	</el-breadcrumb>
 	<el-form :rules="rules" ref="propertyForm" :model="propertyForm">
 		<div class="listStyle">
@@ -50,7 +51,9 @@
 						
 					</el-col>
 				    <el-col :span="6" :offset="1">
-						<el-button type="primary" size="small" @click="addProperty(1)" :disabled="!propertyForm.newFirstProperty">添加属性</el-button>
+                        <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+						  <el-button type="primary" size="small" @click="addProperty(1)" :disabled="!propertyForm.newFirstProperty || !superAdmin">添加属性</el-button>
+                        </el-tooltip>
 					</el-col>
 				  </el-row>
 
@@ -59,10 +62,16 @@
 
 						
 								<el-row class="btnStyle">
-									<el-button type="text" v-if="!firstProperyModify " @click="firstProperyModify = true" :disabled="!firstReqIndex">修改</el-button>
-									<el-button type="text" v-if="firstProperyModify " @click="saveFirstProperty" :disabled="!firstReqIndex">保存</el-button>
+                                    <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+									   <el-button type="text" v-if="!firstProperyModify " @click="firstProperyModify = true" :disabled="!firstReqIndex||!superAdmin">修改</el-button>
+                                    </el-tooltip>
+                                    <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+									   <el-button type="text" v-if="firstProperyModify " @click="saveFirstProperty" :disabled="!firstReqIndex||!superAdmin">保存</el-button>
+                                    </el-tooltip>
 									<el-button type="text" v-if="firstProperyModify " @click="firstProperyModify = false" :disabled="!firstReqIndex">取消</el-button>
-									<el-button type="text" @click="deleteFirstVisiable = true" :disabled="!firstReqIndex">删除</el-button>
+                                    <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+									   <el-button type="text" @click="deleteFirstVisiable = true" :disabled="!firstReqIndex||!superAdmin">删除</el-button>
+                                    </el-tooltip>
 									<el-dialog
 									  title="提示"
 									  :visible.sync="deleteFirstVisiable"
@@ -105,17 +114,25 @@
 							
 						</el-col>
 					    <el-col :span="6" :offset="1">
-							<el-button type="primary" size="small" @click="addProperty(2)" :disabled="!propertyForm.newSecondProperty">添加属性</el-button>
+                            <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+							     <el-button type="primary" size="small" @click="addProperty(2)" :disabled="!propertyForm.newSecondProperty||!superAdmin">添加属性</el-button>
+                            </el-tooltip>
 						</el-col>
 					  </el-row>
 
 					 	<el-row type="flex" class="row-bg" justify="right">
 							<el-col :span="24">
 							<div class="btnStyle">
-									<el-button type="text" v-if="!secondProperyModify" @click="secondProperyModify =true" :disabled="!secondReqIndex">修改</el-button>
-									<el-button type="text" v-if="secondProperyModify" @click='saveSecondProperty' :disabled="!secondReqIndex">保存</el-button>
+                                    <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+                                        <el-button type="text" v-if="!secondProperyModify" @click="secondProperyModify =true" :disabled="!secondReqIndex || !superAdmin">修改</el-button>
+                                    </el-tooltip>
+									<el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+									   <el-button type="text" v-if="secondProperyModify" @click='saveSecondProperty' :disabled="!secondReqIndex|| !superAdmin">保存</el-button>
+                                    </el-tooltip>
 									<el-button type="text" v-if="secondProperyModify" @click='secondProperyModify = false' :disabled="!secondReqIndex">取消</el-button>
-									<el-button type="text" @click="deleteSecondProperty" :disabled="!secondReqIndex">删除</el-button>
+                                    <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="superAdmin">
+									   <el-button type="text" @click="deleteSecondProperty" :disabled="!secondReqIndex|| !superAdmin">删除</el-button>
+                                    </el-tooltip>
 									<el-dialog
 									  title="提示"
 									  :visible.sync="deleteSecondVisiable"
@@ -184,6 +201,7 @@
 		}
 	}
       return {
+        superAdmin : false,
       	requirementIndex : 1,
       	firstReqIndex : "",
       	propertyForm:{
@@ -511,6 +529,11 @@
 	      	$(".RPList ul li:eq("+index+")").addClass = 'aa';
 	      	console.log($(".RPList ul li:eq("+index+")"))
     	},
+    },
+    beforeRouteEnter: function (to,from,next) {
+            next(vm => {
+                vm.superAdmin = (localStorage.getItem('superAdmin') == 1)
+            });
     },
     filters:{
 

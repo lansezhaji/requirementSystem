@@ -4,8 +4,8 @@
 			<el-breadcrumb-item>
 				<h3>我的账号</h3>
 			</el-breadcrumb-item>
-        <el-button @click="getUserInfo()">查询</el-button>
-        <el-button @click="debug()">debug</el-button>
+<!--         <el-button @click="getUserInfo()">查询</el-button>
+        <el-button @click="debug()">debug</el-button> -->
 		</el-breadcrumb>
 		<el-row class="content">
 			<el-form label-width="150px">
@@ -86,7 +86,7 @@
 		        var that = this;
 	            var url = '/api/dlmanagementtool/user/getUserInfo';
 	            var reqData = {
-	            	userName : localStorage.getItem("userName")
+	            	id : parseInt(localStorage.getItem("userId"))
 	            }
 	            this.$http.post(url,reqData).then(({
 	                data,

@@ -9,8 +9,8 @@
     		<el-button type="primary" size="small" v-if="!isEditMode" @click="isEditMode = true">编辑</el-button>
     	</el-col>
     </el-row>
-  		<el-button @click="initDatas()">查询</el-button>
-        <el-button @click="debug()">debug</el-button>
+<!--   		<el-button @click="initDatas()">查询</el-button>
+        <el-button @click="debug()">debug</el-button> -->
     <el-row>
     <el-col :span="16">
 	  <el-form :model="formData" :rules="rules" ref="formData" label-width="200px">
@@ -68,7 +68,7 @@
 
 			
 		  	<el-col :span="16">
-				<el-form-item label="需求包名称：" prop="PakgeName" v-if="formData.requireProgress == 84">
+				<el-form-item label="需求包名称：" prop="PakgeName" v-if="formData.requireProgress >= 84">
 					<el-col  v-if="isEditMode">
 						<el-input size="small" v-model="formData.PakgeName" placeholder="最大长度为50个字符" :maxlength="parseInt(50)"></el-input>
 					</el-col>
@@ -95,7 +95,7 @@
 						<el-select  size="small" v-model="formData.ResponsePerson" placeholder="请选择">
 							<el-option
 						      v-for="item in ProposerOption"
-						      :label="item.userName"
+						      :label="item.name"
 						      :value="item.id"
 						      >
 						    </el-option>
@@ -232,8 +232,8 @@
 					</el-col>
 				</el-form-item>	
 			</el-col>
-			<el-col :span="20" style="text-align:left" v-if="formData.requireProgress == 84 || formData.requireProgress == 85">
-				<el-form-item label="完成时间：" prop="completionTime">
+			<el-col :span="20" style="text-align:left" v-if="formData.requireProgress >= 84 " >
+				<el-form-item label="完成时间：" prop="completionTime" required>
 					<el-col v-if="isEditMode">
 						<el-date-picker
 					      v-model="formData.completionTime"
@@ -247,8 +247,8 @@
 					</el-col>
 				 </el-form-item>	
 	    	</el-col>
-	    	<el-col :span="20" style="text-align:left" v-if="formData.requireProgress == 84 || formData.requireProgress == 85">
-				<el-form-item label="评审时间：" prop="approveTime" >
+	    	<el-col :span="20" style="text-align:left" v-if="formData.requireProgress >= 85 " >
+				<el-form-item label="评审时间：" prop="approveTime" required>
 					<el-col v-if="isEditMode">
 						<el-date-picker
 					      v-model="formData.approveTime"
@@ -296,7 +296,7 @@
 	  </el-form>
 	  </el-col>
 		<el-col :span="8" style="border-left:1px dashed lightgray" v-if="requireDetail.requirementApply">
-			<el-form label-width="120px" style="text-align:left">
+			<el-form label-width="150px" style="text-align:left">
 				<el-col :span="16">
 					<el-form-item>
 						<h3>项目所属信息</h3>
@@ -331,38 +331,38 @@
 	    			</el-form-item>
 	    		</el-col>
 	    		<el-row>
-	    			<el-col :span="12">
+	    			<el-col :span="20">
 		    			<el-form-item label="计划转测时间：" >
-		    				{{requireDetail.requirementApply.testTimeStr}}
+		    				{{requireDetail.requirementApply.planTestTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
-		    		<el-col :span="12">
+		    		<el-col :span="20">
 		    			<el-form-item label="实际转测时间：" >
-		    				暂留
+		    				{{requireDetail.requirementApply.truthTestTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>
 	    		<el-row>
-	    			<el-col :span="12">
+	    			<el-col :span="20">
 		    			<el-form-item label="计划QA时间：" >
-		    				{{requireDetail.requirementApply.qaTimeStr}}
+		    				{{requireDetail.requirementApply.planQaTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
-		    		<el-col :span="12">
+		    		<el-col :span="20">
 		    			<el-form-item label="实际QA时间：" >
-		    				暂留
+		    				{{requireDetail.requirementApply.truthQaTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>	
 	    		<el-row>
-	    			<el-col :span="12">
+	    			<el-col :span="20">
 		    			<el-form-item label="计划上线时间：" >
-		    				{{requireDetail.requirementApply.truthTimeStart}}
+		    				{{requireDetail.versionInfo.planTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
-		    		<el-col :span="12">
+		    		<el-col :span="20">
 		    			<el-form-item label="实际上线时间：" >
-		    				暂留
+		    				{{requireDetail.versionInfo.truthTimeStr}}
 		    			</el-form-item>
 		    		</el-col>	
 	    		</el-row>	
@@ -464,9 +464,9 @@
         	requireProgress : 81,//需求进度
         	completionTime:'', //完成时间
         	approveTime:'',
-        	RqBack:'背景' ,//需求背景
-        	Rqdescription:'描述', //需求描述
-        	RqNote:'需求备注' //需求备注
+        	RqBack:'' ,//需求背景
+        	Rqdescription:'', //需求描述
+        	RqNote:'' //需求备注
         },
         // 初始化选框数据
         initData:{
@@ -735,7 +735,7 @@
     				var responsibleUserName = ""
     				that.ProposerOption.forEach(function(item){
     					if (item.id == that.formData.ResponsePerson) {
-    						responsibleUserName = item.userName
+    						responsibleUserName = item.name
     					};
     				})
     				var reqData = {

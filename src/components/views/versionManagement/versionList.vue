@@ -2,8 +2,8 @@
     <div class="versionList">
       <el-breadcrumb separator=">" class="bread-title">
         <el-breadcrumb-item>版本管理</el-breadcrumb-item>
-        <el-button @click="getVersionTypeList()">查询</el-button>
-        <el-button @click="debug()">debug</el-button>
+<!--         <el-button @click="getVersionTypeList()">查询</el-button>
+        <el-button @click="debug()">debug</el-button> -->
     </el-breadcrumb>
     <div class="retrieval  criteria Style">
       <el-form :model="orderForm" ref="orderForm"  label-width="120px" class="query" style="text-align:left">
@@ -61,7 +61,7 @@
             <el-col :span="12">
                 <el-form-item label="项目经理：" prop="projectManagement">
                   <el-col :span="20">
-                    <el-select  size="small" v-model="orderForm.projectManagement"  placeholder="请选择">
+<!--                     <el-select  size="small" v-model="orderForm.projectManagement"  placeholder="请选择">
                         <el-option label="全部" value=""></el-option>
                         <el-option
                           v-for="item in userList"
@@ -69,20 +69,36 @@
                           :value="item.userName"
                           >
                         </el-option>
-                    </el-select>
+                    </el-select> -->
+                    <el-autocomplete size="small" :maxlength="parseInt(100)"
+                      class="inline-input"
+                      v-model="orderForm.projectManagement"
+                      :fetch-suggestions="queryProjector"
+                      placeholder="请输入内容"
+                      :trigger-on-focus="false"
+                      @select="handleProjectSelect"
+                    ></el-autocomplete>
                   </el-col>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                  <el-form-item label="产品经理：" prop="prodcutManagement">
-                  <el-select size="small" v-model="orderForm.prodcutManagement"  placeholder="请选择">
+<!--                   <el-select size="small" v-model="orderForm.prodcutManagement"  placeholder="请选择">
                     <el-option
                       v-for="item in userList"
                       :label="item.userName"
                       :value="item.userName"
                       >
                     </el-option>
-                  </el-select>
+                  </el-select> -->
+                  <el-autocomplete size="small" :maxlength="parseInt(100)"
+                      class="inline-input"
+                      v-model="orderForm.prodcutManagement"
+                      :fetch-suggestions="queryProductor"
+                      placeholder="请输入内容"
+                      :trigger-on-focus="false"
+                      @select="handleProductSelect"
+                    ></el-autocomplete>
                 </el-form-item>
               </el-col>
               
@@ -234,8 +250,8 @@
                         :loading="loading">
                         <el-option
                           v-for="item in userListTemp"
-                          :label="item.userName"
-                          :value="item.userName">
+                          :label="item.name"
+                          :value="item.name">
                         </el-option>
                       </el-select>
                   </el-col>
@@ -288,19 +304,19 @@
                     <el-form-item >
                         <el-col :span="12">
                           <strong>计划转测时间：</strong>
-                          <span>{{projectInfo.testTimeStr}}</span>
+                          <span>{{projectInfo.planTestTimeStr}}</span>
                         </el-col>
                         <el-col :span="12">
                           <strong>实际转测时间：</strong>
-                          <span>待填</span>
+                          <span>{{projectInfo.truthTestTimeStr}}</span>
                         </el-col>
                         <el-col :span="12">
                           <strong>计划QA时间：</strong>
-                          <span>{{projectInfo.qaTimeStr}}</span>
+                          <span>{{projectInfo.planQaTimeStr}}</span>
                         </el-col>
                         <el-col :span="12">
                           <strong>实际QA时间：</strong>
-                          <span>待填</span>
+                          <span>{{projectInfo.truthQaTimeStr}}</span>
                         </el-col>
                     </el-form-item>
                   </el-col>
@@ -422,11 +438,14 @@
         },//版本列表所有返回数据
         loading : false,
         userList : [],//人员列表
+        associateReponser : [],
+        associateProjector : [],
         userListTemp : [],
         versionList : [],//版本号列表
         versionAllList : [],//版本号列表
         tableData3: [ ],
         associateList : [],//联想查询版本号列表
+
         versionTypeList:[ ],
         versionNumOption:[ ],
         versionStatusOption:[ ],
@@ -652,6 +671,69 @@
           this.orderForm.actualOnlineDateSecond = '';
       } ,
       /**
+       * 模糊查询
+       */
+       queryProductor(queryString, cb) {
+              var that = this;
+              that.associateReponser = [];
+
+              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+              var reqData = {
+                  name: queryString,
+              };
+
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.name;
+                          restaurant.id = item.id;
+                          that.associateReponser.push(restaurant);
+                      })
+                      cb(that.associateReponser);
+                  }
+              });
+
+          },
+          handleProductSelect : function(val){
+              this.orderForm.responsibleUserId = val.id
+          },
+        queryProjector(queryString, cb) {
+              var that = this;
+              that.associateProjector = [];
+
+              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+              var reqData = {
+                  name: queryString,
+              };
+
+              this.$http.post(url, reqData).then(({
+                  data,
+                  ok,
+                  statusText
+              }) => {
+                  if (ok && data.status == 0) {
+                    var list = data.data;
+                      list.forEach(function(item) {
+                          var restaurant = {};
+                          restaurant.value = item.name;
+                          restaurant.id = item.id;
+                          that.associateProjector.push(restaurant);
+                      })
+                      cb(that.associateProjector);
+                  }
+              });
+
+          },
+          handleProjectSelect : function(val){
+              this.orderForm.responsibleUserId = val.id
+          },
+      /**
        * [viewDetail 查看详情]
        * @return {[type]} [description]
        */
@@ -696,7 +778,7 @@
               setTimeout(() => {
                 this.loading = false;
                 this.userListTemp = this.userList.filter(item => {
-                  return item.userName.toLowerCase()
+                  return item.name.toLowerCase()
                     .indexOf(query.toLowerCase()) > -1;
                 });
               }, 200);

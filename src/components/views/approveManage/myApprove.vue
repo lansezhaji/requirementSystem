@@ -3,6 +3,7 @@
 		<el-breadcrumb separator="/">
 			<el-breadcrumb-item>
 				<h3>我发起的</h3>
+        <el-button @click="debug()">debug</el-button>
 			</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-row class="content">
@@ -66,8 +67,8 @@
 					
 					
 					<el-col :span="8" v-if="!pageFlage">
-						<el-form-item label="申请人：" class="userMessage" prop="approvePersion">
-							<el-select  size="small" v-model="approveForm.approvePersion"  placeholder="请选择">
+						<el-form-item label="申请人：" class="userMessage" prop="approvePersionName">
+<!-- 							<el-select  size="small" v-model="approveForm.approvePersion"  placeholder="请选择">
 					            <el-option label="全部" value=""></el-option>
 							    <el-option
 							      v-for="item in userList"
@@ -75,13 +76,22 @@
 							      :value="item.id"
 							      >
 							    </el-option>
-							</el-select>				
+							</el-select> -->	
+							<el-autocomplete size="small" :maxlength="parseInt(100)"
+		                      class="inline-input"
+		                      v-model="approveForm.approvePersionName"
+		                      :fetch-suggestions="queryApplyPerson"
+		                      placeholder="请输入内容"
+		                      :trigger-on-focus="false"
+		                      @select="handleApplyPersonSelect"
+		                    ></el-autocomplete>	
+										
 						</el-form-item>
 					</el-col>	
 						
 					<el-col :span="8">
-						<el-form-item label="产品经理：" class="userMessage" prop="responsibleUserId">
-							<el-select  size="small" v-model="approveForm.responsibleUserId"  placeholder="请选择">
+						<el-form-item label="产品经理：" class="userMessage" prop="responsibleUserName">
+<!-- 							<el-select  size="small" v-model="approveForm.responsibleUserId"  placeholder="请选择">
 					            <el-option label="全部" value=""></el-option>
 							    <el-option
 							      v-for="item in userList"
@@ -89,7 +99,15 @@
 							      :value="item.id"
 							      >
 							    </el-option>
-							</el-select>			
+							</el-select>	 -->	
+							<el-autocomplete size="small" :maxlength="parseInt(100)"
+		                      class="inline-input"
+		                      v-model="approveForm.responsibleUserName"
+		                      :fetch-suggestions="queryProductor"
+		                      placeholder="请输入内容"
+		                      :trigger-on-focus="false"
+		                      @select="handleProductSelect"
+		                    ></el-autocomplete>	
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -149,7 +167,7 @@
 				    </el-table-column>
 				    <el-table-column prop="createTimeStr" label="申请时间" min-width="150px"> </el-table-column>
 				    <el-table-column prop="updateTimeStr" label="最后审批时间" min-width="150px"> </el-table-column>
-				    <el-table-column prop="userName" label="申请人" min-width="100px" v-if="!pageFlage" show-overflow-tooltip> </el-table-column>
+				    <el-table-column prop="name" label="申请人" min-width="100px" v-if="!pageFlage" show-overflow-tooltip> </el-table-column>
 				    <el-table-column prop="versionTypeId" label="版本类型" min-width="100px" show-overflow-tooltip>
 				    	<template scope="scope">
 				    		{{filterVertionType(scope.row.versionTypeId)}}
@@ -158,10 +176,18 @@
 				    <el-table-column prop="versionName" label="版本号" min-width="120px" show-overflow-tooltip> </el-table-column>
 				    <el-table-column prop="projectName" label="需求名称" min-width="200px" show-overflow-tooltip>
 				    	<template scope="scope">
-				    		{{getRequireName(scope.row)}}
+				    		<el-col v-for="requireN in scope.row.requirementInfos">
+				    			{{requireN.requirementName}}&nbsp
+				    		</el-col>
 				    	</template>
 				    </el-table-column>
-				    <el-table-column prop="projectUserName" label="产品经理" min-width="100px" show-overflow-tooltip> </el-table-column>
+				    <el-table-column  label="产品经理" min-width="100px" show-overflow-tooltip>
+				    	<template scope="scope">
+				    		<el-col v-for="requireN in scope.row.requirementInfos">
+				    			{{requireN.responsibleUserName}}&nbsp
+				    		</el-col>
+				    	</template>
+				    </el-table-column>
 				    <el-table-column prop="applyStatus" label="审批状态" min-width="100px" >
 				    	<template scope="scope" >
 				    		<el-col :class="applyStatusClass(scope.row.applyStatus)">
@@ -250,16 +276,19 @@
 					versionType : "",
 					requireName : "",
 					createStartTime : "",
+					approvePersionName : "",
 	            	createEndTime   : "",
 					approveStatus : "",
 					approveVersion : "",
 					approvePersion : "",
 					responsibleUserId : "",
+					responsibleUserName : "",
 					curPage : 1,
 					size : 10,
 				},
 				requireAdmin : false,
 				versionList : [],//版本号列表
+				associateApplyer : [],
 				userList : [],
 				initData : {
 					versionTypeList : []
@@ -283,6 +312,9 @@
 			return data
 		},
 		methods:{
+			debug : function(){
+				debugger
+			},
 			   /**
 		       * 获取版本类型列表
 		       * @return {[type]} [description]
@@ -477,6 +509,42 @@
 		              });
 
 		          },
+		          /**
+		           * 模糊查询申请人
+		           * @param  {[type]}   queryString [description]
+		           * @param  {Function} cb          [description]
+		           * @return {[type]}               [description]
+		           */
+		          queryApplyPerson(queryString, cb) {
+		              var that = this;
+		              that.associateApplyer = [];
+
+		              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+		              var reqData = {
+		                  name: queryString,
+		              };
+
+		              this.$http.post(url, reqData).then(({
+		                  data,
+		                  ok,
+		                  statusText
+		              }) => {
+		                  if (ok && data.status == 0) {
+		                    var list = data.data;
+		                      list.forEach(function(item) {
+		                          var restaurant = {};
+		                          restaurant.value = item.name;
+		                          restaurant.id = item.id;
+		                          that.associateApplyer.push(restaurant);
+		                      })
+		                      cb(that.associateApplyer);
+		                  }
+		              });
+
+		          },
+		          handleApplyPersonSelect : function(val){
+		              this.approveForm.approvePersion = val.id
+		          },
 		    /**
 		       * [handleSelect 联想匹配函数选中]
 		       * @param  {[type]} item [description]
@@ -498,6 +566,39 @@
 				})
 				return typeName
 			},
+	      /**
+	       * 模糊查询产品经理
+	       */
+	       queryProductor(queryString, cb) {
+	              var that = this;
+	              that.associateReponser = [];
+
+	              var url = "/api/dlmanagementtool/user/fuzzyQueryUser";
+	              var reqData = {
+	                  name: queryString,
+	              };
+
+	              this.$http.post(url, reqData).then(({
+	                  data,
+	                  ok,
+	                  statusText
+	              }) => {
+	                  if (ok && data.status == 0) {
+	                    var list = data.data;
+	                      list.forEach(function(item) {
+	                          var restaurant = {};
+	                          restaurant.value = item.name;
+	                          restaurant.id = item.id;
+	                          that.associateReponser.push(restaurant);
+	                      })
+	                      cb(that.associateReponser);
+	                  }
+	              });
+
+	          },
+	          handleProductSelect : function(val){
+	              this.approveForm.responsibleUserId = val.id
+	          },
 			applyStatusClass : function(status){
 				var classArray = ['','wait','pass','refuse','recall'];
 				return classArray[status];
@@ -514,15 +615,15 @@
 			 * 获取需求名称
 			 * @return {[type]} [description]
 			 */
-			getRequireName : function(row){
-				var requrementName = [];
-				if (row.requirementInfos.length >0) {
-					row.requirementInfos.forEach(function(item){
-						requrementName.push(item.requirementName)
-					})
-				}
-				return requrementName.toString();
-			},
+			// getRequireName : function(row){
+			// 	var requrementName = [];
+			// 	if (row.requirementInfos.length >0) {
+			// 		row.requirementInfos.forEach(function(item){
+			// 			requrementName.push(item.requirementName)
+			// 		})
+			// 	}
+			// 	return requrementName.toString();
+			// },
 			/**
 	         * 时间插件--时间区间限制
 	         * @param  {[type]} val [description]
@@ -613,6 +714,8 @@
 				this.$refs['approveForm'].resetFields();
 				this.approveForm.createStartTime = "";
 				this.approveForm.createEndTime = "";
+				this.approveForm.queryApplyPerson = ""
+				this.approveForm.approvePersion = ""
 			},
 			pageChange : function(val){
 				this.approveForm.curPage = val;
