@@ -109,7 +109,9 @@
 <!-- 编辑栏 -->
       <el-row style="margin-top:20px;">
         <el-col :span="2">
-          <el-button type="text" @click="addVersion"><i class="el-icon-plus"></i>新增</el-button>
+           <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+              <el-button type="text" @click="addVersion" :disabled="!versionAdmin"><i class="el-icon-plus"></i>新增</el-button>
+            </el-tooltip>
           <el-dialog
             title="新增版本号"
             :visible.sync="addDialogVisible"
@@ -219,10 +221,16 @@
 
         </el-col>
         <el-col :span="22" style="text-align: right;">
-           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(0)">启用</el-button>
+          <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+            <el-button type="text" :disabled="multipleSelection.length<=0 || !versionAdmin"  @click="changeVersionStatus(0)">启用</el-button>
+          </el-tooltip>
            <!-- <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(1)">上线</el-button> -->
-           <el-button type="text" :disabled="multipleSelection.length<=0"  @click="changeVersionStatus(2)">锁定</el-button>
-           <el-button type="text" :disabled="multipleSelection.length<=0" style="margin-right:60px;" @click="changeVersionStatus(3)">挂起</el-button>
+           <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+              <el-button type="text" :disabled="multipleSelection.length<=0 || !versionAdmin"  @click="changeVersionStatus(2)">锁定</el-button>
+          </el-tooltip>
+          <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+            <el-button type="text" :disabled="multipleSelection.length<=0 || !versionAdmin" style="margin-right:60px;" @click="changeVersionStatus(3)">挂起</el-button>
+          </el-tooltip>
         </el-col>
       </el-row>
     <div class="retrieval  criteria Style" >
@@ -279,9 +287,15 @@
         </el-table-column>
         <el-table-column label="操作">
             <template scope="scope">
-              <el-button type="text" @click="editVersion(scope.row)">编辑</el-button>
-              <el-button type="text" @click="onlineVersion(scope.row)">上线</el-button>
-              <el-button type="text" @click="deleteVersionDialog(scope.row)">删除</el-button>
+              <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+                <el-button type="text" :disabled="!versionAdmin" @click="editVersion(scope.row)">编辑</el-button>
+              </el-tooltip>
+              <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+                <el-button type="text" :disabled="!versionAdmin" @click="onlineVersion(scope.row)">上线</el-button>
+              </el-tooltip>
+              <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+                <el-button type="text" :disabled="!versionAdmin" @click="deleteVersionDialog(scope.row)">删除</el-button>
+              </el-tooltip>
             </template>
         </el-table-column>
       </el-table> 
@@ -338,6 +352,7 @@
           curPage:1,
           size: 10
         },
+        versionAdmin : false,
         returnData : "",//返回数据
         versionTypeList : [],//版本类型列表
         versionList: [ ],
@@ -781,6 +796,7 @@
             if (vm.$route.query.typeId ) {
               vm.form.versionType = vm.$route.query.typeId;
             }
+            vm.versionAdmin = (localStorage.getItem("versionAdmin") == '1')
             vm.getVersionTypeList();
             vm.getVersionList();
         }); 

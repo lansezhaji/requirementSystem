@@ -2,7 +2,7 @@
   <div class="propertyManagement">
      <el-breadcrumb separator=">" class="bread-title retrieval  criteria">
 		  <el-breadcrumb-item>属性管理</el-breadcrumb-item>
-        <el-button @click="debug()">debug</el-button>
+        <!-- <el-button @click="debug()">debug</el-button> -->
 	</el-breadcrumb>
 	<el-form :rules="rules" ref="propertyForm" :model="propertyForm">
 		<div class="listStyle">

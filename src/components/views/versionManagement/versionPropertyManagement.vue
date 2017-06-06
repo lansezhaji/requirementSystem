@@ -9,11 +9,15 @@
     <div class="retrieval  criteria Style">
     	<el-row>
 	      <el-col :span="2">
-	        <el-button type="text" @click="addVersionProperty"><i class="el-icon-plus"></i>新增</el-button>
+          <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+	           <el-button type="text" @click="addVersionProperty" :disabled="!versionAdmin"><i class="el-icon-plus"></i>新增</el-button>
+          </el-tooltip>
 	        <!-- <el-button type="text" @click="dialogEditVisible = true">编辑</el-button> -->
 	      </el-col>
 	      <el-col :span="22" style="text-align: right;">
-	         <el-button type="text" style="margin-right:60px;" @click="deleteVersionType">删除</el-button>
+            <el-tooltip content="当前用户暂无编辑权限" placement="top" :disabled="versionAdmin">
+	             <el-button type="text" style="margin-right:60px;" @click="deleteVersionType" :disabled="!versionAdmin">删除</el-button>
+            </el-tooltip>
 	      </el-col>
 	    </el-row>
 
@@ -155,6 +159,7 @@
           versionType:'',
           comment:''
         },
+        versionAdmin : false,
         editForm:{
           versionType:'',
           versionTypeTemp:'', //缓存名称，如果不为当前
@@ -365,6 +370,7 @@
     },
     beforeRouteEnter: function (to,from,next) {
         next(vm => {
+            vm.versionAdmin = (localStorage.getItem("versionAdmin")=='1')
             vm.getVersionTypeList();
         }); 
     }

@@ -3,7 +3,7 @@
 		<el-breadcrumb separator="/">
 			<el-breadcrumb-item>
 				<h3>我发起的</h3>
-        <el-button @click="debug()">debug</el-button>
+        <!-- <el-button @click="debug()">debug</el-button> -->
 			</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-row class="content">
